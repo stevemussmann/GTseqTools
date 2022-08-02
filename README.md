@@ -18,8 +18,8 @@ This program has only been tested in Python v3.10. However, it should be compati
 The program first conducts all filtering procedures prior to file format conversion. Filtering procedures are conducted in the following order:
 1) Remove species-identification loci (-s option).
 2) Remove sex-identifying loci (functionality not yet enabled).
-3) Remove loci that do not meet the minimum threshold (-i option).
-4) Remove individuals that do not meet the minimum threshold (-l option).
+3) Remove loci that do not meet the minimum threshold (-l option).
+4) Remove individuals that do not meet the minimum threshold (-i option).
 
 ## Program Options
 Required Inputs:
