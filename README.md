@@ -10,14 +10,14 @@ This program has only been tested in Python v3.10. However, it should be compati
 - pandas
 
 ## Development Notes
-- Currently the program is only writing output to stdout rather than output files. 
-- Some file format conversion options are not yet fully implemented.
+- Additional file format conversion options will be implemented.
+- Some existing format conversions will be modified or have additional options added.
 - Minimal error checking procedures have been implemented.
 
 ## Order of operations
 The program first conducts all filtering procedures prior to file format conversion. Filtering procedures are conducted in the following order:
 1) Remove species-identification loci (-s option).
-2) Remove sex-identifying loci (functionality not yet enabled).
+2) Remove sex-identifying loci (-d option).
 3) Remove loci that do not meet the minimum threshold (-l option).
 4) Remove individuals that do not meet the minimum threshold (-i option).
 
@@ -26,6 +26,7 @@ Required Inputs:
 * **-x / --xlsx:** Specify an Excel file containing GTseq data. The first row should be a header line, with cell A1 specifying the individual sample column, cell B1 should contain the text 'Population ID', and cells C1 to the end should specify locus names. These data should all be in a worksheet titled 'Final Genotypes'. Alleles for a genotype should be concatenated per locus (e.g., AA, AT, etc.). A missing genotype for a locus should be recorded as '0'. Some of the format options will (hopefully) be more flexible / customizable in future versions of this program. 
 
 Optional arguments:
+* **-d / --sexid:** Provide a list of loci that are sex-identifying SNPs. This should be a plain text file with one locus per line. These loci will be removed from the dataset before any data filtering steps are executed. 
 * **-i / --pmissind:** Enter the maximum allowable proportion of missing data for an individual sample. Default = 0.2.
 * **-l / --pmissloc:** Enter the maximum allowable proportion of missing data for a locus. Default = 0.1.
 * **-s / --species:** Provide a list of loci that are species identification SNPs. This should be a plain text file with one locus per line. These loci will be removed from the dataset before any data filtering steps are executed. 
