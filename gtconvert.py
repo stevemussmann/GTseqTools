@@ -9,35 +9,59 @@ class GTconvert():
 		self.structureTwoLine = struBool
 		self.df = pdf
 		self.pd = popdata
+		self.suffix = {'genepop': 'gen', 'newhybrids': 'newhyb', 'structure': 'str'}
 
-	def convert(self, d):
+	def convert(self, d, infile):
+		output = list()
 		for filetype, boolean in d.items():
 			if boolean == True:
-				self.convert_to(filetype)
+				print("Converting to", filetype, "format file.")
+				output = self.convert_to(filetype)
+				self.printOutput(output, infile, self.suffix[filetype])
 		
 	def conv_newhybrids(self):
+		#print("This function will convert to NewHybrids format.")
 		nh = NewHybrids(self.df)
 		output = nh.convert()
-		for line in output:
-			print(line)
-		#return output
+		return output
 
 	def conv_structure(self):
-		print("This function will convert to Structure format.")
+		#print("This function will convert to Structure format.")
 		stru = Structure(self.df, self.pd)
-		stru.convert(self.structureTwoLine)
+		output = stru.convert(self.structureTwoLine)
+		return output
 
 	def conv_genepop(self):
-		print("This function will convert to Genepop format.")
-		gen = Genepop(self.df)
-		gen.convert()
+		#print("This function will convert to Genepop format.")
+		gen = Genepop(self.df, self.pd)
+		output = gen.convert()
+		return output
 
 	def convert_to(self, name: str):
 		conv = f"conv_{name}"
+		output = list()
 		if hasattr(self, conv) and callable(func := getattr(self, conv)):
-			func()
+			output = func()
 		else:
 			print("Function not found for converting", name, "format.")
 			print("Exiting program...")
 			print("")
 			raise SystemExit(1)
+		return output
+
+	def printOutput(self, output, fileName, suffix):
+		# make new file name for writing
+		fileName = fileName.replace(" ", "_") #replace spaces in original filename if they exist
+		nameList = fileName.split('.')
+		nameList.pop() #remove old extension
+		nameList.append(suffix) #add new file extension
+		outName = '.'.join(nameList)
+
+		print("Writing to", outName)
+		print("")
+
+		fh = open(outName, 'w')
+
+		for line in output:
+			fh.write(line)
+			fh.write("\n")

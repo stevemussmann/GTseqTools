@@ -21,6 +21,10 @@ class ComLine():
 							dest='species',
 							help="Specify a list of loci that are species identification SNPs."
 		)
+		optional.add_argument("-d", "--sexid",
+							dest='sexid',
+							help="Specify a list of loci that are sex-identifying SNPs."
+		)
 		optional.add_argument("-i", "--pmissind",
 							dest='pmissind',
 							type=float,
@@ -55,13 +59,13 @@ class ComLine():
 		)
 		self.args = parser.parse_args()
 
-		print(self.args)
-
 		#check if files exist
 		#self.exists( self.args.popmap )
 		self.exists( self.args.xlsx )
 		if self.args.species:
 			self.exists(self.args.species)
+		if self.args.sexid:
+			self.exists(self.args.sexid)
 
 	def exists(self, filename):
 		if( os.path.isfile(filename) != True ):

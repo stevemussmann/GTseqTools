@@ -11,6 +11,8 @@ class GTseq():
 		self.gtFile = infile
 
 	def parseFile(self):
+		print("Reading input xlsx file.")
+		print("")
 		with pandas.ExcelFile(self.gtFile) as xlsx:
 			data = pandas.read_excel(xlsx, 'Final Genotypes', index_col=0)
 
@@ -39,6 +41,7 @@ class GTseq():
 		return junk
 
 	def calcMissingLoci(self, df):
+		print("Calculating missing data per locus.")
 		missingDict = dict()
 		numInds = len(df)
 		for (columnName, columnData) in df.iteritems():
@@ -55,17 +58,25 @@ class GTseq():
 		return missingDict
 
 	def removeMissingLoci(self, missingDict, df, pMissLoci):
+		print("Removing loci with missing data proportion >", pMissLoci)
 		remove = list()
+
+		print("Loci removed from dataset:")
+		print("Locus\tMissing")
 
 		for (key, value) in missingDict.items():
 			if value > Decimal(pMissLoci):
+				print(key, "\t", format(value, ".3f"))
 				remove.append(key)
 
 		junk = self.removeColumns(df, remove)
 
+		print("")
+
 		return junk
 
 	def calcMissingInds(self, df):
+		print("Calculating missing data per individual.")
 		missingInd = dict()
 		numLoci = len(df.columns)
 
@@ -80,14 +91,21 @@ class GTseq():
 		return missingInd
 	
 	def removeMissingInds(self, missingDict, df, pMissInd):
+		print("Removing individuals with missing data proportion >", pMissInd)
 		remove = list()
+
+		print("Individuals removed from dataset:")
+		print("Sample\tMissing")
 
 		for (key, value) in missingDict.items():
 			if value > Decimal(pMissInd):
+				print(key, "\t", format(value, ".3f"))
 				remove.append(key)
 
 		junk = self.removeRows(df, remove)
-		
+
+		print("")		
+	
 		return junk
 	
 	def removeColumns(self, df, removelist):

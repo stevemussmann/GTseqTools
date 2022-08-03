@@ -23,8 +23,7 @@ class Structure():
 		else:
 			output = self.twoLine(output, mapDict)
 		
-		for line in output:
-			print(line)
+		return output
 
 	def oneLine(self, output, mapDict):
 		for sampleName, row in self.pdf.iterrows():

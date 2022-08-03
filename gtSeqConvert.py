@@ -18,28 +18,29 @@ def main():
 	for key, value in d.items():
 		if key in convList:
 			convDict[key] = value
-	print(convDict)
+	#print(convDict)
 
 	gtFile = GTseq(input.args.xlsx)
 	pdf = gtFile.parseFile() #returns pandas dataframe with unfiltered data
+	
+	# remove species-identifying SNPs (if option invoked)
 	if input.args.species:
 		print("Removing species-identifying SNPs")
+		print("")
 		speciesPdf = gtFile.removeSpecial(pdf,input.args.species) #only runs if species file is used
+
+	# remove sex-identifying SNPs (if option invoked)
+	if input.args.sexid:
+		print("Removing sex-identifying SNPs")
+		print("")
+		speciesPdf = gtFile.removeSpecial(pdf,input.args.sexid) #only runs if sexid file is used
+
 	pops = gtFile.getPops(pdf) #remove populations column
 	pdf = gtFile.filterFile(pdf, input.args.pmissloc, input.args.pmissind) #returns pandas dataframe with filtered data
 
-	print(speciesPdf)
-
 	#begin conversion process
 	conversion = GTconvert(pdf, pops, input.args.twoline)
-	conversion.convert(convDict)
-
-#	for line in output:
-#		print(line)
-
-
-	
-	
+	conversion.convert(convDict, input.args.xlsx)
 
 main()
 
