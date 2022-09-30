@@ -14,7 +14,7 @@ def main():
 	# make list of file formats; grab relevant options from argparse object
 	d = vars(input.args)
 	convDict = dict()
-	convList = ['genepop','newhybrids','structure']
+	convList = ['genepop','newhybrids','structure', 'snppit']
 	for key, value in d.items():
 		if key in convList:
 			convDict[key] = value
@@ -39,7 +39,7 @@ def main():
 	pdf = gtFile.filterFile(pdf, input.args.pmissloc, input.args.pmissind) #returns pandas dataframe with filtered data
 
 	#begin conversion process
-	conversion = GTconvert(pdf, pops, input.args.twoline)
+	conversion = GTconvert(pdf, pops, input.args.twoline, input.args.snppitmap)
 	conversion.convert(convDict, input.args.xlsx)
 
 main()

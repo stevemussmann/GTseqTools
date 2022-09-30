@@ -8,11 +8,15 @@ class Structure():
 	def __init__(self, df, popmap):
 		self.pdf = df
 		self.pops = popmap
-		self.nucleotides = {'A': '1', 'C': '2', 'G': '3', 'T': '4', '0': '-9'}
+		self.nucleotides = {'A': '1', 'C': '2', 'G': '3', 'T': '4', '-': '5', '0': '-9'}
 
 	def convert(self, boolean):
 		pm = Popmap(self.pops)
 		mapDict = pm.parseMap()
+
+		#list of structure populations. number->pop
+		structureMap = pm.printMap(mapDict)
+		self.printStructureMap(structureMap)
 
 		twoLineFormat = boolean
 
@@ -25,7 +29,20 @@ class Structure():
 		
 		return output
 
+	def printStructureMap(self, poplist):
+		fh = open("distructLabels.txt", 'w')
+		for line in poplist:
+			fh.write(line)
+			fh.write("\n")
+
 	def oneLine(self, output, mapDict):
+		locusHeader = list()
+		for locusName in self.pdf.columns:
+			locusHeader.append(locusName)
+
+		headerString = '\t'.join(locusHeader)
+		output.append(headerString)
+
 		for sampleName, row in self.pdf.iterrows():
 			lineList = list()
 
@@ -61,6 +78,10 @@ class Structure():
 			# add population numbers
 			lineOne.append(str(mapDict[self.pops[sampleName]]))
 			lineTwo.append(str(mapDict[self.pops[sampleName]]))
+
+			for x in range(4):
+				lineOne.append("")
+				lineTwo.append("")
 
 			for (locus, genotype) in row.items():
 				alleles = self.split(str(genotype))

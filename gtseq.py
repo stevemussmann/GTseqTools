@@ -69,7 +69,10 @@ class GTseq():
 				print(key, "\t", format(value, ".3f"))
 				remove.append(key)
 
-		junk = self.removeColumns(df, remove)
+		junk = list()
+
+		if remove:
+			junk = self.removeColumns(df, remove)
 
 		print("")
 
@@ -102,7 +105,10 @@ class GTseq():
 				print(key, "\t", format(value, ".3f"))
 				remove.append(key)
 
-		junk = self.removeRows(df, remove)
+		junk = list()
+
+		if remove:
+			junk = self.removeRows(df, remove)
 
 		print("")		
 	

@@ -8,7 +8,7 @@ class Genepop():
 	def __init__(self, df, popmap):
 		self.pdf = df
 		self.pops = popmap
-		self.nucleotides = {'A': '01', 'C': '02', 'G': '03', 'T': '04', '0': '00'}
+		self.nucleotides = {'A': '01', 'C': '02', 'G': '03', 'T': '04', '-': '05', '0': '00'}
 		
 	def convert(self):
 		pm = Popmap(self.pops)

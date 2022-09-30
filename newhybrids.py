@@ -5,7 +5,7 @@ class NewHybrids():
 
 	def __init__(self, df):
 		self.pdf = df
-		self.nucleotides = {'A': '01', 'C': '02', 'G': '03', 'T': '04', '0': '0'}
+		self.nucleotides = {'A': '01', 'C': '02', 'G': '03', 'T': '04', '-': '05', '0': '0'}
 		
 	def convert(self):
 		output = list() #holds final file output

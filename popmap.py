@@ -17,3 +17,16 @@ class Popmap():
 			counter+=1
 
 		return mapDict
+
+	def printMap(self, mapDict):
+		structurePops = list()
+		for k,v in mapDict.items():
+			line = list()
+			line.append(str(v))
+			line.append(k)
+			lineString = '\t'.join(line)
+			structurePops.append(lineString)
+
+		return structurePops
+			
+			
