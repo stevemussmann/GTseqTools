@@ -3,7 +3,7 @@ from popmap import Popmap
 import pandas
 
 class Snppit():
-	'Class for converting pandas dataframe to Genepop format'
+	'Class for converting pandas dataframe to snppit format'
 
 	def __init__(self, df, popmap):
 		self.pdf = df
