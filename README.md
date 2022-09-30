@@ -25,6 +25,9 @@ The program first conducts all filtering procedures prior to file format convers
 Required Inputs:
 * **-x / --xlsx:** Specify an Excel file containing GTseq data. The first row should be a header line, with cell A1 specifying the individual sample column, cell B1 should contain the text 'Population ID', and cells C1 to the end should specify locus names. These data should all be in a worksheet titled 'Final Genotypes'. Alleles for a genotype should be concatenated per locus (e.g., AA, AT, etc.). A missing genotype for a locus should be recorded as '0'. Some of the format options will (hopefully) be more flexible / customizable in future versions of this program. 
 
+Required for SNPPIT conversion only:
+* **-Z / --snppitmap:** Specify a tab-delimited map in which the first column lists each population, the second column lists its status as POP or OFFSPRING, and the third column lists the potential parental POP(s) for each OFFSPRING. See example snppitmap in 'examples' folder. 
+
 Optional arguments:
 * **-d / --sexid:** Provide a list of loci that are sex-identifying SNPs. This should be a plain text file with one locus per line. These loci will be removed from the dataset before any data filtering steps are executed. 
 * **-i / --pmissind:** Enter the maximum allowable proportion of missing data for an individual sample. Default = 0.2.
@@ -35,7 +38,8 @@ Optional arguments:
 Current supported file conversions:
 * **-g / --genepop:** Prints a file in genepop format.
 * **-n / --newhybrids:** Prints a file in newhybrids format.
-* **-S / --structure:** Prints a file in structure format (default = single line per individual. See '-t' option above). 
+* **-S / --structure:** Prints a file in structure format (default = single line per individual. See '-t' option above).
+* **-z / --snppit:** (under development) Prints a file in snppit format (-Z option is also required for snppit conversion as specified above).
 
 ## Example Command
 The command below would convert the data in the Excel format to a pandas dataframe, remove Species-identifying SNPs listed in the 'speciesIdSNPs.txt' file, remove individuals with the proportion of missing data 0.1, then perform a conversion to a Structure format file with data arranged in two lines per individual. 
