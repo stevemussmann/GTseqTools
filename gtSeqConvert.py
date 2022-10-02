@@ -33,13 +33,16 @@ def main():
 	if input.args.sexid:
 		print("Removing sex-identifying SNPs")
 		print("")
-		speciesPdf = gtFile.removeSpecial(pdf,input.args.sexid) #only runs if sexid file is used
+		sexPdf = gtFile.removeSpecial(pdf,input.args.sexid) #only runs if sexid file is used
+
+	# pull out special columns
+	snppitCols = gtFile.removeSnppit(pdf) #removes optional columns for SNPPIT
 
 	pops = gtFile.getPops(pdf) #remove populations column
 	pdf = gtFile.filterFile(pdf, input.args.pmissloc, input.args.pmissind) #returns pandas dataframe with filtered data
 
 	#begin conversion process
-	conversion = GTconvert(pdf, pops, input.args.twoline, input.args.snppitmap)
+	conversion = GTconvert(pdf, pops, input.args.twoline, input.args.snppitmap, snppitCols)
 	conversion.convert(convDict, input.args.xlsx)
 
 main()

@@ -6,9 +6,10 @@ from snppit import Snppit
 class GTconvert():
 	'Class for converting pandas dataframes into various genotype files'
 
-	def __init__(self, pdf, popdata, struBool, snppitmap):
+	def __init__(self, pdf, popdata, struBool, snppitmap, snppitCols):
 		self.structureTwoLine = struBool
 		self.snppitmap = snppitmap
+		self.snppitCols = snppitCols
 		self.df = pdf
 		self.pd = popdata
 		self.suffix = {'genepop': 'gen', 'newhybrids': 'newhyb', 'structure': 'str', 'snppit': 'snppit'}
@@ -42,7 +43,7 @@ class GTconvert():
 	def conv_snppit(self):
 		#print("This function will convert to SNPPIT format.")
 		snppit = Snppit(self.df, self.pd)
-		output = snppit.convert(self.snppitmap)
+		output = snppit.convert(self.snppitmap, self.snppitCols)
 		return output
 
 	def convert_to(self, name: str):

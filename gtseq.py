@@ -39,6 +39,30 @@ class GTseq():
 
 		junk = self.removeColumns(df, remove)
 		return junk
+	
+	def removeSnppit(self, df):
+		print("Checking for presence of optional SNPPIT columns.")
+		#list of all possible optional snppit columns
+		optionalCols = ['POPCOLUMN_SEX', 'POPCOLUMN_REPRO_YEARS', 'POPCOLUMN_SPAWN_GROUP', 'OFFSPRINGCOLUMN_BORN_YEAR', 'OFFSPRINGCOLUMN_SAMPLE_YEAR', 'OFFSPRINGCOLUMN_AGE_AT_SAMPLING']
+
+		remove = list() #will hold list of snppit columns that appear in pandas df
+		snppitCols = pandas.DataFrame() #declare empty dataframe to be returned even if no optional columns were used. 
+
+		for col in optionalCols:
+			if col in df.columns:
+				remove.append(col) #add existing cols to remove list
+
+		if remove:
+			print("The following optional SNPPIT columns were detected in the input file:")
+			for col in remove:
+				print(col)
+			print("")
+			snppitCols = self.removeColumns(df, remove)
+		else:
+			print("No optional SNPPIT columns detected in input file.")
+			print("")
+
+		return snppitCols
 
 	def calcMissingLoci(self, df):
 		print("Calculating missing data per locus.")
@@ -69,7 +93,7 @@ class GTseq():
 				print(key, "\t", format(value, ".3f"))
 				remove.append(key)
 
-		junk = list()
+		junk = pandas.DataFrame()
 
 		if remove:
 			junk = self.removeColumns(df, remove)
@@ -105,7 +129,7 @@ class GTseq():
 				print(key, "\t", format(value, ".3f"))
 				remove.append(key)
 
-		junk = list()
+		junk = pandas.DataFrame()
 
 		if remove:
 			junk = self.removeRows(df, remove)
