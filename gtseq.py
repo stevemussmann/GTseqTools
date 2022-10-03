@@ -137,6 +137,23 @@ class GTseq():
 		print("")		
 	
 		return junk
+
+	def removeInds(self, df, removeFile):
+		remove = list()
+		with open(removeFile, 'r') as fh:
+			for line in fh:
+				remove.append(line.strip())
+
+		junk = pandas.DataFrame()
+
+		if remove:
+			junk = self.removeRows(df, remove)
+			print("")
+		else:
+			print("WARNING: removelist option (-r) was invoked but file " + removeFile + " was empty.")
+			print("")
+
+		return junk
 	
 	def removeColumns(self, df, removelist):
 		junk = pandas.concat([df.pop(x) for x in removelist], axis=1)

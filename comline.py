@@ -14,8 +14,8 @@ class ComLine():
 		conversion = parser.add_argument_group('conversion arguments')
 		structure = parser.add_argument_group('structure format arguments')
 		snppit = parser.add_argument_group('snppit format arguments')
-		required.add_argument("-x", "--xlsx",
-							dest='xlsx',
+		required.add_argument("-x", "--infile",
+							dest='infile',
 							required=True,
 							help="Specify an Excel file in xlsx format for input."
 		)
@@ -38,6 +38,10 @@ class ComLine():
 							type=float,
 							default=0.1,
 							help="Enter the maximum allowable proportion of missing data for a locus (default = 0.1)."
+		)
+		optional.add_argument("-r", "--removelist",
+							dest='removelist',
+							help="Specify a list of individuals to remove from the converted files."
 		)
 		structure.add_argument("-t", "--twoline",
 							dest='twoline',
@@ -64,6 +68,11 @@ class ComLine():
 							action='store_true',
 							help="Write SNPPIT format file."
 		)
+		conversion.add_argument("-X", "--xlsx",
+							dest='xlsx',
+							action='store_true',
+							help="Write filtered Excel format file."
+		)
 		snppit.add_argument("-Z", "--snppitmap",
 							dest='snppitmap',
 							help="Provide a tab-delimited file specifying POP and OFFSPRING groups for SNPPIT format. Required if converting a SNPPIT file."
@@ -71,7 +80,7 @@ class ComLine():
 		self.args = parser.parse_args()
 
 		#check if at least one conversion option was used.
-		if not [x for x in (self.args.genepop, self.args.newhybrids, self.args.structure, self.args.snppit) if x is True]:
+		if not [x for x in (self.args.genepop, self.args.newhybrids, self.args.structure, self.args.snppit, self.args.xlsx) if x is True]:
 			print("")
 			print("No format conversion options were selected.")
 			print("You must choose at least one file format for output.")
@@ -80,11 +89,13 @@ class ComLine():
 
 		#check if files exist
 		#self.exists( self.args.popmap )
-		self.exists( self.args.xlsx )
+		self.exists( self.args.infile )
 		if self.args.species:
 			self.exists(self.args.species)
 		if self.args.sexid:
 			self.exists(self.args.sexid)
+		if self.args.removelist:
+			self.exists(self.args.removelist)
 		if self.args.snppit == True:
 			if self.args.snppitmap is None:
 				print("")

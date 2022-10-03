@@ -20,8 +20,24 @@ def main():
 			convDict[key] = value
 	#print(convDict)
 
-	gtFile = GTseq(input.args.xlsx)
+	gtFile = GTseq(input.args.infile)
 	pdf = gtFile.parseFile() #returns pandas dataframe with unfiltered data
+
+	# remove blacklisted individuals
+	if input.args.removelist:
+		print("Removing individuals specified by '-r' option.")
+		print("")
+		removePdf = gtFile.removeInds(pdf, input.args.removelist) #only runs if '-r' option is invoked
+	
+	# export xlsx file after removing blacklisted individuals
+	if input.args.xlsx:
+		fileName = input.args.infile.replace(" ", "_") #replace spaces in original filename if they exist
+		nameList = fileName.split('.')
+		nameList.pop() #remove old extension
+		nameList.append("prefilter")
+		nameList.append("xlsx") #add new file extension
+		xlsxOut = '.'.join(nameList)
+		pdf.to_excel(xlsxOut, sheet_name="Final Genotypes")
 	
 	# remove species-identifying SNPs (if option invoked)
 	if input.args.species:
@@ -43,7 +59,7 @@ def main():
 
 	#begin conversion process
 	conversion = GTconvert(pdf, pops, input.args.twoline, input.args.snppitmap, snppitCols)
-	conversion.convert(convDict, input.args.xlsx)
+	conversion.convert(convDict, input.args.infile)
 
 main()
 
