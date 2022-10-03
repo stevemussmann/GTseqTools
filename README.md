@@ -51,10 +51,13 @@ Current supported file conversions:
 
 ## Outputs
 Outputs retain the input file (-x / --infile) base name, but change the output file extension depending upon format. File formats are output with the following file extensions:
-* Genepop = .gen
-* NewHybrids = .newhyb
-* SNPPIT = .snppit
-* Structure = .str
+
+| Format       | Extension   |
+| ------------ | ----------- |
+| Genepop      | .gen        |
+| NewHybrids   | .newhyb     |
+| SNPPIT       | .snppit     |
+| Structure    | .str        |
 
 ## Example Commands
 You can print the program help menu using the -h option:
