@@ -22,9 +22,12 @@ The program first conducts all filtering procedures prior to file format convers
 4) Remove loci that do not meet the minimum threshold (-l option).
 5) Remove individuals that do not meet the minimum threshold (-i option).
 
+## Input Requirements
+The minimal input is a Microsoft Excel formatted file (.xlsx). All data should be in a worksheet titled 'Final Genotypes'. The first row should be a header line, with cell A1 specifying the individual sample column, cell B1 should contain the text 'Population ID', and cells C1 to the end should specify locus names. Alleles for a genotype should be concatenated per locus (e.g., AA, AT, etc.). A missing genotype for a locus should be recorded as '0'. Special columns can be included for certain file formats (e.g., SNPPIT; see explanation below in [File Conversion Input Details](#conversion)). Some of the above format options will (hopefully) be more flexible / customizable in future versions of this program.
+
 ## Program Options
 Required Inputs:
-* **-x / --infile:** Specify an Excel file containing GTseq data. The first row should be a header line, with cell A1 specifying the individual sample column, cell B1 should contain the text 'Population ID', and cells C1 to the end should specify locus names. These data should all be in a worksheet titled 'Final Genotypes'. Alleles for a genotype should be concatenated per locus (e.g., AA, AT, etc.). A missing genotype for a locus should be recorded as '0'. Some of the format options will (hopefully) be more flexible / customizable in future versions of this program. 
+* **-x / --infile:** Specify an input Excel file containing GTseq data. 
 
 Required for SNPPIT conversion only:
 * **-Z / --snppitmap:** Specify a tab-delimited map in which the first column lists each population, the second column lists its status as POP or OFFSPRING, and the third column lists the potential parental POP(s) for each OFFSPRING. See example snppitmap in 'example_files' folder. 
