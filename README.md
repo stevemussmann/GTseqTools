@@ -41,6 +41,7 @@ Current supported file conversions:
 * **-g / --genepop:** Prints a file in genepop format.
 * **-n / --newhybrids:** Prints a file in newhybrids format.
 * **-S / --structure:** Prints a file in structure format (default = single line per individual. See '-t' option above).
+* **-X / --xlsx:** Writes an xlsx-formatted file after user-specified individuals are removed (-r option) but before any other filtering steps are applied.
 * **-z / --snppit:** (under development) Prints a file in snppit format (-Z option is also required for snppit conversion as specified above).
 
 ## Example Command
