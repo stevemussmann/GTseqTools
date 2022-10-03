@@ -44,6 +44,13 @@ Current supported file conversions:
 * **-X / --xlsx:** Writes an xlsx-formatted file after user-specified individuals are removed (-r option) but before any other filtering steps are applied.
 * **-z / --snppit:** (under development) Prints a file in snppit format (-Z option is also required for snppit conversion as specified above).
 
+## Outputs
+Outputs retain the input file (-x / --infile) base name, but change the output file extension depending upon format. File formats are output with the following file extensions:
+* Genepop = .gen
+* NewHybrids = .newhyb
+* SNPPIT = .snppit
+* Structure = .str
+
 ## Example Command
 The command below would convert the data in the Excel format to a pandas dataframe, remove Species-identifying SNPs listed in the 'speciesIdSNPs.txt' file, remove individuals with the proportion of missing data 0.1, then perform a conversion to a Structure format file with data arranged in two lines per individual. 
 ```
