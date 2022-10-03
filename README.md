@@ -56,7 +56,12 @@ Outputs retain the input file (-x / --infile) base name, but change the output f
 * SNPPIT = .snppit
 * Structure = .str
 
-## Example Command
+## Example Commands
+You can print the program help menu using the -h option:
+```
+gtSeqConvert.py -h
+```
+
 The command below would convert the data in the Excel format to a pandas dataframe, remove Species-identifying SNPs listed in the 'speciesIdSNPs.txt' file, remove individuals with the proportion of missing data 0.1, then perform a conversion to a Structure format file with data arranged in two lines per individual. 
 ```
 gtSeqConvert.py -x GTseqData.xlsx -i 0.1 -s speciesIdSNPs.txt -S -t
