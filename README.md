@@ -50,7 +50,17 @@ The command below would convert the data in the Excel format to a pandas datafra
 gtSeqConvert.py -x GTseqData.xlsx -i 0.1 -s speciesIdSNPs.txt -S -t
 ```
 
-## File Conversion Input Details
+All file conversions occur independently of one another, so the following command would also be valid to write genepop, newhybrids, and structure files in a single command:
+```
+gtSeqConvert.py -x GTseqData.xlsx -i 0.1 -s speciesIdSNPs.txt -S -g -n
+```
+
+SNPPIT format requires some extra information to complete the conversion (see explanation below in [File Conversion Input Details](#conversion):
+```
+gtSeqConvert.py -x GTseqData.xlsx -z -Z snppitmap.txt
+```
+
+## File Conversion Input Details <a name="conversion"></a>
 ### SNPPIT
 The SNPPIT conversion has a few special requirements that are not needed for other file formats. Firstly, a special tab-delimited snppit map file is required as supplemental input. An example of the snppit map file is included in the 'example_files' folder. Essentially, each line of this file is intended to contain all of the lines starting with the POP and OFFSPRING keywords, as seen on [pages 22-23 of the SNPPIT program documentation](https://github.com/eriqande/snppit/blob/master/doc/snppit_doc.pdf).
 
