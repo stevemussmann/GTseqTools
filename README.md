@@ -52,12 +52,13 @@ Current supported file conversions:
 ## Outputs
 Outputs retain the input file (-x / --infile) base name, but change the output file extension depending upon format. File formats are output with the following file extensions:
 
-| Format       | Extension   |
-| ------------ | ----------- |
-| Genepop      | .gen        |
-| NewHybrids   | .newhyb     |
-| SNPPIT       | .snppit     |
-| Structure    | .str        |
+| Format       | Extension   | Program Option |
+| :----------: | :---------: | :------------: |
+| Excel        | .xlsx       | -X             |
+| Genepop      | .gen        | -g             |
+| NewHybrids   | .newhyb     | -n             |
+| SNPPIT       | .snppit     | -z             |
+| Structure    | .str        | -S             |
 
 ## Example Commands
 You can print the program help menu using the -h option:
