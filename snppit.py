@@ -24,6 +24,8 @@ class Snppit():
 
 		for line in maplines:
 			splitline = line.split("\t")
+			# list element 0 = population name
+			# list element 1 = POP or OFFSPRING
 			if splitline[1].casefold() == "POP".casefold():
 				self.POP.append(splitline[0])
 			elif splitline[1].casefold() == "OFFSPRING".casefold():
@@ -37,8 +39,10 @@ class Snppit():
 					print("")
 					raise SystemExit
 			else:
+				print("ERROR:")
 				print("Unrecognized value in second column of snppitmap:")
 				print(splitline[1])
+				print("Values in second column should be POP or OFFSPRING only.")
 				print("")
 				raise SystemExit
 
