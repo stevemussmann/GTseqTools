@@ -58,20 +58,25 @@ class ComLine():
 							action='store_true',
 							help="Write NewHybrids format file."
 		)
+		conversion.add_argument("-p", "--plink",
+							dest='plink',
+							action='store_true',
+							help="Write Plink format file."
+		)
 		conversion.add_argument("-S", "--structure",
 							dest='structure',
 							action='store_true',
 							help="Write Structure format file."
 		)
-		conversion.add_argument("-z", "--snppit",
-							dest='snppit',
-							action='store_true',
-							help="Write SNPPIT format file."
-		)
 		conversion.add_argument("-X", "--xlsx",
 							dest='xlsx',
 							action='store_true',
 							help="Write filtered Excel format file."
+		)
+		conversion.add_argument("-z", "--snppit",
+							dest='snppit',
+							action='store_true',
+							help="Write SNPPIT format file."
 		)
 		snppit.add_argument("-Z", "--snppitmap",
 							dest='snppitmap',
@@ -80,7 +85,7 @@ class ComLine():
 		self.args = parser.parse_args()
 
 		#check if at least one conversion option was used.
-		if not [x for x in (self.args.genepop, self.args.newhybrids, self.args.structure, self.args.snppit, self.args.xlsx) if x is True]:
+		if not [x for x in (self.args.genepop, self.args.newhybrids, self.args.plink, self.args.structure, self.args.snppit, self.args.xlsx) if x is True]:
 			print("")
 			print("No format conversion options were selected.")
 			print("You must choose at least one file format for output.")
@@ -88,7 +93,6 @@ class ComLine():
 			raise SystemExit
 
 		#check if files exist
-		#self.exists( self.args.popmap )
 		self.exists( self.args.infile )
 		if self.args.species:
 			self.exists(self.args.species)

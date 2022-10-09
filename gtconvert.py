@@ -2,30 +2,39 @@ from newhybrids import NewHybrids
 from structure import Structure
 from genepop import Genepop
 from snppit import Snppit
+from plink import Plink
 
 class GTconvert():
 	'Class for converting pandas dataframes into various genotype files'
 
-	def __init__(self, pdf, popdata, struBool, snppitmap, snppitCols):
+	def __init__(self, pdf, popdata, struBool, snppitmap, snppitCols, infile):
 		self.structureTwoLine = struBool
 		self.snppitmap = snppitmap
 		self.snppitCols = snppitCols
 		self.df = pdf
 		self.pd = popdata
-		self.suffix = {'genepop': 'gen', 'newhybrids': 'newhyb', 'structure': 'str', 'snppit': 'snppit'}
+		self.infile = infile
+		self.suffix = {'genepop': 'gen', 'newhybrids': 'newhyb', 'plink': 'ped', 'structure': 'str', 'snppit': 'snppit'}
 
-	def convert(self, d, infile):
+	def convert(self, d):
 		output = list()
 		for filetype, boolean in d.items():
 			if boolean == True:
 				print("Converting to", filetype, "format file.")
 				output = self.convert_to(filetype)
-				self.printOutput(output, infile, self.suffix[filetype])
+				self.printOutput(output, self.infile, self.suffix[filetype])
 		
 	def conv_newhybrids(self):
 		#print("This function will convert to NewHybrids format.")
 		nh = NewHybrids(self.df)
 		output = nh.convert()
+		return output
+	
+	def conv_plink(self):
+		#print("This function will convert to Plink format.")
+		ped = Plink(self.df)
+		output, plinkmap = ped.convert() #returning two lists because also must print plink map
+		self.printOutput(plinkmap, self.infile, "map") #special call to print plink map
 		return output
 
 	def conv_structure(self):
