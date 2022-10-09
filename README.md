@@ -45,6 +45,7 @@ Optional Arguments: <a name="optional"></a>
 Current supported file conversions:
 * **-g / --genepop:** Prints a file in genepop format.
 * **-n / --newhybrids:** Prints a file in newhybrids format.
+* **-p / --plink:** Prints a file in plink format. Result is similar to using the --recode12 option in plink. Output should be valid for the program [Admixture](https://dalexander.github.io/admixture/)
 * **-S / --structure:** Prints a file in structure format (default = single line per individual. See '-t' option above).
 * **-X / --xlsx:** Writes an xlsx-formatted file after user-specified individuals are removed (-r option) but before any other filtering steps are applied.
 * **-z / --snppit:** (under development) Prints a file in snppit format (-Z option is also required for snppit conversion as specified above).
@@ -52,13 +53,14 @@ Current supported file conversions:
 ## Outputs
 Outputs retain the input file (-x / --infile) base name, but change the output file extension depending upon format. File formats are output with the following file extensions:
 
-| Format       | Extension   | Program Option |
-| :----------: | :---------: | :------------: |
-| Excel        | .xlsx       | -X             |
-| Genepop      | .gen        | -g             |
-| NewHybrids   | .newhyb     | -n             |
-| SNPPIT       | .snppit     | -z             |
-| Structure    | .str        | -S             |
+| Format       | Extension(s)  | Program Option |
+| :----------: | :-----------: | :------------: |
+| Excel        | .xlsx         | -X             |
+| Genepop      | .gen          | -g             |
+| NewHybrids   | .newhyb       | -n             |
+| Plink        | .ped and .map | -p             |
+| SNPPIT       | .snppit       | -z             |
+| Structure    | .str          | -S             |
 
 ## Example Commands
 You can print the program help menu using the -h option:
