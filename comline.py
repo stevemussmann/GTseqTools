@@ -92,6 +92,14 @@ class ComLine():
 			print("")
 			raise SystemExit
 
+		#check if input file ends with .xlsx
+		if not self.args.infile.endswith(".xlsx"):
+			print("ERROR: Input file " + self.args.infile + " does not end with .xlsx file extension.")
+			print("Is this a valid excel file?")
+			print("Exiting Program...")
+			print("")
+			raise SystemExit
+
 		#check if files exist
 		self.exists( self.args.infile )
 		if self.args.species:

@@ -1,14 +1,17 @@
 from decimal import Decimal
+from stats import GTStats
 
 import os.path
+import re
 import sys
 import pandas
 
 class GTseq():
 	'Class for operating on GTseq genotype files'
 
-	def __init__(self, infile):
+	def __init__(self, infile, log):
 		self.gtFile = infile
+		self.logfile = log
 
 	def parseFile(self):
 		print("Reading input xlsx file.")
@@ -22,12 +25,16 @@ class GTseq():
 		pops = df.pop('Population ID').to_dict()
 		return pops
 
-	def filterFile(self, df, pMissLoci, pMissInd):
+	def filterFile(self, df, pMissLoci, pMissInd, fileName):
 		missingDictLoci = self.calcMissingLoci(df)
 		removedLoci = self.removeMissingLoci(missingDictLoci, df, pMissLoci)
+		lociName = re.sub('.REPLACE.xlsx$', '.filteredLoci.xlsx', fileName)
+		removedLoci.to_excel(lociName, sheet_name="Final Genotypes")
 
 		missingDictInd = self.calcMissingInds(df)
 		removedInds = self.removeMissingInds(missingDictInd, df, pMissInd)
+		indsName = re.sub('.REPLACE.xlsx$', '.filteredIndividuals.xlsx', fileName)
+		removedInds.to_excel(indsName, sheet_name="Final Genotypes")
 
 		return df
 
@@ -84,6 +91,8 @@ class GTseq():
 	def removeMissingLoci(self, missingDict, df, pMissLoci):
 		print("Removing loci with missing data proportion >", pMissLoci)
 		remove = list()
+		removeMiss = list()
+		keepMiss = list()
 
 		print("Loci removed from dataset:")
 		print("Locus\tMissing")
@@ -92,6 +101,9 @@ class GTseq():
 			if value > Decimal(pMissLoci):
 				print(key, "\t", format(value, ".3f"))
 				remove.append(key)
+				removeMiss.append(value)
+			else:
+				keepMiss.append(value)
 
 		junk = pandas.DataFrame()
 
@@ -120,6 +132,8 @@ class GTseq():
 	def removeMissingInds(self, missingDict, df, pMissInd):
 		print("Removing individuals with missing data proportion >", pMissInd)
 		remove = list()
+		removeMiss = list() # list to hold missing data proportion of each removed individual
+		keepMiss = list() # list to hold missing data proportion of each kept individual
 
 		print("Individuals removed from dataset:")
 		print("Sample\tMissing")
@@ -128,14 +142,26 @@ class GTseq():
 			if value > Decimal(pMissInd):
 				print(key, "\t", format(value, ".3f"))
 				remove.append(key)
+				removeMiss.append(value)
+			else:
+				keepMiss.append(value)
 
 		junk = pandas.DataFrame()
 
 		if remove:
 			junk = self.removeRows(df, remove)
 
-		print("")		
+		print("")
+
+		# calculate statistics
+		removeStats = GTStats(removeMiss)
+		removeStats.calcStats()
+		removeStats.printStats(self.logfile, "removed")
 	
+		keepStats = GTStats(keepMiss)
+		keepStats.calcStats()
+		keepStats.printStats(self.logfile, "retained")
+
 		return junk
 
 	def removeInds(self, df, removeFile):
