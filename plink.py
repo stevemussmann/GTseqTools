@@ -1,4 +1,3 @@
-#from popmap import Popmap
 import collections
 
 import pandas
@@ -18,7 +17,8 @@ class Plink():
 			allelecounts = dict() #store allele counts for this locus
 			for key, value in alleledict.items():
 				# ignore missing data values
-				if key != 0:
+				# casting as str() in next line because sometimes Excel encodes as int or string
+				if str(key) != "0":
 					alleles = list(key)
 					for allele in alleles:
 						count = allelecounts.get(allele, 0) #return 0 if key does not exist yet

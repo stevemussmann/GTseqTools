@@ -18,14 +18,25 @@ class Popmap():
 
 		return mapDict
 
-	def printMap(self, mapDict):
+	def printMap(self, mapDict, pdf):
+		poplist = list()
+
+		#check which populations have members that survived all filtering steps
+		for sampleName, row in pdf.iterrows():
+			if sampleName in self.pops.keys():
+				poplist.append(self.pops[sampleName])
+
+		s = set(poplist) #get unique population values
+			
 		structurePops = list()
 		for k,v in mapDict.items():
-			line = list()
-			line.append(str(v))
-			line.append(k)
-			lineString = '\t'.join(line)
-			structurePops.append(lineString)
+			#restrict distructLabels file to only populations present after filtering
+			if k in s:
+				line = list()
+				line.append(str(v))
+				line.append(k)
+				lineString = '\t'.join(line)
+				structurePops.append(lineString)
 
 		return structurePops
 			

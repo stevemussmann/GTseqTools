@@ -15,7 +15,7 @@ class Structure():
 		mapDict = pm.parseMap()
 
 		#get list of structure populations. number->pop
-		structureMap = pm.printMap(mapDict)
+		structureMap = pm.printMap(mapDict, self.pdf)
 
 		twoLineFormat = tBoolean
 		headerFormat = hBoolean
