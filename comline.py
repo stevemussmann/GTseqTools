@@ -39,6 +39,11 @@ class ComLine():
 							default=0.1,
 							help="Enter the maximum allowable proportion of missing data for a locus (default = 0.1)."
 		)
+		optional.add_argument("-m", "--monomorphic",
+							dest='monomorphic',
+							action='store_true',
+							help="Turn on filter to remove monomorphic loci."
+		)
 		optional.add_argument("-r", "--removelist",
 							dest='removelist',
 							help="Specify a list of individuals to remove from the converted files."

@@ -65,9 +65,17 @@ def main():
 
 	# pull out special columns
 	snppitCols = gtFile.removeSnppit(pdf) #removes optional columns for SNPPIT
-
 	pops = gtFile.getPops(pdf) #remove populations column
+
+	# filter based upon missing data
 	pdf = gtFile.filterFile(pdf, input.args.pmissloc, input.args.pmissind, fileName) #returns pandas dataframe with filtered data
+	
+	# remove monomorphic loci (if option invoked)
+	if input.args.monomorphic:
+		print("Removing monomorphic loci")
+		monoName = re.sub('.REPLACE.xlsx$', '.monomorphic.xlsx', fileName)
+		monoPdf = gtFile.removeMonomorphicLoci(pdf)
+		monoPdf.to_excel(monoName, sheet_name="Final Genotypes")
 
 	#begin conversion process
 	conversion = GTconvert(pdf, pops, input.args.twoline, input.args.header, input.args.snppitmap, snppitCols, input.args.infile)

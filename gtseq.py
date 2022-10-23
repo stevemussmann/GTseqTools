@@ -138,6 +138,44 @@ class GTseq():
 
 		return junk
 
+	def removeMonomorphicLoci(self, df):
+		fh = open(self.logfile, 'a')
+
+		remove = list()
+
+		for columnName, columnData in df.iteritems():
+			alleledict = df[columnName].value_counts().to_dict()
+			counter = 0
+			for key, value in alleledict.items():
+				if str(key) != "0":
+					counter+=1
+			if counter == 1:
+				remove.append(columnName)
+
+		junk = pandas.DataFrame()
+
+		if remove:
+			print(str(len(remove)) + " loci were removed because they were monomorphic:")
+			fh.write(str(len(remove)))
+			fh.write(" loci were removed because they were monomorphic:\n")
+			for loc in remove:
+				print(loc)
+				fh.write(loc)
+				fh.write("\n")
+
+			print("")
+			fh.write("\n")
+
+			junk = self.removeColumns(df, remove)
+		else:
+			print("No monomorphic loci detected.")
+			print("")
+			fh.write("No monomorphic loci detected.\n\n")
+
+		fh.close()
+
+		return junk
+
 	def calcMissingInds(self, df):
 		print("Calculating missing data per individual.")
 		missingInd = dict()
