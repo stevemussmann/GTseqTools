@@ -55,13 +55,22 @@ class GTStats():
 		else:
 			return Decimal((sl[i] + sl[i+1])/Decimal(2))
 
-	def printStats(self, fn, mode):
-		fh = open(fn, 'a')
-		print("Proportion of missing summary for " + mode + " individuals.")
+	def printStats(self, fn, mode1, mode2):
+		print("Proportion of missing data summary for " + mode1 + " " + mode2 + ".")
 		print("Mean\tStDev\tMedian\tMin\tMax")
+
+		fh = open(fn, 'a')
+		fh.write(str(len(self.l)))
+		fh.write(" ")
+		fh.write(mode2)
+		fh.write(" were ")
+		fh.write(mode1)
+		fh.write(" after applying missing data filters.\n")
 		fh.write("Missing data stats for ")
-		fh.write(mode)
-		fh.write(" individuals:\n")
+		fh.write(mode1)
+		fh.write(" ")
+		fh.write(mode2)
+		fh.write(":\n")
 		fh.write("Mean\tStDev\tMedian\tMin\tMax\n")
 		print(round(self.mean,3), "\t", round(self.stdev,3), "\t", round(self.med,3), "\t", round(self.mmin,3), "\t", round(self.mmax,3))
 		print("")
