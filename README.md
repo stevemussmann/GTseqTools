@@ -56,16 +56,16 @@ Current supported file conversions:
 * **-z / --snppit:** (under development) Prints a file in snppit format (-Z option is also required for snppit conversion as specified above).
 
 ## Outputs
-Outputs retain the input file (-x / --infile) base name, but change the output file extension depending upon format. File formats are output with the following file extensions:
+Outputs retain the input file (-x / --infile) base name, but change the output file extension depending upon format. Most file conversions result in a single file. Exceptions include Plink and Structure format. The Structure conversion creates a .distructLabels.txt file which contains a list of population numbers and their associated population names. This file can be input into distruct, or used in the CLUMPAK pipeline. File formats are output with the following file extensions:
 
-| Format       | Extension(s)  | Program Option |
-| :----------: | :-----------: | :------------: |
-| Excel        | .xlsx         | -X             |
-| Genepop      | .gen          | -g             |
-| NewHybrids   | .newhyb       | -n             |
-| Plink        | .ped and .map | -p             |
-| SNPPIT       | .snppit       | -z             |
-| Structure    | .str          | -S             |
+| Format       | Extension(s)                 | Program Option |
+| :----------: | :--------------------------: | :------------: |
+| Excel        | .xlsx                        | -X             |
+| Genepop      | .gen                         | -g             |
+| NewHybrids   | .newhyb                      | -n             |
+| Plink        | .ped and .map                | -p             |
+| SNPPIT       | .snppit                      | -z             |
+| Structure    | .str and .distructLabels.txt | -S             |
 
 Loci and individuals discarded via filtering options will be written to Excel files. All outputs retain the input file (-x / --infile) base name, but change slightly according to filtering step:
 
