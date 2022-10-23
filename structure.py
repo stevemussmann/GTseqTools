@@ -14,9 +14,8 @@ class Structure():
 		pm = Popmap(self.pops)
 		mapDict = pm.parseMap()
 
-		#list of structure populations. number->pop
+		#get list of structure populations. number->pop
 		structureMap = pm.printMap(mapDict)
-		self.printStructureMap(structureMap)
 
 		twoLineFormat = boolean
 
@@ -27,13 +26,7 @@ class Structure():
 		else:
 			output = self.twoLine(output, mapDict)
 		
-		return output
-
-	def printStructureMap(self, poplist):
-		fh = open("distructLabels.txt", 'w')
-		for line in poplist:
-			fh.write(line)
-			fh.write("\n")
+		return output, structureMap
 
 	def oneLine(self, output, mapDict):
 		locusHeader = list()

@@ -40,7 +40,8 @@ class GTconvert():
 	def conv_structure(self):
 		#print("This function will convert to Structure format.")
 		stru = Structure(self.df, self.pd)
-		output = stru.convert(self.structureTwoLine)
+		output, structureMap = stru.convert(self.structureTwoLine)
+		self.printOutput(structureMap, self.infile, "distructLabels.txt")
 		return output
 
 	def conv_genepop(self):
