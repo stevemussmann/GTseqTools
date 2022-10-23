@@ -7,8 +7,9 @@ from plink import Plink
 class GTconvert():
 	'Class for converting pandas dataframes into various genotype files'
 
-	def __init__(self, pdf, popdata, struBool, snppitmap, snppitCols, infile):
+	def __init__(self, pdf, popdata, struBool, headBool, snppitmap, snppitCols, infile):
 		self.structureTwoLine = struBool
+		self.structureHeader = headBool
 		self.snppitmap = snppitmap
 		self.snppitCols = snppitCols
 		self.df = pdf
@@ -40,7 +41,7 @@ class GTconvert():
 	def conv_structure(self):
 		#print("This function will convert to Structure format.")
 		stru = Structure(self.df, self.pd)
-		output, structureMap = stru.convert(self.structureTwoLine)
+		output, structureMap = stru.convert(self.structureTwoLine, self.structureHeader)
 		self.printOutput(structureMap, self.infile, "distructLabels.txt")
 		return output
 

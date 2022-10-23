@@ -70,7 +70,7 @@ def main():
 	pdf = gtFile.filterFile(pdf, input.args.pmissloc, input.args.pmissind, fileName) #returns pandas dataframe with filtered data
 
 	#begin conversion process
-	conversion = GTconvert(pdf, pops, input.args.twoline, input.args.snppitmap, snppitCols, input.args.infile)
+	conversion = GTconvert(pdf, pops, input.args.twoline, input.args.header, input.args.snppitmap, snppitCols, input.args.infile)
 	conversion.convert(convDict)
 
 main()

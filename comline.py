@@ -48,6 +48,11 @@ class ComLine():
 							action='store_true',
 							help="Turn on twoline format version for Structure output"
 		)
+		structure.add_argument("-H", "--header",
+							dest='header',
+							action='store_false',
+							help="Turn off printing of header line with locus names for Structure output"
+		)
 		conversion.add_argument("-g", "--genepop",
 							dest='genepop',
 							action='store_true',

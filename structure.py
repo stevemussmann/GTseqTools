@@ -10,31 +10,37 @@ class Structure():
 		self.pops = popmap
 		self.nucleotides = {'A': '1', 'C': '2', 'G': '3', 'T': '4', '-': '5', '0': '-9'}
 
-	def convert(self, boolean):
+	def convert(self, tBoolean, hBoolean):
 		pm = Popmap(self.pops)
 		mapDict = pm.parseMap()
 
 		#get list of structure populations. number->pop
 		structureMap = pm.printMap(mapDict)
 
-		twoLineFormat = boolean
+		twoLineFormat = tBoolean
+		headerFormat = hBoolean
 
 		output = list()
 
 		if twoLineFormat == False:
-			output = self.oneLine(output, mapDict)
+			output = self.oneLine(output, mapDict, headerFormat)
 		else:
-			output = self.twoLine(output, mapDict)
+			output = self.twoLine(output, mapDict, headerFormat)
 		
 		return output, structureMap
 
-	def oneLine(self, output, mapDict):
+	def prepareHeader(self):
 		locusHeader = list()
 		for locusName in self.pdf.columns:
 			locusHeader.append(locusName)
 
 		headerString = '\t'.join(locusHeader)
-		output.append(headerString)
+		return headerString
+
+	def oneLine(self, output, mapDict, header):
+		if header:
+			headerString = self.prepareHeader()
+			output.append(headerString)
 
 		for sampleName, row in self.pdf.iterrows():
 			lineList = list()
@@ -59,7 +65,11 @@ class Structure():
 
 		return output
 
-	def twoLine(self, output, mapDict):
+	def twoLine(self, output, mapDict, header):
+		if header:
+			headerString = self.prepareHeader()
+			output.append(headerString)
+
 		for sampleName, row in self.pdf.iterrows():
 			lineOne = list()
 			lineTwo = list()
