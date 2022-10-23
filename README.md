@@ -21,6 +21,7 @@ The program first conducts all filtering procedures prior to file format convers
 3) Remove sex-identifying loci (-d option).
 4) Remove loci that do not meet the minimum threshold (-l option).
 5) Remove individuals that do not meet the minimum threshold (-i option).
+6) Remove monomorphic loci (-m option).
 
 ## Input Requirements
 The minimal input is a Microsoft Excel formatted file (.xlsx). All data should be in a worksheet titled 'Final Genotypes'. The first row should be a header line, with cell A1 specifying the individual sample column, cell B1 should contain the text 'Population ID', and cells C1 to the end should specify locus names. Alleles for a genotype should be concatenated per locus (e.g., AA, AT, etc.). A missing genotype for a locus should be recorded as '0'. Special columns can be included for certain file formats (e.g., SNPPIT; see explanation below in [File Conversion Input Details](#conversion)). Some of the above format options for Excel files will (hopefully) be more flexible / customizable in future versions of this program.
@@ -38,9 +39,13 @@ Optional Arguments: <a name="optional"></a>
 * **-d / --sexid:** Provide a list of loci that are sex-identifying SNPs. This should be a plain text file with one locus per line. These loci will be removed from the dataset before any data filtering steps are executed. 
 * **-i / --pmissind:** Enter the maximum allowable proportion of missing data for an individual sample. Default = 0.2.
 * **-l / --pmissloc:** Enter the maximum allowable proportion of missing data for a locus. Default = 0.1.
+* **-m / --monomorphic:** Turn on filter to remove monomorphic loci.
 * **-r / --removelist:** Provide a list of individuals that should be removed from the input xlsx file. This should be a plain text file with each individual being specified on its own line. These individuals will be removed before missing data proportions are calculated. 
 * **-s / --species:** Provide a list of loci that are species identification SNPs. This should be a plain text file with one locus per line. These loci will be removed from the dataset before any other data filtering steps are executed. 
-* **-t / --twoline:** If a Structure file is to be written, use this option to write it in two-line format. Default = single-line Structure format.
+
+Structure Format Arguments:
+* **-H / --header:** Turn off printing of header line with locus names for Structure output
+* **-t / --twoline:** Use this option to write structure files in two-line format. Default = single-line Structure format.
 
 Current supported file conversions:
 * **-g / --genepop:** Prints a file in genepop format.
@@ -61,6 +66,19 @@ Outputs retain the input file (-x / --infile) base name, but change the output f
 | Plink        | .ped and .map | -p             |
 | SNPPIT       | .snppit       | -z             |
 | Structure    | .str          | -S             |
+
+Loci and individuals discarded via filtering options will be written to Excel files. All outputs retain the input file (-x / --infile) base name, but change slightly according to filtering step:
+
+| Filtering Step                            | Name                        | Program Option |
+| :---------------------------------------: | :-------------------------: | :------------: |
+| Missing data proportion for individuals   | .filteredIndividuals.xlsx   | -i             |
+| Missing data proportion for loci          | .filteredLoci.xlsx          | -l             |
+| Monomorphic loci                          | .monomorphic.xlsx           | -m             |
+| List of individuals for removal           | .removed.xlsx               | -r             |
+| Sex-identifying loci                      | .sexID.xlsx                 | -d             |
+| Species-identifying loci                  | .speciesID.xlsx             | -s             |
+
+A log file is also created that documents missing data proportions per individual and locus, and the number of individuals/loci removed at each step. The log file is a plain text file that retains the input file (-x / --infile) base name, but ends in .log.
 
 ## Example Commands
 You can print the program help menu using the -h option:
