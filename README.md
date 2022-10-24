@@ -65,7 +65,7 @@ Outputs retain the input file (-x / --infile) base name, but change the output f
 <div align="center">
   
 | Format       | Extension(s)                 | Program Option |
-| :----------: | :--------------------------: | :------------: |
+| :----------- | :--------------------------: | :------------: |
 | Excel        | .xlsx                        | -X             |
 | Genepop      | .gen                         | -g             |
 | NewHybrids   | .newhyb                      | -n             |
@@ -80,7 +80,7 @@ Loci and individuals discarded via filtering options will be written to Excel fi
 <div align="center">
   
 | Filtering Step                            | Name                        | Program Option |
-| :---------------------------------------: | :-------------------------: | :------------: |
+| :---------------------------------------- | :-------------------------: | :------------: |
 | Missing data proportion for individuals   | .filteredIndividuals.xlsx   | -i             |
 | Missing data proportion for loci          | .filteredLoci.xlsx          | -l             |
 | Monomorphic loci                          | .monomorphic.xlsx           | -m             |
