@@ -62,6 +62,8 @@ Current supported file conversions:
 ## Outputs
 Outputs retain the input file (-x / --infile) base name, but change the output file extension depending upon format. Most file conversions result in a single file. Exceptions include Plink and Structure format. The Structure conversion creates a .distructLabels.txt file which contains a list of population numbers and their associated population names. This file can be input into [distruct](https://rosenberglab.stanford.edu/distruct.html), or used in the [CLUMPAK](http://clumpak.tau.ac.il/) pipeline for visualizing outputs of the program [Structure](https://web.stanford.edu/group/pritchardlab/structure.html). File formats are output with the following file extensions:
 
+<center>
+  
 | Format       | Extension(s)                 | Program Option |
 | :----------: | :--------------------------: | :------------: |
 | Excel        | .xlsx                        | -X             |
@@ -70,9 +72,13 @@ Outputs retain the input file (-x / --infile) base name, but change the output f
 | Plink        | .ped and .map                | -p             |
 | SNPPIT       | .snppit                      | -z             |
 | Structure    | .str and .distructLabels.txt | -S             |
+  
+</center>
 
 Loci and individuals discarded via filtering options will be written to Excel files. All outputs retain the input file (-x / --infile) base name, but change slightly according to filtering step:
 
+<center>
+  
 | Filtering Step                            | Name                        | Program Option |
 | :---------------------------------------: | :-------------------------: | :------------: |
 | Missing data proportion for individuals   | .filteredIndividuals.xlsx   | -i             |
@@ -81,6 +87,8 @@ Loci and individuals discarded via filtering options will be written to Excel fi
 | List of individuals for removal           | .removed.xlsx               | -r             |
 | Sex-identifying loci                      | .sexID.xlsx                 | -d             |
 | Species-identifying loci                  | .speciesID.xlsx             | -s             |
+
+</center>
 
 A log file is also created that documents missing data proportions per individual and locus, and the number of individuals/loci removed at each step. The log file is a plain text file that retains the input file (-x / --infile) base name, but ends in .log.
 
