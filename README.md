@@ -73,11 +73,11 @@ Outputs retain the input file (-x / --infile) base name, but change the output f
 | SNPPIT       | .snppit                      | -z             |
 | Structure    | .str and .distructLabels.txt | -S             |
   
-</center>
+</div>
 
 Loci and individuals discarded via filtering options will be written to Excel files. All outputs retain the input file (-x / --infile) base name, but change slightly according to filtering step:
 
-<center>
+<div align="center">
   
 | Filtering Step                            | Name                        | Program Option |
 | :---------------------------------------: | :-------------------------: | :------------: |
@@ -88,7 +88,7 @@ Loci and individuals discarded via filtering options will be written to Excel fi
 | Sex-identifying loci                      | .sexID.xlsx                 | -d             |
 | Species-identifying loci                  | .speciesID.xlsx             | -s             |
 
-</center>
+</div>
 
 A log file is also created that documents missing data proportions per individual and locus, and the number of individuals/loci removed at each step. The log file is a plain text file that retains the input file (-x / --infile) base name, but ends in .log.
 
