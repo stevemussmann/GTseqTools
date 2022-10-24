@@ -62,7 +62,7 @@ Current supported file conversions:
 ## Outputs
 Outputs retain the input file (-x / --infile) base name, but change the output file extension depending upon format. Most file conversions result in a single file. Exceptions include Plink and Structure format. The Structure conversion creates a .distructLabels.txt file which contains a list of population numbers and their associated population names. This file can be input into [distruct](https://rosenberglab.stanford.edu/distruct.html), or used in the [CLUMPAK](http://clumpak.tau.ac.il/) pipeline for visualizing outputs of the program [Structure](https://web.stanford.edu/group/pritchardlab/structure.html). File formats are output with the following file extensions:
 
-<center>
+<div align="center">
   
 | Format       | Extension(s)                 | Program Option |
 | :----------: | :--------------------------: | :------------: |
