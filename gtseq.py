@@ -75,7 +75,7 @@ class GTseq():
 		print("Calculating missing data per locus.")
 		missingDict = dict()
 		numInds = len(df)
-		for (columnName, columnData) in df.iteritems():
+		for (columnName, columnData) in df.items():
 			alleledict = df[columnName].value_counts().to_dict() #convert type pandas.Series to dict
 			
 			# add a 0 key to the dict if there is no 0 key
@@ -143,7 +143,7 @@ class GTseq():
 
 		remove = list()
 
-		for columnName, columnData in df.iteritems():
+		for columnName, columnData in df.items():
 			alleledict = df[columnName].value_counts().to_dict()
 			counter = 0
 			for key, value in alleledict.items():
