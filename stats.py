@@ -14,11 +14,12 @@ class GTStats():
 		self.mmax = 0.0
 
 	def calcStats(self):
-		self.mean = self.calcMean(self.l)
-		self.stdev = self.calcStdev(self.l, self.mean)
-		self.med = self.calcMed(self.l)
-		self.mmin = min(self.l)
-		self.mmax = max(self.l)
+		if len(self.l)!=0:
+			self.mean = self.calcMean(self.l)
+			self.stdev = self.calcStdev(self.l, self.mean)
+			self.med = self.calcMed(self.l)
+			self.mmin = min(self.l)
+			self.mmax = max(self.l)
 		
 		
 	def calcMean(self,l):
