@@ -18,7 +18,7 @@ class Genepop():
 
 		lineList.append('Title line:""')
 
-		for (columnName, columnData) in self.pdf.iteritems():
+		for (columnName, columnData) in self.pdf.items():
 			lineList.append(columnName)
 
 		for (pop, num) in mapDict.items():
