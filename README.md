@@ -9,6 +9,37 @@ This program has only been tested in Python v3.10. However, it should be compati
 ## Dependencies
 - pandas
 
+## Installation
+One option for installation is the setup of a conda environment. This can be accomplished by first installing [Miniconda](https://docs.conda.io/en/latest/miniconda.html). Once conda is setup, configure it so that the base environment does not automatically load on startup.
+```
+conda config --set auto_activate_base false
+```
+
+Next, create a conda environment in which this program can be run. Use the following command, which should install a sufficiently recent version of python:
+```
+conda create -n GTseqTools -c conda-forge python=3 pandas
+```
+The environment can be activated and deactivated as needed with the following commands:
+```
+conda activate GTseqTools
+conda deactivate
+```
+
+Next, download this package to the location of your choice with the following command.
+```
+git clone https://github.com/stevemussmann/GTseqTools.git
+```
+
+If necessary, make the software executable:
+```
+chmod u+x gtSeqConvert.py
+```
+
+Finally, put the software in your $PATH. There are many ways of accomplishing this. For example. add the following line (with correct path) to your .bashrc and reload your .bashrc:
+```
+export PATH=/path/to/GTseqTools:$PATH
+```
+
 ## Development Notes
 - Additional file format conversion options will be implemented.
 - Some existing format conversions will be modified or have additional options added.
