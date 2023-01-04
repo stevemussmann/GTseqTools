@@ -2,17 +2,18 @@ import collections
 
 import pandas
 
-class Plink():
-	'Class for converting pandas dataframe to Plink format'
+class Binary():
+	'Class for converting pandas dataframe to binary format'
 
-	def __init__(self, df):
+	def __init__(self, df, popdata):
 		self.pdf = df
-		self.recode12 = collections.defaultdict(dict) #stores major/minor allele for converting to PLINK format. 0 = missing, 1 = major, 2 = minor
+		self.pd = popdata
+		self.recode12 = collections.defaultdict(dict) #stores major/minor allele for converting to binary format. 2 = missing, 0 = major, 1 = minor
 
 	def getMajorMinor(self):
 		# get counts of all genotypes at each locus and put into dictionary
 		for columnName, columnData in self.pdf.items():
-			self.recode12[columnName]["0"] = "0" #add missing data value to dict
+			self.recode12[columnName]["0"] = "2" #add missing data value to dict
 			alleledict = self.pdf[columnName].value_counts().to_dict()
 			allelecounts = dict() #store allele counts for this locus
 			for key, value in alleledict.items():
@@ -33,7 +34,7 @@ class Plink():
 			#check number of alleles. Print warning if only 1 allele at a locus; exit program if 0 or >2 alleles at locus
 			if len(allelecounts.keys()) == 1:
 				print("WARNING: locus " + columnName + " is monomorphic in your dataset.")
-				self.recode12[columnName][major] = "1"
+				self.recode12[columnName][major] = "0"
 			elif len(allelecounts.keys()) == 2:
 				#test if equal number of alleles found
 				if majCount == minCount:
@@ -42,8 +43,8 @@ class Plink():
 						alleleNum += 1
 						self.recode12[columnName][key] = str(alleleNum)
 				else:
-					self.recode12[columnName][major] = "1"
-					self.recode12[columnName][minor] = "2"
+					self.recode12[columnName][major] = "0"
+					self.recode12[columnName][minor] = "1"
 			else:
 				#unlikely to reach this code unless user turns off missing data filters or you have >2 alleles at a locus.
 				num = len(allelecounts.keys())
@@ -56,31 +57,36 @@ class Plink():
 
 		self.getMajorMinor()
 
-		output = self.makePlink(output)
+		output = self.makeBinary(output)
 		
-		plinkMapOutput = self.plinkMap()
-		#for line in plinkMapOutput:
-		#	print(line)
+		return output
 
-		return output, plinkMapOutput
+	def makeBinary(self, output):
+		# make header and append to output
+		headerList = list()
+		headerList.append("Sample")
+		headerList.append("Population_ID")
+		columns = list(self.pdf)
+		for col in columns:
+			headerList.append(col)
+			headerList.append("")
 
-	def makePlink(self, output):
+		headerLine = ' '.join(headerList)
+		output.append(headerLine)
+
 		for sampleName, row in self.pdf.iterrows():
 			lineList = list()
 
 			lineList.append(sampleName)
-			lineList.append(sampleName) #adding twice - this matches behavior of PLINK output from my admixpipe pipeline
-
-			lineList.append("0")
-			lineList.append("0")
-			lineList.append("0")
-
-			lineList.append("-9")
+			lineList.append(self.pd[sampleName])
+			
+			# add population name here if desired
 
 			for (locus, genotype) in row.items():
 				alleles = self.split(str(genotype))
-
-				if len(alleles) == 1 and alleles[0] == '0':
+				
+				# next line is testing for original data missing value (0) instead of binary recoded missing value (2). 
+				if len(alleles) == 1 and alleles[0] == "0":
 					lineList.append(self.recode12[locus][alleles[0]])
 					lineList.append(self.recode12[locus][alleles[0]])
 				else:
@@ -93,31 +99,5 @@ class Plink():
 
 		return output
 	
-	def plinkMap(self):
-		output = list()
-
-		counter=0
-
-		for locus in self.recode12.keys():
-			counter+=1
-			stringList = list() #hold items to be combined into a single tab-delimited line
-			#print(locus)
-			stringList.append("0")
-
-			tempList = list() #holds items for locus identifier
-			tempList.append(str(counter))
-			tempList.append("1")
-			tempString = ':'.join(tempList)
-			stringList.append(tempString)
-
-			stringList.append("0")
-			stringList.append("1")
-
-			newstring = "\t".join(stringList)
-
-			output.append(newstring)
-
-		return output
-
 	def split(self, word):
 		return [char for char in word]	

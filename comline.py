@@ -58,6 +58,11 @@ class ComLine():
 							action='store_false',
 							help="Turn off printing of header line with locus names for Structure output"
 		)
+		conversion.add_argument("-b", "--binary",
+							dest='binary',
+							action='store_true',
+							help="Write binary format file."
+		)
 		conversion.add_argument("-g", "--genepop",
 							dest='genepop',
 							action='store_true',
@@ -95,7 +100,7 @@ class ComLine():
 		self.args = parser.parse_args()
 
 		#check if at least one conversion option was used.
-		if not [x for x in (self.args.genepop, self.args.newhybrids, self.args.plink, self.args.structure, self.args.snppit, self.args.xlsx) if x is True]:
+		if not [x for x in (self.args.binary, self.args.genepop, self.args.newhybrids, self.args.plink, self.args.structure, self.args.snppit, self.args.xlsx) if x is True]:
 			print("")
 			print("No format conversion options were selected.")
 			print("You must choose at least one file format for output.")

@@ -1,8 +1,9 @@
-from newhybrids import NewHybrids
-from structure import Structure
+from binary import Binary
 from genepop import Genepop
-from snppit import Snppit
+from newhybrids import NewHybrids
 from plink import Plink
+from snppit import Snppit
+from structure import Structure
 
 class GTconvert():
 	'Class for converting pandas dataframes into various genotype files'
@@ -15,7 +16,7 @@ class GTconvert():
 		self.df = pdf
 		self.pd = popdata
 		self.infile = infile
-		self.suffix = {'genepop': 'gen', 'newhybrids': 'newhyb', 'plink': 'ped', 'structure': 'str', 'snppit': 'snppit'}
+		self.suffix = {'binary': 'bin', 'genepop': 'gen', 'newhybrids': 'newhyb', 'plink': 'ped', 'structure': 'str', 'snppit': 'snppit'}
 
 	def convert(self, d):
 		output = list()
@@ -25,6 +26,12 @@ class GTconvert():
 				output = self.convert_to(filetype)
 				self.printOutput(output, self.infile, self.suffix[filetype])
 		
+	def conv_binary(self):
+		#print("This function will convert to binary format.")
+		bi = Binary(self.df, self.pd)
+		output = bi.convert()
+		return output
+
 	def conv_newhybrids(self):
 		#print("This function will convert to NewHybrids format.")
 		nh = NewHybrids(self.df)
