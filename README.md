@@ -10,14 +10,14 @@ This program has only been tested in Python v3.10. However, it should be compati
 - pandas
 
 ## Installation
-One option for installation is the setup of a conda environment. This can be accomplished by first installing [Miniconda](https://docs.conda.io/en/latest/miniconda.html). Once conda is setup, configure it so that the base environment does not automatically load on startup.
+One option for installation is the setup of a conda environment. This can be accomplished by first installing [Miniconda](https://docs.conda.io/en/latest/miniconda.html), and might be the easiest option if you do not have admin privileges on your computer. Once conda is setup, configure it so that the base environment does not automatically load on startup.
 ```
 conda config --set auto_activate_base false
 ```
 
 Next, create a conda environment in which this program can be run. Use the following command, which should install a sufficiently recent version of python:
 ```
-conda create -n GTseqTools -c conda-forge python=3 pandas
+conda create -n GTseqTools -c conda-forge python=3 pandas openpyxl
 ```
 The environment can be activated and deactivated as needed with the following commands:
 ```
@@ -83,6 +83,7 @@ Structure Format Arguments:
 * **-t / --twoline:** Use this option to write structure files in two-line format. Default = single-line Structure format.
 
 Current supported file conversions:
+* **-b / --binary:** Prints a file in binary format (0 = major allele, 1 = minor allele, 2 = missing data).
 * **-g / --genepop:** Prints a file in genepop format.
 * **-n / --newhybrids:** Prints a file in newhybrids format.
 * **-p / --plink:** Prints a file in plink format. Result is similar to using the --recode12 option in plink. Output should be valid for the program [Admixture](https://dalexander.github.io/admixture/)
@@ -97,6 +98,7 @@ Outputs retain the input file (-x / --infile) base name, but change the output f
   
 | Format       | Extension(s)                 | Program Option |
 | :----------- | :--------------------------: | :------------: |
+| Binary       | .bin                         | -b             |
 | Excel        | .xlsx                        | -X             |
 | Genepop      | .gen                         | -g             |
 | NewHybrids   | .newhyb                      | -n             |
