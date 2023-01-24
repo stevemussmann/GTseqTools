@@ -147,6 +147,11 @@ gtSeqConvert.py -x GTseqData.xlsx -z -Z snppitmap.txt
 ```
 
 ## File Conversion Input Details <a name="conversion"></a>
+### NewHybrids
+The NewHybrids conversion allows for optional use of the 'z' option. To use this option, add an extra column to your input .xlsx file titled exactly 'ZOPT' (no quotes). The naming of the column is important so that it will be ignored in conversions for other file formats. 
+
+Fill the column with data to designate individuals belonging to the different classes (e.g., z0 for Pure_0, z1 for Pure_1, etc). If you do not want to provide a 'z' designation for a sample then leave that cell empty and it will be ignored. Any data in the 'ZOPT' column will be transferred to your converted file exactly as it appears in your input .xlsx file, so it is important to only enter information that will be valid in a NewHybrids input file.
+
 ### SNPPIT
 The SNPPIT conversion has a few special requirements that are not needed for other file formats. Firstly, a special tab-delimited snppit map file is required as supplemental input. An example of the snppit map file is included in the 'example_files' folder. Essentially, each line of this file is intended to contain all of the information of lines starting with the POP and OFFSPRING keywords, as seen on [pages 22-23 of the SNPPIT program documentation](https://github.com/eriqande/snppit/blob/master/doc/snppit_doc.pdf). However, note that the columns of the snppitmap are in a different order than they appear in the final snppit-formatted file (i.e., 'popname'\tab'POP' rather than 'POP'\tab'popname').
 
