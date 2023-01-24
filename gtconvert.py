@@ -8,11 +8,12 @@ from structure import Structure
 class GTconvert():
 	'Class for converting pandas dataframes into various genotype files'
 
-	def __init__(self, pdf, popdata, struBool, headBool, snppitmap, snppitCols, infile):
+	def __init__(self, pdf, popdata, struBool, headBool, snppitmap, snppitCols, newhybCols, infile):
 		self.structureTwoLine = struBool
 		self.structureHeader = headBool
 		self.snppitmap = snppitmap
 		self.snppitCols = snppitCols
+		self.newhybCols = newhybCols
 		self.df = pdf
 		self.pd = popdata
 		self.infile = infile
@@ -35,7 +36,7 @@ class GTconvert():
 	def conv_newhybrids(self):
 		#print("This function will convert to NewHybrids format.")
 		nh = NewHybrids(self.df)
-		output = nh.convert()
+		output = nh.convert(self.newhybCols)
 		return output
 	
 	def conv_plink(self):

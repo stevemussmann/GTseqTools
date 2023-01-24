@@ -70,6 +70,29 @@ class GTseq():
 			print("")
 
 		return snppitCols
+	
+	def removeNewhyb(self, df):
+		print("Checking for presence of optional Newhybrids columns.")
+		optionalCols = ['ZOPT']
+
+		remove = list() #will hold list of snppit columns that appear in pandas df
+		newhybCols = pandas.DataFrame() #declare empty dataframe to be returned even if no optional columns were used. 
+
+		for col in optionalCols:
+			if col in df.columns:
+				remove.append(col) #add existing cols to remove list
+
+		if remove:
+			print("The following optional NewHybrids columns were detected in the input file:")
+			for col in remove:
+				print(col)
+			print("")
+			newhybCols = self.removeColumns(df, remove)
+		else:
+			print("No optional NewHybrids columns detected in input file.")
+			print("")
+
+		return newhybCols
 
 	def calcMissingLoci(self, df):
 		print("Calculating missing data per locus.")

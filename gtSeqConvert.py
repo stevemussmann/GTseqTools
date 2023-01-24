@@ -65,6 +65,7 @@ def main():
 
 	# pull out special columns
 	snppitCols = gtFile.removeSnppit(pdf) #removes optional columns for SNPPIT
+	newhybCols = gtFile.removeNewhyb(pdf) #removes optional columns for NewHybrids
 	pops = gtFile.getPops(pdf) #remove populations column
 
 	# filter based upon missing data
@@ -78,7 +79,7 @@ def main():
 		monoPdf.to_excel(monoName, sheet_name="Final Genotypes")
 
 	#begin conversion process
-	conversion = GTconvert(pdf, pops, input.args.twoline, input.args.header, input.args.snppitmap, snppitCols, input.args.infile)
+	conversion = GTconvert(pdf, pops, input.args.twoline, input.args.header, input.args.snppitmap, snppitCols, newhybCols, input.args.infile)
 	conversion.convert(convDict)
 
 main()

@@ -7,7 +7,7 @@ class NewHybrids():
 		self.pdf = df
 		self.nucleotides = {'A': '01', 'C': '02', 'G': '03', 'T': '04', '-': '05', '0': '0'}
 		
-	def convert(self):
+	def convert(self, newhybCols):
 		output = list() #holds final file output
 		# get number of individuals and loci
 		nInds = len(self.pdf.axes[0])
@@ -21,7 +21,7 @@ class NewHybrids():
 		
 		# develop locus header line
 		headerList = ['LocusNames']
-		for(columnName, columnData) in self.pdf.iteritems():
+		for(columnName, columnData) in self.pdf.items():
 			headerList.append(columnName)
 
 		locusHeader = '\t'.join(headerList)
@@ -34,9 +34,18 @@ class NewHybrids():
 		output.append('') #blank line
 		output.append(locusHeader)
 
+		counter=0
 		for sampleName, row in self.pdf.iterrows():
-			lineList = [sampleName]
-			lineList.append('') #blank space - can be used for 'z' option if implemented
+			counter+=1
+			#lineList = [sampleName]
+			lineList = [str(counter)] #newhybrids format wants consecutively numbered sample names
+			if not newhybCols.empty:
+				if pandas.isnull(newhybCols.loc[sampleName]['ZOPT']):
+					lineList.append('')
+				else:
+					lineList.append(str(newhybCols.loc[sampleName]['ZOPT']))
+			else:
+				lineList.append('') #blank space - can be used for 'z' option if implemented
 			for (locus,genotype) in row.items():
 				alleles = self.split(str(genotype))
 				convertedAlleles = list()
