@@ -280,7 +280,31 @@ class GTseq():
 			print("")
 
 		return junk
-	
+
+	def removePops(self, df, removeFile):
+		popSet = set(line.strip() for line in open(removeFile))
+
+		junk = pandas.DataFrame()
+
+		if popSet:
+			remove = self.findInds(df, popSet)
+			junk = self.removeRows(df, remove)
+			print("")
+		else:
+			print("WARNING: keeppops option (-P) was invoked but file " + removeFile + " was empty.")
+			print("")
+
+		return junk
+
+	def findInds(self, df, popSet):
+		removeSamples = list()
+		
+		for (sampleName, pop) in df['Population ID'].items():
+			if pop not in popSet:
+				removeSamples.append(sampleName)
+
+		return removeSamples
+
 	def removeColumns(self, df, removelist):
 		junk = pandas.concat([df.pop(x) for x in removelist], axis=1)
 		return junk

@@ -19,10 +19,6 @@ class ComLine():
 							required=True,
 							help="Specify an Excel file in xlsx format for input."
 		)
-		optional.add_argument("-s", "--species",
-							dest='species',
-							help="Specify a list of loci that are species identification SNPs."
-		)
 		optional.add_argument("-d", "--sexid",
 							dest='sexid',
 							help="Specify a list of loci that are sex-identifying SNPs."
@@ -44,9 +40,21 @@ class ComLine():
 							action='store_true',
 							help="Turn on filter to remove monomorphic loci."
 		)
-		optional.add_argument("-r", "--removelist",
-							dest='removelist',
+		optional.add_argument("-P", "--keeppops",
+							dest='keeppops',
+							help="Provide a text file of populations to retain. One population per line. Populations must match data in 'Population ID' column of your input Excel file."
+		)
+		optional.add_argument("-r", "--removeinds",
+							dest='removeinds',
 							help="Specify a list of individuals to remove from the converted files."
+		)
+		optional.add_argument("-R", "--removeloci",
+							dest='removeloci',
+							help="Specify a list of individuals to remove from the converted files."
+		)
+		optional.add_argument("-s", "--species",
+							dest='species',
+							help="Specify a list of loci that are species identification SNPs."
 		)
 		structure.add_argument("-t", "--twoline",
 							dest='twoline',
@@ -121,8 +129,12 @@ class ComLine():
 			self.exists(self.args.species)
 		if self.args.sexid:
 			self.exists(self.args.sexid)
-		if self.args.removelist:
-			self.exists(self.args.removelist)
+		if self.args.removeinds:
+			self.exists(self.args.removeinds)
+		if self.args.removeloci:
+			self.exists(self.args.removeloci)
+		if self.args.keeppops:
+			self.exists(self.args.keeppops)
 		if self.args.snppit == True:
 			if self.args.snppitmap is None:
 				print("")

@@ -35,18 +35,34 @@ def main():
 	pdf = gtFile.parseFile() #returns pandas dataframe with unfiltered data
 
 	# remove blacklisted individuals
-	if input.args.removelist:
+	if input.args.removeinds:
 		print("Removing individuals specified by '-r' option.")
 		print("")
 		removeName = re.sub('.REPLACE.xlsx$', '.removed.xlsx', fileName)
-		removePdf = gtFile.removeInds(pdf, input.args.removelist) #only runs if '-r' option is invoked
+		removePdf = gtFile.removeInds(pdf, input.args.removeinds) #only runs if '-r' option is invoked
+		removePdf.to_excel(removeName, sheet_name="Final Genotypes")
+
+	# discard individuals not found in retained populations
+	if input.args.keeppops:
+		print("Keeping only individuals from populations specified by '-P' option.")
+		print("")
+		removeName = re.sub('.REPLACE.xlsx$', '.removed.pops.xlsx', fileName)
+		removePdf = gtFile.removePops(pdf, input.args.keeppops)
 		removePdf.to_excel(removeName, sheet_name="Final Genotypes")
 	
-	# export xlsx file after removing blacklisted individuals
+	# export xlsx file after removing blacklisted individuals and populations
 	if input.args.xlsx:
 		prefilterName = re.sub('.REPLACE.xlsx$', '.prefilter.xlsx', fileName)
 		pdf.to_excel(prefilterName, sheet_name="Final Genotypes")
 	
+	# remove unwanted loci (if option invoked)
+	if input.args.removeloci:
+		print("Removing loci specified by '-R' option.")
+		print("")
+		removeLociName = re.sub('.REPLACE.xlsx$', '.removed.loci.xlsx', fileName)
+		removeLociPdf = gtFile.removeSpecial(pdf,input.args.removeloci) #only runs if '-R' option is used
+		removeLociPdf.to_excel(removeLociName, sheet_name="Final Genotypes")
+
 	# remove species-identifying SNPs (if option invoked)
 	if input.args.species:
 		print("Removing species-identifying SNPs")
