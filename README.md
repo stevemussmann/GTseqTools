@@ -48,11 +48,13 @@ export PATH=/path/to/GTseqTools:$PATH
 ## Order of operations
 The program first conducts all filtering procedures prior to file format conversion. Filtering procedures are conducted in the following order:
 1) Remove user-specified individuals (-r option).
-2) Remove species-identification loci (-s option).
-3) Remove sex-identifying loci (-d option).
-4) Remove loci that do not meet the minimum threshold (-l option).
-5) Remove individuals that do not meet the minimum threshold (-i option).
-6) Remove monomorphic loci (-m option).
+2) Remove all individuals not belonging to retained populations (-P option).
+3) Remove unwanted locus list (-R option).
+4) Remove species-identification loci (-s option).
+5) Remove sex-identifying loci (-d option).
+6) Remove loci that do not meet the minimum threshold (-l option).
+7) Remove individuals that do not meet the minimum threshold (-i option).
+8) Remove monomorphic loci (-m option).
 
 ## Input Requirements
 ### Required
@@ -75,7 +77,9 @@ Optional Arguments: <a name="optional"></a>
 * **-i / --pmissind:** Enter the maximum allowable proportion of missing data for an individual sample. Default = 0.2.
 * **-l / --pmissloc:** Enter the maximum allowable proportion of missing data for a locus. Default = 0.1.
 * **-m / --monomorphic:** Turn on filter to remove monomorphic loci.
-* **-r / --removelist:** Provide a list of individuals that should be removed from the input xlsx file. This should be a plain text file with each individual being specified on its own line. These individuals will be removed before missing data proportions are calculated. 
+* **-r / --removeinds:** Provide a list of individuals that should be removed from the input xlsx file. This should be a plain text file with each individual being specified on its own line. These individuals will be removed before missing data proportions are calculated. 
+* **-P / --keeppops:** Provide a list of populations that will be retained in final outputs. All individuals belonging to populations not specified in this file will be filtered. This input should be a plain text file with each population being specified on its own line. Population names must match those in the 'Population ID' column exactly.
+* **-R / --removeloci:** Provide a list of loci that should be removed from the input xlsx file. This should be a plain text file with each locus being specified on its own line. These loci will be removed before any other locus-filtering operations are performed. 
 * **-s / --species:** Provide a list of loci that are species identification SNPs. This should be a plain text file with one locus per line. These loci will be removed from the dataset before any other data filtering steps are executed. 
 
 Structure Format Arguments:
@@ -117,7 +121,9 @@ Loci and individuals discarded via filtering options will be written to Excel fi
 | Missing data proportion for individuals   | .filteredIndividuals.xlsx   | -i             |
 | Missing data proportion for loci          | .filteredLoci.xlsx          | -l             |
 | Monomorphic loci                          | .monomorphic.xlsx           | -m             |
+| Discard unwanted populations              | .removed.pops.xlsx          | -P             |
 | List of individuals for removal           | .removed.xlsx               | -r             |
+| List of loci for removal                  | .removed.loci.xlsx          | -R             |
 | Sex-identifying loci                      | .sexID.xlsx                 | -d             |
 | Species-identifying loci                  | .speciesID.xlsx             | -s             |
 
