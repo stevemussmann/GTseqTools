@@ -14,6 +14,9 @@ class Genepop():
 		pm = Popmap(self.pops)
 		mapDict = pm.parseMap()
 
+		# open file for writing population map.
+		fh=open("genepop.popmap.txt", 'w')
+
 		lineList = list()
 
 		lineList.append('Title line:""')
@@ -26,6 +29,13 @@ class Genepop():
 			for sampleName, row in self.pdf.iterrows():
 				sampleList = list()
 				if self.pops[sampleName] == pop:
+					# write to popmap
+					fh.write(sampleName)
+					fh.write("\t")
+					fh.write(pop)
+					fh.write("\n")
+
+					# append data to sampleList
 					sampleList.append(sampleName)
 					sampleList.append(",")
 					sampleList.append("")
@@ -43,6 +53,9 @@ class Genepop():
 						sampleList.append(locusStr)
 					sampleStr = ' '.join(sampleList)
 					lineList.append(sampleStr)
+
+		# close genepop popmap file
+		fh.close()
 
 		return lineList
 

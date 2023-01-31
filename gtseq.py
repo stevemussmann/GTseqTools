@@ -13,6 +13,14 @@ class GTseq():
 		self.gtFile = infile
 		self.logfile = log
 
+		# write command used to launch program
+		fh = open(self.logfile, 'a')
+		fh.write("#gtSeqConvert.py was launched with command:\n#")
+		comm = ' '.join(sys.argv)
+		fh.write(comm)
+		fh.write("\n\n")
+		fh.close()
+
 	def parseFile(self):
 		print("Reading input xlsx file.")
 		print("")

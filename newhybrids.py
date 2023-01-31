@@ -3,11 +3,14 @@ import pandas
 class NewHybrids():
 	'Class for converting GTseq genotype files'
 
-	def __init__(self, df):
+	def __init__(self, df, popmap):
 		self.pdf = df
+		self.pops = popmap
 		self.nucleotides = {'A': '01', 'C': '02', 'G': '03', 'T': '04', '-': '05', '0': '0'}
 		
 	def convert(self, newhybCols):
+		fh=open("newhybrids.popmap.txt", 'w')
+
 		output = list() #holds final file output
 		# get number of individuals and loci
 		nInds = len(self.pdf.axes[0])
@@ -37,6 +40,15 @@ class NewHybrids():
 		counter=0
 		for sampleName, row in self.pdf.iterrows():
 			counter+=1
+
+			# write to newhybrids popmap
+			fh.write(str(counter))
+			fh.write("\t")
+			fh.write(sampleName)
+			fh.write("\t")
+			fh.write(self.pops[sampleName])
+			fh.write("\n")
+
 			#lineList = [sampleName]
 			lineList = [str(counter)] #newhybrids format wants consecutively numbered sample names
 			if not newhybCols.empty:
@@ -62,6 +74,8 @@ class NewHybrids():
 				lineList.append(convertedGenotype)
 			indLine = '\t'.join(lineList)
 			output.append(indLine) # add to output
+
+		fh.close()
 
 		return output
 
