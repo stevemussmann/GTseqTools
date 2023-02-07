@@ -35,7 +35,7 @@ If necessary, make the software executable:
 chmod u+x gtSeqConvert.py
 ```
 
-Finally, put the software in your $PATH. There are many ways of accomplishing this. For example. add the following line (with correct path) to your .bashrc and reload your .bashrc:
+Finally, put the software in your $PATH. There are many ways of accomplishing this. For example, add the following line (replacing '/path/to/GTseqTools' with the correct path) to the end of your .bashrc file and reload your .bashrc:
 ```
 export PATH=/path/to/GTseqTools:$PATH
 ```
