@@ -78,6 +78,29 @@ class GTseq():
 			print("")
 
 		return snppitCols
+
+	def removeSex(self, df):
+		print("Checking for presence of optional column containing phenotypic sex data.")
+		optionalCols = ['Sex']
+
+		remove = list()
+		sexCols = pandas.DataFrame()
+
+		for col in optionalCols:
+			if col in df.columns:
+				remove.append(col)
+
+		if remove:
+			print("The phenotypic sex data column is being removed.")
+			for col in remove:
+				print(col)
+			print("")
+			sexCols = self.removeColumns(df, remove)
+		else:
+			print("Phenotypic sex column not detected in input file.")
+			print("")
+
+		return sexCols
 	
 	def removeNewhyb(self, df):
 		print("Checking for presence of optional Newhybrids columns.")

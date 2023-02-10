@@ -77,11 +77,15 @@ def main():
 		print("")
 		sexName = re.sub('.REPLACE.xlsx$', '.sexID.xlsx', fileName)
 		sexPdf = gtFile.removeSpecial(pdf,input.args.sexid) #only runs if sexid file is used
+		sexPdf['Population ID'] = pdf['Population ID']
+		if 'Sex' in pdf.columns:
+			sexPdf['Sex'] = pdf['Sex']
 		sexPdf.to_excel(sexName, sheet_name="Final Genotypes")
 
 	# pull out special columns
 	snppitCols = gtFile.removeSnppit(pdf) #removes optional columns for SNPPIT
 	newhybCols = gtFile.removeNewhyb(pdf) #removes optional columns for NewHybrids
+	sexes = gtFile.removeSex(pdf) #removes optional phenotypic sex data column
 	pops = gtFile.getPops(pdf) #remove populations column
 
 	# filter based upon missing data
