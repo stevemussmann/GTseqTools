@@ -65,6 +65,8 @@ If you are using the GTscore pipeline for genotyping, I have [forked a copy of t
 ### Optional
 Optionally, you can also provide plain text files with individuals or loci to be stripped from the input file (see -d, -r, and -s options in the [Optional Arguments](#optional) below). Each of these files should contain a single column of data listing a single individual or locus per line.
 
+You can also add a 'Sex' column to your input .xlsx file. The column heading must be exactly 'Sex' (no quotes) to be processed properly. This column is intended to hold phenotypic sex data, and will be transferred to the .sexID.xlsx output if you use the -d option. All other functions in the program will ignore this option.
+
 ## Program Options
 Required Inputs:
 * **-x / --infile:** Specify an input Excel file containing GTseq data. 
