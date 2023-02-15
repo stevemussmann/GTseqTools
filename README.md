@@ -1,4 +1,5 @@
 # GTseqTools
+[![DOI](https://zenodo.org/badge/520264976.svg)](https://zenodo.org/badge/latestdoi/520264976)
 Program for filtering GTseq genotype data and converting to various file formats
 
 This program is a work in progress. This README.md file will be updated regarding program functionality as features are added.
