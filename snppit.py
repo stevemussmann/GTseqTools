@@ -163,7 +163,7 @@ class Snppit():
 						offCols.append(col)
 
 		#locus genotyping error values
-		for (columnName, columnData) in self.pdf.iteritems():
+		for (columnName, columnData) in self.pdf.items():
 			templist = [columnName, "0.005"]
 			locuserr = '\t'.join(templist)
 			lineList.append(locuserr)
