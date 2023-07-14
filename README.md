@@ -95,6 +95,7 @@ Current supported file conversions:
 * **-g / --genepop:** Prints a file in genepop format.
 * **-n / --newhybrids:** Prints a file in newhybrids format.
 * **-p / --plink:** Prints a file in plink format. Result is similar to using the --recode12 option in plink. Output should be valid for the program [Admixture](https://dalexander.github.io/admixture/)
+* **-q / --sequoia:** Prints a sequoia formatted genotype file (I still need to implement something that writes out relevant metadata for this program).
 * **-S / --structure:** Prints a file in structure format (default = single line per individual. See '-t' option above).
 * **-X / --xlsx:** Writes an xlsx-formatted file after user-specified individuals are removed (-r option) but before any other filtering steps are applied.
 * **-z / --snppit:** (under development) Prints a file in snppit format (-Z option is also required for snppit conversion as specified above).
@@ -112,6 +113,7 @@ Outputs retain the input file (-x / --infile) base name, but change the output f
 | Genepop      | .gen; genepop.popmap.txt       | -g             |
 | NewHybrids   | .newhyb; newhybrids.popmap.txt | -n             |
 | Plink        | .ped and .map                  | -p             |
+| Sequoia      | .sequoia                       | -q             |
 | SNPPIT       | .snppit                        | -z             |
 | Structure    | .str; .distructLabels.txt      | -S             |
   
