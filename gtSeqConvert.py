@@ -16,7 +16,7 @@ def main():
 	# make list of file formats; grab relevant options from argparse object
 	d = vars(input.args)
 	convDict = dict()
-	convList = ['allelematch', 'binary', 'genepop','newhybrids','plink', 'structure', 'snppit']
+	convList = ['allelematch', 'binary', 'genepop','newhybrids','plink', 'sequoia', 'structure', 'snppit']
 	for key, value in d.items():
 		if key in convList:
 			convDict[key] = value

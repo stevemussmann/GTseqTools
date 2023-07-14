@@ -91,6 +91,11 @@ class ComLine():
 							action='store_true',
 							help="Write Plink format file."
 		)
+		conversion.add_argument("-q", "--sequoia",
+							dest='sequoia',
+							action='store_true',
+							help="Write Sequoia format file."
+		)
 		conversion.add_argument("-S", "--structure",
 							dest='structure',
 							action='store_true',
