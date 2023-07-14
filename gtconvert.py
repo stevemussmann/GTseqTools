@@ -1,3 +1,4 @@
+from allelematch import AlleleMatch
 from binary import Binary
 from genepop import Genepop
 from newhybrids import NewHybrids
@@ -17,7 +18,7 @@ class GTconvert():
 		self.df = pdf
 		self.pd = popdata
 		self.infile = infile
-		self.suffix = {'binary': 'bin', 'genepop': 'gen', 'newhybrids': 'newhyb', 'plink': 'ped', 'structure': 'str', 'snppit': 'snppit'}
+		self.suffix = {'allelematch': 'allelematch', 'binary': 'bin', 'genepop': 'gen', 'newhybrids': 'newhyb', 'plink': 'ped', 'structure': 'str', 'snppit': 'snppit'}
 
 	def convert(self, d):
 		output = list()
@@ -27,6 +28,12 @@ class GTconvert():
 				output = self.convert_to(filetype)
 				self.printOutput(output, self.infile, self.suffix[filetype])
 		
+	def conv_allelematch(self):
+		#print("This function will convert to binary format.")
+		am = AlleleMatch(self.df, self.pd)
+		output = am.convert()
+		return output
+	
 	def conv_binary(self):
 		#print("This function will convert to binary format.")
 		bi = Binary(self.df, self.pd)

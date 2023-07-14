@@ -66,6 +66,11 @@ class ComLine():
 							action='store_false',
 							help="Turn off printing of header line with locus names for Structure output"
 		)
+		conversion.add_argument("-a", "--allelematch",
+							dest='allelematch',
+							action='store_true',
+							help="Write allelematch format file."
+		)
 		conversion.add_argument("-b", "--binary",
 							dest='binary',
 							action='store_true',
