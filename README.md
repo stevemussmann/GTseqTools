@@ -90,6 +90,7 @@ Structure Format Arguments:
 * **-t / --twoline:** Use this option to write structure files in two-line format. Default = single-line Structure format.
 
 Current supported file conversions:
+* **-a / --allelematch:** Prints a file formatted for the allelematch R package
 * **-b / --binary:** Prints a file in binary format (0 = major allele, 1 = minor allele, 2 = missing data).
 * **-g / --genepop:** Prints a file in genepop format.
 * **-n / --newhybrids:** Prints a file in newhybrids format.
@@ -105,6 +106,7 @@ Outputs retain the input file (-x / --infile) base name, but change the output f
   
 | Format       | Extension(s)                   | Program Option |
 | :----------- | :----------------------------: | :------------: |
+| AlleleMatch  | .allelematch                   | -a             |
 | Binary       | .bin                           | -b             |
 | Excel        | .xlsx                          | -X             |
 | Genepop      | .gen; genepop.popmap.txt       | -g             |
