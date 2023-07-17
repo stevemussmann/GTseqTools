@@ -57,7 +57,7 @@ class GTconvert():
 	def conv_sequoia(self):
 		#print("This function will convert to binary format.")
 		seq = Sequoia(self.df, self.pd)
-		output = seq.convert()
+		output = seq.convert(self.snppitCols)
 		return output
 
 	def conv_structure(self):

@@ -53,18 +53,39 @@ class Sequoia():
 				print("Exiting program.")
 				raise SystemExit
 
-	def convert(self):
+	def convert(self, snppit):
 		output = list()
 
 		self.getMajorMinor()
 
-		output = self.makeSequoia(output)
+		output = self.makeSequoia(output, snppit)
 		
 		return output
 
-	def makeSequoia(self, output):
+	def makeSequoia(self, output, snppit):
+		print(snppit)
+		# open sequoia life history file for writing
+		fh=open("sequoia.LH.txt", 'w')
+
 		for sampleName, row in self.pdf.iterrows():
 			lineList = list()
+
+			# write relevant data to life history file
+			fh.write(sampleName)
+			fh.write("\t")
+			tempSex = str(snppit.loc[sampleName]['POPCOLUMN_SEX'])
+			if tempSex.casefold() == "m" or tempSex.casefold() == "male":
+				fh.write("2") # need to convert sex data to sequoia format (1 = female, 2 = male, 3 = unknown)
+			elif tempSex.casefold() == "f" or tempSex.casefold() == "female":
+				fh.write("1") # need to convert sex data to sequoia format (1 = female, 2 = male, 3 = unknown)
+			else:
+				fh.write("3") # need to convert sex data to sequoia format (1 = female, 2 = male, 3 = unknown)
+			fh.write("\t")
+			if snppit.isnull().loc[sampleName]["OFFSPRINGCOLUMN_BORN_YEAR"] is False:
+				fh.write("-1")
+			else: 
+				fh.write(str(snppit.loc[sampleName]["OFFSPRINGCOLUMN_BORN_YEAR"])) # might need to pull birth year data from special column. Negative number = unknown
+			fh.write("\n")
 
 			lineList.append(sampleName)
 			#lineList.append(self.pd[sampleName])
@@ -89,6 +110,9 @@ class Sequoia():
 			lineString = ' '.join(lineList)
 
 			output.append(lineString)
+
+		# close sequoia life history file
+		fh.close()
 
 		return output
 	
