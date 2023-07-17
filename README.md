@@ -160,6 +160,13 @@ gtSeqConvert.py -x GTseqData.xlsx -z -Z snppitmap.txt
 ```
 
 ## File Conversion Input Details <a name="conversion"></a>
+### AlleleMatch
+The allelematch file can be read into allelematch with the following R code, substituting "filename.allelematch" for your actual file name:
+```
+data <- read.table("filename.allelematch", header=TRUE, sep=",")
+amData <- amDataset(data, missingCode="-99", indexColumn=1, metaDataColumn=2)
+```
+
 ### NewHybrids
 The NewHybrids conversion allows for optional use of the 'z' option. To use this option, add an extra column to your input .xlsx file titled exactly 'ZOPT' (no quotes). The naming of the column is important so that it will be ignored in conversions for other file formats. 
 
