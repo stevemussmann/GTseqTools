@@ -95,7 +95,7 @@ Current supported file conversions:
 * **-g / --genepop:** Prints a file in genepop format.
 * **-n / --newhybrids:** Prints a file in newhybrids format.
 * **-p / --plink:** Prints a file in plink format. Result is similar to using the --recode12 option in plink. Output should be valid for the program [Admixture](https://dalexander.github.io/admixture/)
-* **-q / --sequoia:** Prints a sequoia formatted genotype file (I still need to implement something that writes out relevant metadata for this program).
+* **-q / --sequoia:** Prints a sequoia formatted genotype file.
 * **-S / --structure:** Prints a file in structure format (default = single line per individual. See '-t' option above).
 * **-X / --xlsx:** Writes an xlsx-formatted file after user-specified individuals are removed (-r option) but before any other filtering steps are applied.
 * **-z / --snppit:** (under development) Prints a file in snppit format (-Z option is also required for snppit conversion as specified above).
@@ -113,7 +113,7 @@ Outputs retain the input file (-x / --infile) base name, but change the output f
 | Genepop      | .gen; genepop.popmap.txt       | -g             |
 | NewHybrids   | .newhyb; newhybrids.popmap.txt | -n             |
 | Plink        | .ped and .map                  | -p             |
-| Sequoia      | .sequoia                       | -q             |
+| Sequoia      | .sequoia; sequoia.lh.txt       | -q             |
 | SNPPIT       | .snppit                        | -z             |
 | Structure    | .str; .distructLabels.txt      | -S             |
   
@@ -171,6 +171,22 @@ amData <- amDataset(data, missingCode="-99", indexColumn=1, metaDataColumn=2)
 The NewHybrids conversion allows for optional use of the 'z' option. To use this option, add an extra column to your input .xlsx file titled exactly 'ZOPT' (no quotes). The naming of the column is important so that it will be ignored in conversions for other file formats. 
 
 Fill the column with data to designate individuals belonging to the different classes (e.g., z0 for Pure_0, z1 for Pure_1, etc). If you do not want to provide a 'z' designation for a sample then leave that cell empty and it will be ignored. Any data in the 'ZOPT' column will be transferred to your converted file exactly as it appears in your input .xlsx file, so it is important to only enter information that will be valid in a NewHybrids input file.
+
+### Sequoia
+The Sequoia conversion relies upon some of the optional SNPPIT columns that are also used for the SNPPIT file conversion (see below). Use the POPCOLUMN_SEX column to specify sex data for all individuals. Only case insensitive versions of 'f', 'female', 'm', and 'male' will be recognized. All other values and blank cells will be converted to unknown sex data value in sequoia (3). 
+
+The OFFSPRINGCOLUMN_BORN_YEAR is used to specify the birth year for all individuals. You can enter birth year data in this column even for the 'parental' populations. This will not cause any problems for the SNPPIT file conversion as listed below.
+
+The code for creating the life history data file has not yet been robustly tested, so there could be bugs.
+
+Files can be read into sequoia with the following commands:
+```
+# genotypes file
+geno <- as.matrix(read.csv("filename.sequoia", sep="\t", header=FALSE, row.names=1))
+
+# life history file
+lh <- read.csv("sequoia.LH.txt", sep="\t", header=TRUE)
+```
 
 ### SNPPIT
 The SNPPIT conversion has a few special requirements that are not needed for other file formats. Firstly, a special tab-delimited snppit map file is required as supplemental input. An example of the snppit map file is included in the 'example_files' folder. Essentially, each line of this file is intended to contain all of the information of lines starting with the POP and OFFSPRING keywords, as seen on [pages 22-23 of the SNPPIT program documentation](https://github.com/eriqande/snppit/blob/master/doc/snppit_doc.pdf). However, note that the columns of the snppitmap are in a different order than they appear in the final snppit-formatted file (i.e., 'popname'\tab'POP' rather than 'POP'\tab'popname').
