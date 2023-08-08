@@ -1,5 +1,6 @@
 from allelematch import AlleleMatch
 from binary import Binary
+from coancestry import Coancestry
 from genepop import Genepop
 from newhybrids import NewHybrids
 from plink import Plink
@@ -19,7 +20,7 @@ class GTconvert():
 		self.df = pdf
 		self.pd = popdata
 		self.infile = infile
-		self.suffix = {'allelematch': 'allelematch', 'binary': 'bin', 'genepop': 'gen', 'newhybrids': 'newhyb', 'plink': 'ped', 'structure': 'str', 'snppit': 'snppit', 'sequoia': 'sequoia'}
+		self.suffix = {'allelematch': 'allelematch', 'binary': 'bin', 'coancestry': 'coancestry', 'genepop': 'gen', 'newhybrids': 'newhyb', 'plink': 'ped', 'structure': 'str', 'snppit': 'snppit', 'sequoia': 'sequoia'}
 
 	def convert(self, d):
 		output = list()
@@ -30,7 +31,7 @@ class GTconvert():
 				self.printOutput(output, self.infile, self.suffix[filetype])
 		
 	def conv_allelematch(self):
-		#print("This function will convert to binary format.")
+		#print("This function will convert to allelematch format.")
 		am = AlleleMatch(self.df, self.pd)
 		output = am.convert()
 		return output
@@ -39,6 +40,12 @@ class GTconvert():
 		#print("This function will convert to binary format.")
 		bi = Binary(self.df, self.pd)
 		output = bi.convert()
+		return output
+	
+	def conv_coancestry(self):
+		#print("This function will convert to coancestry format.")
+		am = Coancestry(self.df, self.pd)
+		output = am.convert()
 		return output
 
 	def conv_newhybrids(self):

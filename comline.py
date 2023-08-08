@@ -76,6 +76,11 @@ class ComLine():
 							action='store_true',
 							help="Write binary format file."
 		)
+		conversion.add_argument("-c", "--coancestry",
+							dest='coancestry',
+							action='store_true',
+							help="Write coancestry format file."
+		)
 		conversion.add_argument("-g", "--genepop",
 							dest='genepop',
 							action='store_true',
