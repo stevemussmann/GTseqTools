@@ -92,6 +92,7 @@ Structure Format Arguments:
 Current supported file conversions:
 * **-a / --allelematch:** Prints a file formatted for the allelematch R package
 * **-b / --binary:** Prints a file in binary format (0 = major allele, 1 = minor allele, 2 = missing data).
+* **-c / --coancestry:** Prints a file formatted for coancestry (or 'related' R package)
 * **-g / --genepop:** Prints a file in genepop format.
 * **-n / --newhybrids:** Prints a file in newhybrids format.
 * **-p / --plink:** Prints a file in plink format. Result is similar to using the --recode12 option in plink. Output should be valid for the program [Admixture](https://dalexander.github.io/admixture/)
@@ -105,17 +106,18 @@ Outputs retain the input file (-x / --infile) base name, but change the output f
 
 <div align="center">
   
-| Format       | Extension(s)                   | Program Option |
-| :----------- | :----------------------------: | :------------: |
-| AlleleMatch  | .allelematch                   | -a             |
-| Binary       | .bin                           | -b             |
-| Excel        | .xlsx                          | -X             |
-| Genepop      | .gen; genepop.popmap.txt       | -g             |
-| NewHybrids   | .newhyb; newhybrids.popmap.txt | -n             |
-| Plink        | .ped and .map                  | -p             |
-| Sequoia      | .sequoia; sequoia.lh.txt       | -q             |
-| SNPPIT       | .snppit                        | -z             |
-| Structure    | .str; .distructLabels.txt      | -S             |
+| Format       | Extension(s)                       | Program Option |
+| :----------- | :--------------------------------: | :------------: |
+| AlleleMatch  | .allelematch                       | -a             |
+| Binary       | .bin                               | -b             |
+| Coancestry   | .coancestry; coancestry.popmap.txt | -c             |
+| Excel        | .xlsx                              | -X             |
+| Genepop      | .gen; genepop.popmap.txt           | -g             |
+| NewHybrids   | .newhyb; newhybrids.popmap.txt     | -n             |
+| Plink        | .ped and .map                      | -p             |
+| Sequoia      | .sequoia; sequoia.lh.txt           | -q             |
+| SNPPIT       | .snppit                            | -z             |
+| Structure    | .str; .distructLabels.txt          | -S             |
   
 </div>
 
