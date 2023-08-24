@@ -107,7 +107,7 @@ class Sequoia():
 				tempString = self.genotypes[tempString]
 				lineList.append(tempString)
 
-			lineString = ' '.join(lineList)
+			lineString = "\t".join(lineList)
 
 			output.append(lineString)
 
