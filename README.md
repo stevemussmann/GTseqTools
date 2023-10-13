@@ -8,6 +8,7 @@ This program is a work in progress. This README.md file will be updated regardin
 This program has only been tested in Python v3.10. However, it should be compatible with Python v3.8+. Compatibility is somewhat restrictive because the GTconvert class uses syntax that is new to Python as of v3.8.
 
 ## Dependencies
+- matplotlib
 - pandas
 
 ## Installation
@@ -18,7 +19,7 @@ conda config --set auto_activate_base false
 
 Next, create a conda environment in which this program can be run. Use the following command, which should install a sufficiently recent version of python:
 ```
-conda create -n GTseqTools -c conda-forge python=3 pandas openpyxl
+conda create -n GTseqTools -c conda-forge python=3 pandas openpyxl matplotlib
 ```
 The environment can be activated and deactivated as needed with the following commands:
 ```
@@ -140,6 +141,7 @@ Loci and individuals discarded via filtering options will be written to Excel fi
 
 A log file is also created that documents missing data proportions per individual and locus, and the number of individuals/loci removed at each step. The log file is a plain text file that retains the input file (-x / --infile) base name, but ends in .log.
 
+I am currently working on implementing plots to show distributions of missing data per locus and individual sample. These are a work in progress.
 ## Example Commands
 You can print the program help menu using the -h option:
 ```
