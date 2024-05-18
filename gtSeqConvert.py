@@ -5,6 +5,7 @@ from gtseq import GTseq
 from gtconvert import GTconvert
 
 import argparse
+import collections
 import os
 import pandas
 import re
@@ -33,6 +34,7 @@ def main():
 
 	gtFile = GTseq(input.args.infile, logfile)
 	pdf = gtFile.parseFile() #returns pandas dataframe with unfiltered data
+	startPopCounts = pdf['Population ID'].value_counts() #count starting number of individuals per population
 
 	# remove blacklisted individuals
 	if input.args.removeinds:
@@ -86,11 +88,12 @@ def main():
 	snppitCols = gtFile.removeSnppit(pdf) #removes optional columns for SNPPIT
 	newhybCols = gtFile.removeNewhyb(pdf) #removes optional columns for NewHybrids
 	sexes = gtFile.removeSex(pdf) #removes optional phenotypic sex data column
-	pops = gtFile.getPops(pdf) #remove populations column
+	pops = gtFile.getPops(pdf) #remove populations column; variable 'pops' is a dict
 
 	# filter based upon missing data
 	pdf = gtFile.filterFile(pdf, input.args.pmissloc, input.args.pmissind, fileName) #returns pandas dataframe with filtered data
-	
+	keep = list(pdf.index) # make list of keys remaining in pdf - used to reduce 'pops' dict to only retained individuals after missing data filtering
+
 	# remove monomorphic loci (if option invoked)
 	if input.args.monomorphic:
 		print("Removing monomorphic loci")
@@ -98,6 +101,11 @@ def main():
 		monoPdf = gtFile.removeMonomorphicLoci(pdf)
 		monoPdf.to_excel(monoName, sheet_name="Final Genotypes")
 
+	# count individuals per population after all filters have been applied
+	pops = {k: pops[k] for k in keep} # reduce 'pops' dict to only individuals retained after missing data filtering
+	endPopCounts = collections.Counter(pops.values()) #count ending number of individuals per population
+	gtFile.printRetained(startPopCounts, endPopCounts) # print number of retained individuals to logfile
+	
 	#begin conversion process
 	conversion = GTconvert(pdf, pops, input.args.twoline, input.args.header, input.args.snppitmap, snppitCols, newhybCols, input.args.infile)
 	conversion.convert(convDict)

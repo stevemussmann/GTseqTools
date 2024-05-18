@@ -21,6 +21,43 @@ class GTseq():
 		fh.write(comm)
 		fh.write("\n\n")
 		fh.close()
+	
+	def printRetained(self, start, end):
+		fh = open(self.logfile, 'a')
+		fh.write("The following table reports the number of individuals retained (Output) from each population:\n")
+		fh.write("Population\tInput\tOutput\n")
+		print("The following table reports the number of individuals retained (Output) from each population:")
+		print("Population\tInput\tOutput")
+		fh.write("Population\tInput\tOutput")
+		totalIn = 0
+		totalOut = 0
+		for k,v in start.items():
+			totalIn = totalIn + int(v)
+			if k in end:
+				print("{}\t{}\t{}".format(k, v, end[k]))
+				fh.write(str(k))
+				fh.write("\t")
+				fh.write(str(v))
+				fh.write("\t")
+				fh.write(str(end[k]))
+				fh.write("\n")
+				totalOut = totalOut + int(end[k])
+			else:
+				print("{}\t{}\t{}".format(k, v, "0"))
+				fh.write(str(k))
+				fh.write("\t")
+				fh.write(str(v))
+				fh.write("\t")
+				fh.write(str("0"))
+				fh.write("\n")
+		print("{}\t{}\t{}".format("Total", str(totalIn), str(totalOut)))
+		print("")
+		fh.write(str("Total\t"))
+		fh.write(str(totalIn))
+		fh.write(str("\t"))
+		fh.write(str(totalOut))
+		fh.write(str("\n\n"))
+		fh.close()
 
 	def parseFile(self):
 		print("Reading input xlsx file.")
