@@ -27,6 +27,11 @@ def main():
 	fileName = input.args.infile.replace(" ", "_") #replace spaces in original filename if they exist
 	fileName = re.sub('.xlsx$', '.REPLACE.xlsx', fileName)
 	logfile = re.sub('.REPLACE.xlsx$', '.log', fileName)
+
+	# make directory to hold discarded data files
+	discardDir = "discardedFiles"
+	if os.path.exists(discardDir) == False:
+		os.mkdir(discardDir)
 	
 	#check if logfile exists and delete if true
 	if os.path.isfile(logfile):
@@ -42,6 +47,7 @@ def main():
 		print("")
 		removeName = re.sub('.REPLACE.xlsx$', '.removed.xlsx', fileName)
 		removePdf = gtFile.removeInds(pdf, input.args.removeinds) #only runs if '-r' option is invoked
+		removeName = os.path.join(discardDir, removeName)
 		removePdf.to_excel(removeName, sheet_name="Final Genotypes")
 
 	# discard individuals not found in retained populations
@@ -50,6 +56,7 @@ def main():
 		print("")
 		removeName = re.sub('.REPLACE.xlsx$', '.removed.pops.xlsx', fileName)
 		removePdf = gtFile.removePops(pdf, input.args.keeppops)
+		removeName = os.path.join(discardDir, removeName)
 		removePdf.to_excel(removeName, sheet_name="Final Genotypes")
 	
 	# export xlsx file after removing blacklisted individuals and populations
@@ -63,6 +70,7 @@ def main():
 		print("")
 		removeLociName = re.sub('.REPLACE.xlsx$', '.removed.loci.xlsx', fileName)
 		removeLociPdf = gtFile.removeSpecial(pdf,input.args.removeloci) #only runs if '-R' option is used
+		removeLociName = os.path.join(discardDir, removeLociName)
 		removeLociPdf.to_excel(removeLociName, sheet_name="Final Genotypes")
 
 	# remove species-identifying SNPs (if option invoked)
@@ -91,7 +99,7 @@ def main():
 	pops = gtFile.getPops(pdf) #remove populations column; variable 'pops' is a dict
 
 	# filter based upon missing data
-	pdf = gtFile.filterFile(pdf, input.args.pmissloc, input.args.pmissind, fileName) #returns pandas dataframe with filtered data
+	pdf = gtFile.filterFile(pdf, input.args.pmissloc, input.args.pmissind, fileName, discardDir) #returns pandas dataframe with filtered data
 	keep = list(pdf.index) # make list of keys remaining in pdf - used to reduce 'pops' dict to only retained individuals after missing data filtering
 
 	# remove monomorphic loci (if option invoked)
@@ -99,6 +107,7 @@ def main():
 		print("Removing monomorphic loci")
 		monoName = re.sub('.REPLACE.xlsx$', '.monomorphic.xlsx', fileName)
 		monoPdf = gtFile.removeMonomorphicLoci(pdf)
+		monoName = os.path.join(discardDir, monoName)
 		monoPdf.to_excel(monoName, sheet_name="Final Genotypes")
 
 	# count individuals per population after all filters have been applied

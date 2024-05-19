@@ -8,6 +8,8 @@ from sequoia import Sequoia
 from snppit import Snppit
 from structure import Structure
 
+import os
+
 class GTconvert():
 	'Class for converting pandas dataframes into various genotype files'
 
@@ -21,6 +23,10 @@ class GTconvert():
 		self.pd = popdata
 		self.infile = infile
 		self.suffix = {'allelematch': 'allelematch', 'binary': 'bin', 'coancestry': 'coancestry', 'genepop': 'gen', 'newhybrids': 'newhyb', 'plink': 'ped', 'structure': 'str', 'snppit': 'snppit', 'sequoia': 'sequoia'}
+		
+		self.convertedDir = "convertedFiles"
+		if os.path.exists(self.convertedDir) == False:
+			os.mkdir(self.convertedDir)
 
 	def convert(self, d):
 		output = list()
@@ -44,7 +50,7 @@ class GTconvert():
 	
 	def conv_coancestry(self):
 		#print("This function will convert to coancestry format.")
-		am = Coancestry(self.df, self.pd)
+		am = Coancestry(self.df, self.pd, self.convertedDir)
 		output = am.convert()
 		return output
 
@@ -63,7 +69,7 @@ class GTconvert():
 	
 	def conv_sequoia(self):
 		#print("This function will convert to binary format.")
-		seq = Sequoia(self.df, self.pd)
+		seq = Sequoia(self.df, self.pd, self.convertedDir)
 		output = seq.convert(self.snppitCols)
 		return output
 
@@ -76,7 +82,7 @@ class GTconvert():
 
 	def conv_genepop(self):
 		#print("This function will convert to Genepop format.")
-		gen = Genepop(self.df, self.pd)
+		gen = Genepop(self.df, self.pd, self.convertedDir)
 		output = gen.convert()
 		return output
 
@@ -105,6 +111,7 @@ class GTconvert():
 		nameList.pop() #remove old extension
 		nameList.append(suffix) #add new file extension
 		outName = '.'.join(nameList)
+		outName = os.path.join(self.convertedDir, outName)
 
 		print("Writing to", outName)
 		print("")

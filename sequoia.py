@@ -1,15 +1,16 @@
 import collections
-
+import os
 import pandas
 
 class Sequoia():
 	'Class for converting pandas dataframe to sequoia format'
 
-	def __init__(self, df, popdata):
+	def __init__(self, df, popdata, convDir):
 		self.pdf = df
 		self.pd = popdata
 		self.recode12 = collections.defaultdict(dict) #stores major/minor allele for converting to binary format. 2 = missing, 0 = major, 1 = minor
 		self.genotypes = {'00': '0', '11': '2', '10': '1', '01': '1', '22': '-9'} # map for converting binary format to sequoia format
+		self.convertedDir = convDir
 
 	def getMajorMinor(self):
 		# get counts of all genotypes at each locus and put into dictionary
@@ -65,7 +66,8 @@ class Sequoia():
 	def makeSequoia(self, output, snppit):
 		print(snppit)
 		# open sequoia life history file for writing
-		fh=open("sequoia.LH.txt", 'w')
+		popmapOut = os.path.join(self.convertedDir, "sequoia.LH.txt")
+		fh=open(popmapOut, 'w')
 
 		for sampleName, row in self.pdf.iterrows():
 			lineList = list()

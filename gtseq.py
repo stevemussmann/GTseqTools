@@ -1,7 +1,7 @@
 from decimal import Decimal
 from stats import GTStats
 
-import os.path
+import os
 import re
 import sys
 import pandas
@@ -13,6 +13,7 @@ class GTseq():
 	def __init__(self, infile, log):
 		self.gtFile = infile
 		self.logfile = log
+		self.plotDir = "plots"
 
 		# write command used to launch program
 		fh = open(self.logfile, 'a')
@@ -21,6 +22,9 @@ class GTseq():
 		fh.write(comm)
 		fh.write("\n\n")
 		fh.close()
+
+		if os.path.exists(self.plotDir) == False:
+			os.mkdir(self.plotDir)
 	
 	def printRetained(self, start, end):
 		fh = open(self.logfile, 'a')
@@ -71,19 +75,22 @@ class GTseq():
 		pops = df.pop('Population ID').to_dict()
 		return pops
 
-	def filterFile(self, df, pMissLoci, pMissInd, fileName):
+	def filterFile(self, df, pMissLoci, pMissInd, fileName, discardDir):
 		# start by calculating proportion of missing data in loci
 		missingDictLoci = self.calcMissingLoci(df)
 		# plot missing loci data here
-		self.plotMissing(missingDictLoci, "histogram.loci.prefilter.png")
+		lociPrefilterHisto = os.path.join(self.plotDir, "histogram.loci.prefilter.png")
+		self.plotMissing(missingDictLoci, lociPrefilterHisto)
 
 		# also calculate missing data per individual before removing loci with high missingness
 		missingDictTemp = self.calcMissingInds(df)
 		# make plot of pre-filter missing data per individual
-		self.plotMissing(missingDictTemp, "histogram.samples.prefilter.png")
+		sampPrefilterHisto = os.path.join(self.plotDir, "histogram.samples.prefilter.png")
+		self.plotMissing(missingDictTemp, sampPrefilterHisto)
 
 		removedLoci = self.removeMissingLoci(missingDictLoci, df, pMissLoci)
 		lociName = re.sub('.REPLACE.xlsx$', '.filteredLoci.xlsx', fileName)
+		lociName = os.path.join(discardDir, lociName)
 		removedLoci.to_excel(lociName, sheet_name="Final Genotypes")
 
 		missingDictInd = self.calcMissingInds(df)
@@ -93,6 +100,7 @@ class GTseq():
 
 		removedInds = self.removeMissingInds(missingDictInd, df, pMissInd)
 		indsName = re.sub('.REPLACE.xlsx$', '.filteredIndividuals.xlsx', fileName)
+		indsName = os.path.join(discardDir, indsName)
 		removedInds.to_excel(indsName, sheet_name="Final Genotypes")
 
 		return df
@@ -249,13 +257,15 @@ class GTseq():
 		
 		# calculate statistics
 		# plot missing data from removeMiss Dict
-		self.plotMissing(removeMiss, "histogram.loci.removed.postfilter.png")
+		lociPostfilterRemovedHisto = os.path.join(self.plotDir, "histogram.loci.removed.postfilter.png")
+		self.plotMissing(removeMiss, lociPostfilterRemovedHisto)
 		removeStats = GTStats(removeMiss)
 		removeStats.calcStats()
 		removeStats.printStats(self.logfile, "removed", "loci")
 	
 		# plot missing data from removeMiss Dict
-		self.plotMissing(keepMiss, "histogram.loci.retained.postfilter.png")
+		lociPostfilterRetainedHisto = os.path.join(self.plotDir, "histogram.loci.retained.postfilter.png")
+		self.plotMissing(keepMiss, lociPostfilterRetainedHisto)
 		keepStats = GTStats(keepMiss)
 		keepStats.calcStats()
 		keepStats.printStats(self.logfile, "retained", "loci")
@@ -356,13 +366,15 @@ class GTseq():
 
 		## calculate statistics
 		# plot missing data from removeMiss Dict
-		self.plotMissing(removeMiss, "histogram.samples.removed.postfilter.png")
+		sampPostfilterRemovedHisto = os.path.join(self.plotDir, "histogram.samples.removed.postfilter.png")
+		self.plotMissing(removeMiss, sampPostfilterRemovedHisto)
 		removeStats = GTStats(removeMiss)
 		removeStats.calcStats()
 		removeStats.printStats(self.logfile, "removed", "individuals")
 	
 		# plot missing data from removeMiss Dict
-		self.plotMissing(keepMiss, "histogram.samples.retained.postfilter.png")
+		sampPostfilterRetainedHisto = os.path.join(self.plotDir, "histogram.samples.retained.postfilter.png")
+		self.plotMissing(keepMiss, sampPostfilterRetainedHisto)
 		keepStats = GTStats(keepMiss)
 		keepStats.calcStats()
 		keepStats.printStats(self.logfile, "retained", "individuals")

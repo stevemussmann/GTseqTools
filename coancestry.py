@@ -1,12 +1,14 @@
+import os
 import pandas
 
 class Coancestry():
 	'Class for converting pandas dataframe to coancestry format'
 
-	def __init__(self, df, popdata):
+	def __init__(self, df, popdata, convDir):
 		self.pdf = df
 		self.pd = popdata
 		self.nucleotides = {'A': '1', 'C': '2', 'G': '3', 'T': '4', '-': '5', '0': '0'}
+		self.convertedDir = convDir
 
 	def convert(self):
 		lineList = list()
@@ -31,7 +33,8 @@ class Coancestry():
 			popMap[pop] = popcode
 
 		# write list of population map codes for coancestry output file
-		fh=open("coancestry.popmap.txt", 'w')
+		popmapOut = os.path.join(self.convertedDir, "coancestry.popmap.txt")
+		fh=open(popmapOut, 'w')
 		for key, val in popMap.items():
 			fh.write(key)
 			fh.write("\t")

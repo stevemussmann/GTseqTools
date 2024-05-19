@@ -1,21 +1,24 @@
 from popmap import Popmap
 
+import os
 import pandas
 
 class Genepop():
 	'Class for converting pandas dataframe to Genepop format'
 
-	def __init__(self, df, popmap):
+	def __init__(self, df, popmap, convDir):
 		self.pdf = df
 		self.pops = popmap
 		self.nucleotides = {'A': '01', 'C': '02', 'G': '03', 'T': '04', '-': '05', '0': '00'}
+		self.convertedDir = convDir
 		
 	def convert(self):
 		pm = Popmap(self.pops)
 		mapDict = pm.parseMap()
 
 		# open file for writing population map.
-		fh=open("genepop.popmap.txt", 'w')
+		popmapOut = os.path.join(self.convertedDir, "genepopmap.txt")
+		fh=open(popmapOut, 'w')
 
 		lineList = list()
 
