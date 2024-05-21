@@ -32,7 +32,6 @@ class GTseq():
 		fh.write("Population\tInput\tOutput\n")
 		print("The following table reports the number of individuals retained (Output) from each population:")
 		print("Population\tInput\tOutput")
-		fh.write("Population\tInput\tOutput")
 		totalIn = 0
 		totalOut = 0
 		for k,v in start.items():
