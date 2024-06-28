@@ -1,15 +1,18 @@
+import os
 import pandas
 
 class NewHybrids():
 	'Class for converting GTseq genotype files'
 
-	def __init__(self, df, popmap):
+	def __init__(self, df, popmap, convDir):
 		self.pdf = df
 		self.pops = popmap
+		self.convertedDir = convDir
 		self.nucleotides = {'A': '01', 'C': '02', 'G': '03', 'T': '04', '-': '05', '0': '0'}
 		
 	def convert(self, newhybCols):
-		fh=open("newhybrids.popmap.txt", 'w')
+		nhbmapOut = os.path.join(self.convertedDir, "newhybrids.popmap.txt")
+		fh=open(nhbmapOut, 'w')
 
 		output = list() #holds final file output
 		# get number of individuals and loci

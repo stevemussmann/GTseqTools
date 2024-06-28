@@ -56,7 +56,7 @@ class GTconvert():
 
 	def conv_newhybrids(self):
 		#print("This function will convert to NewHybrids format.")
-		nh = NewHybrids(self.df, self.pd)
+		nh = NewHybrids(self.df, self.pd, self.convertedDir)
 		output = nh.convert(self.newhybCols)
 		return output
 	
