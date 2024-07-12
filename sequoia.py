@@ -42,8 +42,8 @@ class Sequoia():
 				if majCount == minCount:
 					alleleNum = 0
 					for key in allelecounts.keys():
-						alleleNum += 1
 						self.recode12[columnName][key] = str(alleleNum)
+						alleleNum += 1
 				else:
 					self.recode12[columnName][major] = "0"
 					self.recode12[columnName][minor] = "1"
@@ -106,7 +106,15 @@ class Sequoia():
 					for allele in alleles:
 						tempList.append(self.recode12[locus][allele])
 				tempString = ''.join(tempList)
-				tempString = self.genotypes[tempString]
+				try:
+					tempString = self.genotypes[tempString]
+				except KeyError as e:
+					print("Problem converting locus" + locus + "for individual" + sampleName + "to create Sequoia output.")
+					print("Problem key when accessing recoded allele hash:" + e)
+					print("Exiting program...")
+					print("")
+					print("")
+					raise SystemExit
 				lineList.append(tempString)
 
 			lineString = "\t".join(lineList)
