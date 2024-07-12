@@ -23,7 +23,7 @@ class Sequoia():
 		return output
 
 	def makeSequoia(self, output, snppit):
-		print(snppit)
+		#print(snppit) #uncomment to print SNPPIT columns to stdout
 		# open sequoia life history file for writing
 		popmapOut = os.path.join(self.convertedDir, "sequoia.LH.txt")
 		fh=open(popmapOut, 'w')
@@ -34,7 +34,16 @@ class Sequoia():
 			# write relevant data to life history file
 			fh.write(sampleName)
 			fh.write("\t")
-			tempSex = str(snppit.loc[sampleName]['POPCOLUMN_SEX'])
+			try:
+				tempSex = str(snppit.loc[sampleName]['POPCOLUMN_SEX'])
+			except KeyError as e:
+				print("ERROR: " + str(e) + " not found.")
+				print("Your input .xlsx file might be missing the POPCOLUMN_SEX column. This is required for Sequoia format conversion.")
+				print("Exiting Program...")
+				print("")
+				print("")
+				raise SystemExit
+
 			if tempSex.casefold() == "m" or tempSex.casefold() == "male":
 				fh.write("2") # need to convert sex data to sequoia format (1 = female, 2 = male, 3 = unknown)
 			elif tempSex.casefold() == "f" or tempSex.casefold() == "female":
@@ -42,11 +51,21 @@ class Sequoia():
 			else:
 				fh.write("3") # need to convert sex data to sequoia format (1 = female, 2 = male, 3 = unknown)
 			fh.write("\t")
-			if snppit.isnull().loc[sampleName]["OFFSPRINGCOLUMN_BORN_YEAR"] is False:
-				fh.write("-1")
-			else: 
-				fh.write(str(snppit.loc[sampleName]["OFFSPRINGCOLUMN_BORN_YEAR"])) # might need to pull birth year data from special column. Negative number = unknown
-			fh.write("\n")
+
+			try:
+				if snppit.isnull().loc[sampleName]["OFFSPRINGCOLUMN_BORN_YEAR"] is False:
+					fh.write("-1")
+				else: 
+					fh.write(str(snppit.loc[sampleName]["OFFSPRINGCOLUMN_BORN_YEAR"])) # might need to pull birth year data from special column. Negative number = unknown
+				fh.write("\n")
+			except KeyError as e:
+				print("ERROR: " + str(e) + " not found.")
+				print("Your input .xlsx file might be missing the OFFSPRINGCOLUMN_BORN_YEAR column. This is required for Sequoia format conversion.")
+				print("Exiting Program...")
+				print("")
+				print("")
+				raise SystemExit
+				
 
 			lineList.append(sampleName)
 			#lineList.append(self.pd[sampleName])
