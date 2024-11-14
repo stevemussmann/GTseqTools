@@ -209,8 +209,16 @@ class GTseq():
 			if 0 not in alleledict.keys():
 				alleledict[0] = 0
 
-			missing=Decimal(alleledict[0]/numInds)
-			
+			try:
+				missing=Decimal(alleledict[0]/numInds)
+			except ZeroDivisionError as e:
+				print("ERROR:")
+				print(e)
+				print("This error occurred when calculating the proportion of mising data per locus.")
+				print("Exiting program...")
+				print("")
+				raise SystemExit
+
 			missingDict[columnName] = missing
 
 		return missingDict
@@ -319,7 +327,17 @@ class GTseq():
 			for (locus, genotype) in rowData.items():
 				if genotype == 0:
 					numMissing = numMissing+1
-			missing = Decimal(numMissing/numLoci)
+			try:
+				missing = Decimal(numMissing/numLoci)
+			except ZeroDivisionError as e:
+				print("ERROR:")
+				print(e)
+				print("This error occurred when calculating the proportion of mising data per individual.")
+				print("This could result if all loci were discarded by missing data filter (option -l).")
+				print("Exiting program...")
+				print("")
+				raise SystemExit
+
 			missingInd[rowName] = missing
 
 		return missingInd
