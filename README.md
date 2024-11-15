@@ -72,10 +72,10 @@ You can also add a 'Sex' column to your input .xlsx file. The column heading mus
 
 ## Program Options
 Required Inputs:
-* **-x / --infile:** Specify an input Excel file containing GTseq data. 
+* **`-x` / `--infile`:** Specify an input Excel file containing GTseq data. 
 
 Required for SNPPIT conversion only:
-* **-Z / --snppitmap:** Specify a tab-delimited map in which the first column lists each population, the second column lists its status as POP or OFFSPRING, and the third column lists the potential parental POP(s) for each OFFSPRING. See example snppitmap in 'example_files' folder. 
+* **`-Z` / `--snppitmap`:** Specify a tab-delimited map in which the first column lists each population, the second column lists its status as POP or OFFSPRING, and the third column lists the potential parental POP(s) for each OFFSPRING. See example snppitmap in 'example_files' folder. 
 
 Optional Arguments: <a name="optional"></a>
 * **`-d` / `--sexid`:** Provide a list of loci that are sex-identifying SNPs. This should be a plain text file with one locus per line. These loci will be removed from the dataset before any data filtering steps are executed. 
@@ -109,18 +109,18 @@ Outputs retain the input file (-x / --infile) base name, but change the output f
 
 <div align="center">
   
-| Format       | Extension(s)                       | Program Option |
-| :----------- | :--------------------------------: | :------------: |
-| AlleleMatch  | .allelematch                       | -a             |
-| Binary       | .bin                               | -b             |
-| Coancestry   | .coancestry; coancestry.popmap.txt | -c             |
-| Excel        | .xlsx                              | -X             |
-| Genepop      | .gen; genepop.popmap.txt           | -g             |
-| NewHybrids   | .newhyb; newhybrids.popmap.txt     | -n             |
-| Plink        | .ped and .map                      | -p             |
-| Sequoia      | .sequoia; sequoia.lh.txt           | -q             |
-| SNPPIT       | .snppit                            | -z             |
-| Structure    | .str; .distructLabels.txt          | -S             |
+| Format       | Extension(s)                       |  Program Option  |
+| :----------- | :--------------------------------: | :--------------: |
+| AlleleMatch  | .allelematch                       | `-a`             |
+| Binary       | .bin                               | `-b`             |
+| Coancestry   | .coancestry; coancestry.popmap.txt | `-c`             |
+| Excel        | .xlsx                              | `-X`             |
+| Genepop      | .gen; genepop.popmap.txt           | `-g`             |
+| NewHybrids   | .newhyb; newhybrids.popmap.txt     | `-n`             |
+| Plink        | .ped and .map                      | `-p`             |
+| Sequoia      | .sequoia; sequoia.lh.txt           | `-q`             |
+| SNPPIT       | .snppit                            | `-z`             |
+| Structure    | .str; .distructLabels.txt          | `-S`             |
   
 </div>
 
@@ -128,17 +128,17 @@ Loci and individuals discarded via filtering options will be written to Excel fi
 
 <div align="center">
   
-| Filtering Step                            | Name                        | Program Option |
-| :---------------------------------------- | :-------------------------: | :------------: |
-| Missing data proportion for individuals   | .filteredIndividuals.xlsx   | -i             |
-| Missing data proportion for loci          | .filteredLoci.xlsx          | -l             |
-| Monomorphic loci                          | .monomorphic.xlsx           | -m             |
-| Discard unwanted populations              | .removed.pops.xlsx          | -P             |
-| IFI score filtering                       | .removed.ifi.xlsx           | -I             |
-| List of individuals for removal           | .removed.xlsx               | -r             |
-| List of loci for removal                  | .removed.loci.xlsx          | -R             |
-| Sex-identifying loci                      | .sexID.xlsx                 | -d             |
-| Species-identifying loci                  | .speciesID.xlsx             | -s             |
+| Filtering Step                            | Name                        |  Program Option  |
+| :---------------------------------------- | :-------------------------: | :--------------: |
+| Missing data proportion for individuals   | .filteredIndividuals.xlsx   | `-i`             |
+| Missing data proportion for loci          | .filteredLoci.xlsx          | `-l`             |
+| Monomorphic loci                          | .monomorphic.xlsx           | `-m`             |
+| Discard unwanted populations              | .removed.pops.xlsx          | `-P`             |
+| IFI score filtering                       | .removed.ifi.xlsx           | `-I`             |
+| List of individuals for removal           | .removed.xlsx               | `-r`             |
+| List of loci for removal                  | .removed.loci.xlsx          | `-R`             |
+| Sex-identifying loci                      | .sexID.xlsx                 | `-d`             |
+| Species-identifying loci                  | .speciesID.xlsx             | `-s`             |
 
 </div>
 
