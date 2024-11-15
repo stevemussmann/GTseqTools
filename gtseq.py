@@ -364,9 +364,7 @@ class GTseq():
 	
 	def removeMissingInds(self, missingDict, df, pMissInd):
 		fh = open(self.logfile, 'a')
-		fh.write("Removed individuals with missing data proportion > ")
-		fh.write(str(pMissInd))
-		fh.write("\n")
+		fh.write("Removed individuals with missing data proportion > " + str(pMissInd) + "\n")
 		print("Removing individuals with missing data proportion >", pMissInd)
 
 		remove = list()
@@ -419,6 +417,8 @@ class GTseq():
 		return junk
 
 	def	removeIFIinds(self, df, ifiCols, ifiScore):
+		fh = open(self.logfile, 'a')
+		fh.write("Removed individuals with IFI score > " + str(ifiScore) + "\n")
 		remove = list()
 
 		# pull out columns greater than IFI score
@@ -428,6 +428,18 @@ class GTseq():
 
 		# convert the 'toss' pandas dataframe to a list of samples to be removed
 		if not toss.empty:
+			# write to file
+			fh.write("Individuals removed from dataset:\n")
+			fh.write("Sample\tIFI\n")
+
+			# print to terminal
+			print("Individuals removed from dataset:")
+			print("Sample\tIFI")
+
+			for index, value in toss['IFI'].items():
+				fh.write(str(index) + "\t" + str(value) + "\n")
+				print(str(index), "\t", str(value))
+
 			remove = toss.index.tolist()
 
 		if remove:
@@ -436,6 +448,9 @@ class GTseq():
 		else:
 			print("No samples had IFI scores > " + str(ifiScore) + ".")
 			print("")
+
+		fh.write("\n")
+		fh.close()
 
 		return junk
 
