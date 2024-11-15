@@ -10,6 +10,7 @@ This program has only been tested in Python v3.10. However, it should be compati
 ## Dependencies
 - matplotlib
 - pandas
+- scipy
 
 ## Installation
 One option for installation is the setup of a conda environment. This can be accomplished by first installing [Miniconda](https://docs.conda.io/en/latest/miniconda.html), and might be the easiest option if you do not have admin privileges on your computer. Once conda is setup, configure it so that the base environment does not automatically load on startup.
@@ -19,7 +20,7 @@ conda config --set auto_activate_base false
 
 Next, create a conda environment in which this program can be run. Use the following command, which should install a sufficiently recent version of python:
 ```
-conda create -n GTseqTools -c conda-forge python=3 pandas openpyxl matplotlib
+conda create -n GTseqTools -c conda-forge python=3 pandas openpyxl matplotlib scipy
 ```
 The environment can be activated and deactivated as needed with the following commands:
 ```
@@ -142,7 +143,13 @@ Loci and individuals discarded via filtering options will be written to Excel fi
 
 </div>
 
-A log file is also created that documents missing data proportions per individual and locus, and the number of individuals/loci removed at each step. The log file is a plain text file that retains the input file (-x / --infile) base name, but ends in .log.
+A log file (plain text format) is also created that documents the following:
+* The command used to execute gtSeqConvert.py
+* Missing data proportions per individual and locus
+* The number of individuals/loci removed at each step
+* The number of individuals retained from each sample group (observed and expected)
+* A chisquare test that evaluates whether missing individuals are evenly distributed among sample groups
+The log file is named using the input file (-x / --infile) base name with the file suffix `.log`.
 
 I am currently working on implementing plots to show distributions of missing data per locus and individual sample. These are a work in progress.
 ## Example Commands
