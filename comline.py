@@ -32,8 +32,8 @@ class ComLine():
 		optional.add_argument("-I", "--ifi",
 							dest='ifi',
 							type=float,
-							default=3.5,
-							help="Enter the maximum allowable IFI score for a genotype (default = 3.5)."
+							default=2.5,
+							help="Enter the maximum allowable IFI score for a genotype (default = 2.5)."
 		)
 		optional.add_argument("-l", "--pmissloc",
 							dest='pmissloc',
