@@ -59,6 +59,15 @@ def main():
 		removeName = os.path.join(discardDir, removeName)
 		removePdf.to_excel(removeName, sheet_name="Final Genotypes")
 	
+	# discard individuals not passing IFI score filter
+	ifiCols = gtFile.removeIFI(pdf) #removes optional IFI score column
+	if not ifiCols.empty:
+		print("Removing individuals with IFI score > " + str(input.args.ifi) + ".")
+		removeName = re.sub('.REPLACE.xlsx$', '.removed.ifi.xlsx', fileName)
+		removePdf = gtFile.removeIFIinds(pdf, ifiCols, input.args.ifi)
+		removeName = os.path.join(discardDir, removeName)
+		removePdf.to_excel(removeName, sheet_name="Final Genotypes")
+	
 	# export xlsx file after removing blacklisted individuals and populations
 	if input.args.xlsx:
 		prefilterName = re.sub('.REPLACE.xlsx$', '.prefilter.xlsx', fileName)

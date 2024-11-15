@@ -127,6 +127,26 @@ class GTseq():
 
 		junk = self.removeColumns(df, remove)
 		return junk
+
+	def removeIFI(self, df):
+		print("Checking for presence of IFI score column.")
+		optionalCols = ['IFI']
+
+		remove = list()
+		ifiCols = pandas.DataFrame()
+
+		for col in optionalCols:
+			if col in df.columns:
+				remove.append(col)
+
+		if remove:
+			print("IFI score column is being removed.")
+			ifiCols = self.removeColumns(df, remove)
+		else:
+			print("IFI score column not detected in input file.")
+			print("")
+
+		return ifiCols
 	
 	def removeSnppit(self, df):
 		print("Checking for presence of optional SNPPIT columns.")
@@ -395,6 +415,27 @@ class GTseq():
 		keepStats = GTStats(keepMiss)
 		keepStats.calcStats()
 		keepStats.printStats(self.logfile, "retained", "individuals")
+
+		return junk
+
+	def	removeIFIinds(self, df, ifiCols, ifiScore):
+		remove = list()
+
+		# pull out columns greater than IFI score
+		toss = ifiCols[ifiCols['IFI'] > ifiScore]
+	
+		junk = pandas.DataFrame()
+
+		# convert the 'toss' pandas dataframe to a list of samples to be removed
+		if not toss.empty:
+			remove = toss.index.tolist()
+
+		if remove:
+			junk = self.removeRows(df, remove)
+			print("")
+		else:
+			print("No samples had IFI scores > " + str(ifiScore) + ".")
+			print("")
 
 		return junk
 

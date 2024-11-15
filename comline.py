@@ -29,6 +29,12 @@ class ComLine():
 							default=0.2,
 							help="Enter the maximum allowable proportion of missing data for an individual (default = 0.2)."
 		)
+		optional.add_argument("-I", "--ifi",
+							dest='ifi',
+							type=float,
+							default=3.5,
+							help="Enter the maximum allowable IFI score for a genotype (default = 3.5)."
+		)
 		optional.add_argument("-l", "--pmissloc",
 							dest='pmissloc',
 							type=float,
