@@ -6,6 +6,7 @@ import re
 import sys
 import pandas
 import matplotlib.pyplot
+import scipy
 
 class GTseq():
 	'Class for operating on GTseq genotype files'
@@ -28,39 +29,53 @@ class GTseq():
 	
 	def printRetained(self, start, end):
 		fh = open(self.logfile, 'a')
-		fh.write("The following table reports the number of individuals retained (Output) from each population:\n")
-		fh.write("Population\tInput\tOutput\n")
-		print("The following table reports the number of individuals retained (Output) from each population:")
-		print("Population\tInput\tOutput")
-		totalIn = 0
-		totalOut = 0
+		fh.write("The following table reports the number of individuals retained (Output) from each population.\n")
+		fh.write("The Output(expected) value assumes missing individuals are evenly distributed among sample groups.\n")
+		fh.write("Population\tInput\tOutput(observed)\tOutput(expected)\n")
+		print("The following table reports the number of individuals retained (Output) from each population.")
+		print("The Output(expected) value assumes missing individuals are evenly distributed among sample groups.")
+		print("Population\tInput\tOutput(observed)\tOutput(expected)")
+		totalIn = start.sum() # total samples input
+		totalOut = end.total() # total samples output
+		pctRetained = totalOut / totalIn # percentage of retained individuals
+		obsList = list()
+		expList = list()
 		for k,v in start.items():
-			totalIn = totalIn + int(v)
 			if k in end:
-				print("{}\t{}\t{}".format(k, v, end[k]))
-				fh.write(str(k))
-				fh.write("\t")
-				fh.write(str(v))
-				fh.write("\t")
-				fh.write(str(end[k]))
-				fh.write("\n")
-				totalOut = totalOut + int(end[k])
+				exp = self.expected(start[k], end[k], pctRetained)
+				print("{}\t{}\t{}\t{}".format(k, v, end[k], str(exp)))
+				fh.write(str(k) + "\t" + str(v) + "\t" + str(end[k]) + "\t" + str(exp) + "\n")
+				obsList.append(float(end[k]))
+				expList.append(float(exp))
 			else:
-				print("{}\t{}\t{}".format(k, v, "0"))
-				fh.write(str(k))
-				fh.write("\t")
-				fh.write(str(v))
-				fh.write("\t")
-				fh.write(str("0"))
-				fh.write("\n")
-		print("{}\t{}\t{}".format("Total", str(totalIn), str(totalOut)))
+				exp = self.expected(start[k], 0, pctRetained)
+				print("{}\t{}\t{}\t{}".format(k, v, "0", str(exp)))
+				fh.write(str(k) + "\t" + str(v) + "\t" + str("0") + "\t" + str(exp) + "\n")
+				obsList.append(float(0))
+				expList.append(float(exp))
+		print("{}\t{}\t{}\t{}".format("Total", str(totalIn), str(totalOut), "N/A"))
 		print("")
-		fh.write(str("Total\t"))
-		fh.write(str(totalIn))
-		fh.write(str("\t"))
-		fh.write(str(totalOut))
-		fh.write(str("\n\n"))
+		fh.write(str("Total\t") + str(totalIn) + "\t" + str(totalOut) + "\tN/A" + "\n\n")
+
+		# chisquare test using scipy library
+		chisq = scipy.stats.chisquare(obsList, f_exp=expList)
+		df = len(obsList)-1
+		
+		print("Performing chi squared test to evaluate if missing individuals are evenly distributed among sample groups")
+		print("chisq\tdf\tp")
+		print(str("{:.3f}".format(chisq[0])), "\t", str(df), "\t", str("{:.3f}".format(chisq[1])))
+		print("")
+		
+		fh.write("Performing chi squared test to evaluate if missing individuals are evenly distributed among sample groups\n")
+		fh.write("chisq\tdf\tp\n")
+		fh.write(str("{:.3f}".format(chisq[0])) + "\t" + str(df) + "\t" + str("{:.3f}".format(chisq[1])) + "\n\n")
+
 		fh.close()
+
+	def expected(self, inInds, outInds, pctRet):
+		exp = "{:.2f}".format(inInds * pctRet)
+
+		return exp
 
 	def parseFile(self):
 		print("Reading input xlsx file.")
