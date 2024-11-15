@@ -51,12 +51,13 @@ export PATH=/path/to/GTseqTools:$PATH
 The program first conducts all filtering procedures prior to file format conversion. Filtering procedures are conducted in the following order:
 1) Remove user-specified individuals (-r option).
 2) Remove all individuals not belonging to retained populations (-P option).
-3) Remove unwanted locus list (-R option).
-4) Remove species-identification loci (-s option).
-5) Remove sex-identifying loci (-d option).
-6) Remove loci that do not meet the minimum threshold (-l option).
-7) Remove individuals that do not meet the minimum threshold (-i option).
-8) Remove monomorphic loci (-m option).
+3) Remove individuals that do not pass IFI score threshold (-I).
+4) Remove unwanted locus list (-R option).
+5) Remove species-identification loci (-s option).
+6) Remove sex-identifying loci (-d option).
+7) Remove loci that do not meet the minimum threshold (-l option).
+8) Remove individuals that do not meet the minimum threshold (-i option).
+9) Remove monomorphic loci (-m option).
 
 ## Input Requirements
 ### Required
@@ -79,6 +80,7 @@ Required for SNPPIT conversion only:
 Optional Arguments: <a name="optional"></a>
 * **-d / --sexid:** Provide a list of loci that are sex-identifying SNPs. This should be a plain text file with one locus per line. These loci will be removed from the dataset before any data filtering steps are executed. 
 * **-i / --pmissind:** Enter the maximum allowable proportion of missing data for an individual sample. Default = 0.2.
+* **-I / --ifi:** Enter the maximum allowable IFI score. Default = 3.5.
 * **-l / --pmissloc:** Enter the maximum allowable proportion of missing data for a locus. Default = 0.1.
 * **-m / --monomorphic:** Turn on filter to remove monomorphic loci.
 * **-r / --removeinds:** Provide a list of individuals that should be removed from the input xlsx file. This should be a plain text file with each individual being specified on its own line. These individuals will be removed before missing data proportions are calculated. 
@@ -132,6 +134,7 @@ Loci and individuals discarded via filtering options will be written to Excel fi
 | Missing data proportion for loci          | .filteredLoci.xlsx          | -l             |
 | Monomorphic loci                          | .monomorphic.xlsx           | -m             |
 | Discard unwanted populations              | .removed.pops.xlsx          | -P             |
+| IFI score filtering                       | .removed.ifi.xlsx           | -I             |
 | List of individuals for removal           | .removed.xlsx               | -r             |
 | List of loci for removal                  | .removed.loci.xlsx          | -R             |
 | Sex-identifying loci                      | .sexID.xlsx                 | -d             |
