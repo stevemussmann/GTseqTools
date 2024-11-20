@@ -81,7 +81,15 @@ class GTseq():
 		print("Reading input xlsx file.")
 		print("")
 		with pandas.ExcelFile(self.gtFile) as xlsx:
-			data = pandas.read_excel(xlsx, 'Final Genotypes', index_col=0)
+			try:
+				data = pandas.read_excel(xlsx, 'Final Genotypes', index_col=0)
+			except ValueError as e:
+				print("ERROR:")
+				print(e)
+				print("Your GTseq data must be in a worksheet named exactly \"Final Genotypes\" (no quotes).")
+				print("Exiting program...")
+				print("")
+				raise SystemExit
 
 		return data
 
