@@ -57,18 +57,24 @@ class GTseq():
 		print("")
 		fh.write(str("Total\t") + str(totalIn) + "\t" + str(totalOut) + "\tN/A" + "\n\n")
 
-		# chisquare test using scipy library
-		chisq = scipy.stats.chisquare(obsList, f_exp=expList)
-		df = len(obsList)-1
+		try:
+			# chisquare test using scipy library
+			chisq = scipy.stats.chisquare(obsList, f_exp=expList)
+			df = len(obsList)-1
 		
-		print("Performing chi squared test to evaluate if missing individuals are evenly distributed among sample groups")
-		print("chisq\tdf\tp")
-		print(str("{:.3f}".format(chisq[0])), "\t", str(df), "\t", str("{:.3f}".format(chisq[1])))
-		print("")
+			print("Performing chi squared test to evaluate if missing individuals are evenly distributed among sample groups")
+			print("chisq\tdf\tp")
+			print(str("{:.3f}".format(chisq[0])), "\t", str(df), "\t", str("{:.3f}".format(chisq[1])))
+			print("")
 		
-		fh.write("Performing chi squared test to evaluate if missing individuals are evenly distributed among sample groups\n")
-		fh.write("chisq\tdf\tp\n")
-		fh.write(str("{:.3f}".format(chisq[0])) + "\t" + str(df) + "\t" + str("{:.3f}".format(chisq[1])) + "\n\n")
+			fh.write("Performing chi squared test to evaluate if missing individuals are evenly distributed among sample groups\n")
+			fh.write("chisq\tdf\tp\n")
+			fh.write(str("{:.3f}".format(chisq[0])) + "\t" + str(df) + "\t" + str("{:.3f}".format(chisq[1])) + "\n\n")
+
+		except ValueError as e:
+			print("ERROR: chisquare test failed.")
+			print("Error message: " + str(e))
+			print("")
 
 		fh.close()
 
