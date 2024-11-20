@@ -37,20 +37,20 @@ class GTseq():
 		print("Population\tInput\tOutput(observed)\tOutput(expected)")
 		totalIn = start.sum() # total samples input
 		totalOut = end.total() # total samples output
-		pctRetained = totalOut / totalIn # percentage of retained individuals
+		pctRetained = float(totalOut / totalIn) # percentage of retained individuals
 		obsList = list()
 		expList = list()
 		for k,v in start.items():
 			if k in end:
 				exp = self.expected(start[k], end[k], pctRetained)
-				print("{}\t{}\t{}\t{}".format(k, v, end[k], str(exp)))
-				fh.write(str(k) + "\t" + str(v) + "\t" + str(end[k]) + "\t" + str(exp) + "\n")
+				print("{}\t{}\t{}\t{}".format(k, v, end[k], "{:.2f}".format(exp)))
+				fh.write(str(k) + "\t" + str(v) + "\t" + str(end[k]) + "\t" + "{:.2f}".format(exp) + "\n")
 				obsList.append(float(end[k]))
 				expList.append(float(exp))
 			else:
 				exp = self.expected(start[k], 0, pctRetained)
-				print("{}\t{}\t{}\t{}".format(k, v, "0", str(exp)))
-				fh.write(str(k) + "\t" + str(v) + "\t" + str("0") + "\t" + str(exp) + "\n")
+				print("{}\t{}\t{}\t{}".format(k, v, "0", "{:.2f}".format(exp)))
+				fh.write(str(k) + "\t" + str(v) + "\t" + str("0") + "\t" + "{:.2f}".format(exp) + "\n")
 				obsList.append(float(0))
 				expList.append(float(exp))
 		print("{}\t{}\t{}\t{}".format("Total", str(totalIn), str(totalOut), "N/A"))
@@ -79,7 +79,7 @@ class GTseq():
 		fh.close()
 
 	def expected(self, inInds, outInds, pctRet):
-		exp = "{:.2f}".format(inInds * pctRet)
+		exp = inInds * pctRet
 
 		return exp
 
