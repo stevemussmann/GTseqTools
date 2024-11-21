@@ -50,15 +50,15 @@ export PATH=/path/to/GTseqTools:$PATH
 
 ## Order of operations
 The program first conducts all filtering procedures prior to file format conversion. Filtering procedures are conducted in the following order:
-1) Remove user-specified individuals (-r option).
-2) Remove all individuals not belonging to retained populations (-P option).
-3) Remove individuals that do not pass IFI score threshold (-I).
-4) Remove unwanted locus list (-R option).
-5) Remove species-identification loci (-s option).
-6) Remove sex-identifying loci (-d option).
-7) Remove loci that do not meet the minimum threshold (-l option).
-8) Remove individuals that do not meet the minimum threshold (-i option).
-9) Remove monomorphic loci (-m option).
+1) Remove user-specified individuals (`-r` option).
+2) Remove all individuals not belonging to retained populations (`-P` option).
+3) Remove individuals that do not pass IFI score threshold (`-I`).
+4) Remove unwanted locus list (`-R` option).
+5) Remove species-identification loci (`-s` option).
+6) Remove sex-identifying loci (`-d` option).
+7) Remove loci that do not meet the minimum threshold (`-l` option).
+8) Remove individuals that do not meet the minimum threshold (`-i` option).
+9) Remove monomorphic loci (`-m` option).
 
 ## Input Requirements
 ### Required
@@ -67,9 +67,9 @@ The minimal input is a Microsoft Excel formatted file (.xlsx). All data should b
 If you are using the GTscore pipeline for genotyping, I have [forked a copy of this repository](https://github.com/stevemussmann/GTscore) and included my [transposeDataGTscore.pl](https://github.com/stevemussmann/GTscore/blob/master/transposeDataGTscore.pl) script which will mostly transform the GTscore genotype outputs to a format compatible with this conversion program. Just open the output of transposeDataGTscore.pl in Microsoft Excel, make sure the worksheet is titled 'Final Genotypes', add the 'Population ID' column, and save the file in .xlsx format.
 
 ### Optional
-Optionally, you can also provide plain text files with individuals or loci to be stripped from the input file (see -d, -r, and -s options in the [Optional Arguments](#optional) below). Each of these files should contain a single column of data listing a single individual or locus per line.
+Optionally, you can also provide plain text files with individuals or loci to be stripped from the input file (see `-d`, `-r`, and `-s` options in the [Optional Arguments](#optional) below). Each of these files should contain a single column of data listing a single individual or locus per line.
 
-You can also add a 'Sex' column to your input .xlsx file. The column heading must be exactly 'Sex' (no quotes) to be processed properly. This column is intended to hold phenotypic sex data, and will be transferred to the .sexID.xlsx output if you use the -d option. All other functions in the program will ignore this option.
+You can also add a 'Sex' column to your input .xlsx file. The column heading must be exactly 'Sex' (no quotes) to be processed properly. This column is intended to hold phenotypic sex data, and will be transferred to the .sexID.xlsx output if you use the `-d` option. All other functions in the program will ignore this option.
 
 ## Program Options
 Required Inputs:
@@ -106,7 +106,7 @@ Current supported file conversions:
 * **`-z` / `--snppit`:** (under development) Prints a file in snppit format (-Z option is also required for snppit conversion as specified above).
 
 ## Outputs
-Outputs retain the input file (-x / --infile) base name, but change the output file extension depending upon format. Most file conversions result in a single file. Exceptions include Plink and Structure format. The Structure conversion creates a .distructLabels.txt file which contains a list of population numbers and their associated population names. This file can be input into [distruct](https://rosenberglab.stanford.edu/distruct.html), or used in the [CLUMPAK](http://clumpak.tau.ac.il/) pipeline for visualizing outputs of the program [Structure](https://web.stanford.edu/group/pritchardlab/structure.html). File formats are output with the file extensions in the table below. Population maps are also provided for Genepop and NewHybrids format. These provide you with the order of the samples as they appear in the converted genotype files, as well as the population for each individual (pulled from the 'Population ID' column in your input .xlsx file).
+Outputs retain the input file (`-x` / `--infile`) base name, but change the output file extension depending upon format. Most file conversions result in a single file. Exceptions include Plink and Structure format. The Structure conversion creates a .distructLabels.txt file which contains a list of population numbers and their associated population names. This file can be input into [distruct](https://rosenberglab.stanford.edu/distruct.html), or used in the [CLUMPAK](http://clumpak.tau.ac.il/) pipeline for visualizing outputs of the program [Structure](https://web.stanford.edu/group/pritchardlab/structure.html). File formats are output with the file extensions in the table below. Population maps are also provided for Genepop and NewHybrids format. These provide you with the order of the samples as they appear in the converted genotype files, as well as the population for each individual (pulled from the 'Population ID' column in your input .xlsx file).
 
 <div align="center">
   
@@ -125,7 +125,7 @@ Outputs retain the input file (-x / --infile) base name, but change the output f
   
 </div>
 
-Loci and individuals discarded via filtering options will be written to Excel files. All outputs retain the input file (-x / --infile) base name, but change slightly according to filtering step:
+Loci and individuals discarded via filtering options will be written to Excel files. All outputs retain the input file (`-x` / `--infile`) base name, but change slightly according to filtering step:
 
 <div align="center">
   
@@ -149,11 +149,11 @@ A log file (plain text format) is also created that documents the following:
 * The number of individuals/loci removed at each step
 * The number of individuals retained from each sample group (observed and expected)
 * A chisquare test that evaluates whether missing individuals are evenly distributed among sample groups
-The log file is named using the input file (-x / --infile) base name with the file suffix `.log`.
+The log file is named using the input file (`-x` / `--infile`) base name with the file suffix `.log`.
 
 I am currently working on implementing plots to show distributions of missing data per locus and individual sample. These are a work in progress.
 ## Example Commands
-You can print the program help menu using the -h option:
+You can print the program help menu using the `-h` option:
 ```
 gtSeqConvert.py -h
 ```
@@ -182,12 +182,12 @@ amData <- amDataset(data, missingCode="-99", indexColumn=1, metaDataColumn=2)
 ```
 
 ### NewHybrids
-The NewHybrids conversion allows for optional use of the 'z' option. To use this option, add an extra column to your input .xlsx file titled exactly 'ZOPT' (no quotes). The naming of the column is important so that it will be ignored in conversions for other file formats. 
+The NewHybrids conversion allows for optional use of its 'z' option to specify known genotypes. To use this option, add an extra column to your input .xlsx file titled exactly `ZOPT`. The naming of the column is important so that it will be ignored in conversions for other file formats. 
 
-Fill the column with data to designate individuals belonging to the different classes (e.g., z0 for Pure_0, z1 for Pure_1, etc). If you do not want to provide a 'z' designation for a sample then leave that cell empty and it will be ignored. Any data in the 'ZOPT' column will be transferred to your converted file exactly as it appears in your input .xlsx file, so it is important to only enter information that will be valid in a NewHybrids input file.
+Fill the column with data to designate individuals belonging to the different classes (e.g., z0 for Pure_0, z1 for Pure_1, etc). If you do not want to provide a 'z' designation for a sample then leave that cell empty and it will be ignored. Any data in the `ZOPT` column will be transferred to your converted file exactly as it appears in your input .xlsx file, so it is important to only enter information that will be valid in a NewHybrids input file.
 
 ### Sequoia
-The Sequoia conversion relies upon some of the optional SNPPIT columns that are also used for the SNPPIT file conversion (see below). Use the POPCOLUMN_SEX column to specify sex data for all individuals. Only case insensitive versions of 'f', 'female', 'm', and 'male' will be recognized. All other values and blank cells will be converted to unknown sex data value in sequoia (3). 
+The Sequoia conversion relies upon some of the optional SNPPIT columns that are also used for the SNPPIT file conversion (see below). Use the POPCOLUMN_SEX column to specify sex data for all individuals. Only case insensitive versions of `f`, `female`, `m`, and `male` will be recognized. All other values and blank cells will be converted to unknown sex data value in sequoia (3). 
 
 The OFFSPRINGCOLUMN_BORN_YEAR is used to specify the birth year for all individuals. You can enter birth year data in this column even for the 'parental' populations. This will not cause any problems for the SNPPIT file conversion as listed below.
 
