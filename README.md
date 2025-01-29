@@ -98,6 +98,7 @@ Current supported file conversions:
 * **`-b` / `--binary`:** Prints a file in binary format (0 = major allele, 1 = minor allele, 2 = missing data).
 * **`-c` / `--coancestry`:** Prints a file formatted for coancestry (or 'related' R package)
 * **`-g` / `--genepop`:** Prints a file in genepop format.
+* **`-G` / `--grandma`:** Prints a file in [gRandma](https://github.com/delomast/gRandma) format.
 * **`-n` / `--newhybrids`:** Prints a file in newhybrids format.
 * **`-p` / `--plink`:** Prints a file in plink format. Result is similar to using the --recode12 option in plink. Output should be valid for the program [Admixture](https://dalexander.github.io/admixture/)
 * **`-q` / `--sequoia`:** Prints a sequoia formatted genotype file.
@@ -117,6 +118,7 @@ Outputs retain the input file (`-x` / `--infile`) base name, but change the outp
 | Coancestry   | .coancestry; coancestry.popmap.txt | `-c`             |
 | Excel        | .xlsx                              | `-X`             |
 | Genepop      | .gen; genepop.popmap.txt           | `-g`             |
+| gRandma      | .grandma                           | `-G`             |
 | NewHybrids   | .newhyb; newhybrids.popmap.txt     | `-n`             |
 | Plink        | .ped and .map                      | `-p`             |
 | Sequoia      | .sequoia; sequoia.lh.txt           | `-q`             |
@@ -181,6 +183,19 @@ data <- read.table("filename.allelematch", header=TRUE, sep=",")
 amData <- amDataset(data, missingCode="-99", indexColumn=1, metaDataColumn=2)
 ```
 
+### gRandma
+A special filter is applied to the gRandma-formatted output to retain only biallelic SNPs for which at least one individual in the data file meets three conditions:
+1. Homozygous for allele 1
+2. Homozygous for allele 2
+3. Heterozygous for alleles 1 and 2
+
+The output file can be read into gRandma with the following command:
+```
+library("gRandma")
+
+genotypes <- read.csv("output.grandma.txt", sep="\t", header=TRUE, na.strings="")
+```
+
 ### NewHybrids
 The NewHybrids conversion allows for optional use of its 'z' option to specify known genotypes. To use this option, add an extra column to your input .xlsx file titled exactly `ZOPT`. The naming of the column is important so that it will be ignored in conversions for other file formats. 
 
@@ -195,6 +210,8 @@ The code for creating the life history data file has not yet been robustly teste
 
 Files can be read into sequoia with the following commands:
 ```
+library("sequoia")
+
 # genotypes file
 geno <- as.matrix(read.csv("filename.sequoia", sep="\t", header=FALSE, row.names=1))
 
