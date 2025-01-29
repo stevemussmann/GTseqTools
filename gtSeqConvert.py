@@ -17,7 +17,7 @@ def main():
 	# make list of file formats; grab relevant options from argparse object
 	d = vars(input.args)
 	convDict = dict()
-	convList = ['allelematch', 'binary', 'coancestry', 'genepop','newhybrids','plink', 'sequoia', 'structure', 'snppit']
+	convList = ['allelematch', 'binary', 'coancestry', 'genepop', 'grandma', 'newhybrids','plink', 'sequoia', 'structure', 'snppit']
 	for key, value in d.items():
 		if key in convList:
 			convDict[key] = value
@@ -134,7 +134,7 @@ def main():
 	gtFile.printRetained(startPopCounts, endPopCounts) # print number of retained individuals to logfile
 
 	#begin conversion process
-	conversion = GTconvert(pdf, pops, input.args.twoline, input.args.header, input.args.snppitmap, snppitCols, newhybCols, input.args.infile)
+	conversion = GTconvert(pdf, pops, input.args.twoline, input.args.header, input.args.snppitmap, snppitCols, newhybCols, input.args.infile, logfile)
 	conversion.convert(convDict)
 
 main()

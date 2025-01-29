@@ -2,6 +2,7 @@ from allelematch import AlleleMatch
 from binary import Binary
 from coancestry import Coancestry
 from genepop import Genepop
+from grandma import gRandma
 from newhybrids import NewHybrids
 from plink import Plink
 from sequoia import Sequoia
@@ -13,7 +14,7 @@ import os
 class GTconvert():
 	'Class for converting pandas dataframes into various genotype files'
 
-	def __init__(self, pdf, popdata, struBool, headBool, snppitmap, snppitCols, newhybCols, infile):
+	def __init__(self, pdf, popdata, struBool, headBool, snppitmap, snppitCols, newhybCols, infile, log):
 		self.structureTwoLine = struBool
 		self.structureHeader = headBool
 		self.snppitmap = snppitmap
@@ -22,7 +23,8 @@ class GTconvert():
 		self.df = pdf
 		self.pd = popdata
 		self.infile = infile
-		self.suffix = {'allelematch': 'allelematch', 'binary': 'bin', 'coancestry': 'coancestry', 'genepop': 'gen', 'newhybrids': 'newhyb', 'plink': 'ped', 'structure': 'str', 'snppit': 'snppit', 'sequoia': 'sequoia'}
+		self.log = log
+		self.suffix = {'allelematch': 'allelematch', 'binary': 'bin', 'coancestry': 'coancestry', 'genepop': 'gen', 'grandma': 'grandma', 'newhybrids': 'newhyb', 'plink': 'ped', 'structure': 'str', 'snppit': 'snppit', 'sequoia': 'sequoia'}
 		
 		self.convertedDir = "convertedFiles"
 		if os.path.exists(self.convertedDir) == False:
@@ -84,6 +86,12 @@ class GTconvert():
 		#print("This function will convert to Genepop format.")
 		gen = Genepop(self.df, self.pd, self.convertedDir)
 		output = gen.convert()
+		return output
+
+	def conv_grandma(self):
+		#print("This function will convert to gRandma format.")
+		gma = gRandma(self.df, self.log, self.pd)
+		output = gma.convert()
 		return output
 
 	def conv_snppit(self):

@@ -92,6 +92,11 @@ class ComLine():
 							action='store_true',
 							help="Write genepop format file."
 		)
+		conversion.add_argument("-G", "--grandma",
+							dest='grandma',
+							action='store_true',
+							help="Write gRandma format file."
+		)
 		conversion.add_argument("-n", "--newhybrids",
 							dest='newhybrids',
 							action='store_true',
@@ -129,7 +134,7 @@ class ComLine():
 		self.args = parser.parse_args()
 
 		#check if at least one conversion option was used.
-		if not [x for x in (self.args.allelematch, self.args.binary, self.args.coancestry, self.args.genepop, self.args.newhybrids, self.args.plink, self.args.sequoia, self.args.structure, self.args.snppit, self.args.xlsx) if x is True]:
+		if not [x for x in (self.args.allelematch, self.args.binary, self.args.coancestry, self.args.genepop, self.args.grandma, self.args.newhybrids, self.args.plink, self.args.sequoia, self.args.structure, self.args.snppit, self.args.xlsx) if x is True]:
 			print("")
 			print("No format conversion options were selected.")
 			print("You must choose at least one file format for output.")
