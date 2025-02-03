@@ -94,17 +94,17 @@ Structure Format Arguments:
 * **`-t` / `--twoline`:** Use this option to write structure files in two-line format. Default = single-line Structure format.
 
 Current supported file conversions:
-* **`-a` / `--allelematch`:** Prints a file formatted for the allelematch R package
+* **`-a` / `--allelematch`:** Prints a file formatted for the [allelematch](https://rdrr.io/cran/allelematch/src/R/allelematch.r) R package
 * **`-b` / `--binary`:** Prints a file in binary format (0 = major allele, 1 = minor allele, 2 = missing data).
-* **`-c` / `--coancestry`:** Prints a file formatted for coancestry (or 'related' R package)
-* **`-g` / `--genepop`:** Prints a file in genepop format.
+* **`-c` / `--coancestry`:** Prints a file formatted for coancestry (or '[related](https://github.com/timothyfrasier/related)' R package)
+* **`-g` / `--genepop`:** Prints a file in [genepop](https://genepop.curtin.edu.au/) format.
 * **`-G` / `--grandma`:** Prints a file in [gRandma](https://github.com/delomast/gRandma) format.
-* **`-n` / `--newhybrids`:** Prints a file in newhybrids format.
-* **`-p` / `--plink`:** Prints a file in plink format. Result is similar to using the --recode12 option in plink. Output should be valid for the program [Admixture](https://dalexander.github.io/admixture/)
-* **`-q` / `--sequoia`:** Prints a sequoia formatted genotype file.
-* **`-S` / `--structure`:** Prints a file in structure format (default = single line per individual. See '-t' option above).
+* **`-n` / `--newhybrids`:** Prints a file in [NewHybrids](https://github.com/eriqande/newhybrids) format.
+* **`-p` / `--plink`:** Prints a file in [plink](https://www.cog-genomics.org/plink/) format. Result is similar to using the --recode12 option in plink. Output should be valid for the program [Admixture](https://dalexander.github.io/admixture/)
+* **`-q` / `--sequoia`:** Prints a [sequoia](https://jiscah.github.io/) formatted genotype file.
+* **`-S` / `--structure`:** Prints a file in [structure](https://web.stanford.edu/group/pritchardlab/structure.html) format (default = single line per individual. See '-t' option above).
 * **`-X` / `--xlsx`:** Writes an xlsx-formatted file after user-specified individuals are removed (-r option) but before any other filtering steps are applied.
-* **`-z` / `--snppit`:** (under development) Prints a file in snppit format (-Z option is also required for snppit conversion as specified above).
+* **`-z` / `--snppit`:** (under development) Prints a file in [snppit](https://github.com/eriqande/snppit) format (-Z option is also required for snppit conversion as specified above).
 
 ## Outputs
 Outputs retain the input file (`-x` / `--infile`) base name, but change the output file extension depending upon format. Most file conversions result in a single file. Exceptions include Plink and Structure format. The Structure conversion creates a .distructLabels.txt file which contains a list of population numbers and their associated population names. This file can be input into [distruct](https://rosenberglab.stanford.edu/distruct.html), or used in the [CLUMPAK](http://clumpak.tau.ac.il/) pipeline for visualizing outputs of the program [Structure](https://web.stanford.edu/group/pritchardlab/structure.html). File formats are output with the file extensions in the table below. Population maps are also provided for Genepop and NewHybrids format. These provide you with the order of the samples as they appear in the converted genotype files, as well as the population for each individual (pulled from the 'Population ID' column in your input .xlsx file).
@@ -179,12 +179,14 @@ gtSeqConvert.py -x GTseqData.xlsx -z -Z snppitmap.txt
 ### AlleleMatch
 The allelematch file can be read into allelematch with the following R code, substituting "filename.allelematch" for your actual file name:
 ```
+library("allelematch")
+
 data <- read.table("filename.allelematch", header=TRUE, sep=",")
 amData <- amDataset(data, missingCode="-99", indexColumn=1, metaDataColumn=2)
 ```
 
 ### gRandma
-A special filter is applied to the gRandma-formatted output to retain only biallelic SNPs for which at least one individual in the data file meets three conditions:
+A special filter is applied to the gRandma-formatted output to retain only biallelic SNPs for which each of the following conditions is met by at least one individual in the data file:
 1. Homozygous for allele 1
 2. Homozygous for allele 2
 3. Heterozygous for alleles 1 and 2
