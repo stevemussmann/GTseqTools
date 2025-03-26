@@ -261,9 +261,10 @@ class GTseq():
 			try:
 				missing=Decimal(alleledict[0]/numInds)
 			except ZeroDivisionError as e:
-				print("ERROR:")
+				print("ERROR at locus")
+				print(columnName)
 				print(e)
-				print("This error occurred when calculating the proportion of mising data per locus.")
+				print("This error occurred when calculating the proportion of missing data per locus.")
 				print("Exiting program...")
 				print("")
 				raise SystemExit
@@ -519,7 +520,7 @@ class GTseq():
 		removeSamples = list()
 		
 		for (sampleName, pop) in df['Population ID'].items():
-			if pop not in popSet:
+			if str(pop) not in popSet:
 				removeSamples.append(sampleName)
 
 		return removeSamples
