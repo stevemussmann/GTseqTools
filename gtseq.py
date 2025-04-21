@@ -493,8 +493,14 @@ class GTseq():
 		junk = pandas.DataFrame()
 
 		if remove:
-			junk = self.removeRows(df, remove)
-			print("")
+			try:
+				junk = self.removeRows(df, remove)
+				print("")
+			except KeyError as e:
+				print("ERROR: " + removeFile + " contains individuals not found in Excel file.")
+				print(e)
+				print("")
+				raise SystemExit
 		else:
 			print("WARNING: removelist option (-r) was invoked but file " + removeFile + " was empty.")
 			print("")
