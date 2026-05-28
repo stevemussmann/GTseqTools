@@ -17,7 +17,7 @@ def main():
 	# make list of file formats; grab relevant options from argparse object
 	d = vars(input.args)
 	convDict = dict()
-	convList = ['allelematch', 'binary', 'coancestry', 'genepop','newhybrids','plink', 'sequoia', 'structure', 'snppit']
+	convList = ['allelematch', 'binary', 'coancestry', 'genepop', 'grandma', 'newhybrids','plink', 'sequoia', 'structure', 'snppit']
 	for key, value in d.items():
 		if key in convList:
 			convDict[key] = value
@@ -56,6 +56,15 @@ def main():
 		print("")
 		removeName = re.sub('.REPLACE.xlsx$', '.removed.pops.xlsx', fileName)
 		removePdf = gtFile.removePops(pdf, input.args.keeppops)
+		removeName = os.path.join(discardDir, removeName)
+		removePdf.to_excel(removeName, sheet_name="Final Genotypes")
+	
+	# discard individuals not passing IFI score filter
+	ifiCols = gtFile.removeIFI(pdf) #removes optional IFI score column
+	if not ifiCols.empty:
+		print("Removing individuals with IFI score > " + str(input.args.ifi) + ".")
+		removeName = re.sub('.REPLACE.xlsx$', '.removed.ifi.xlsx', fileName)
+		removePdf = gtFile.removeIFIinds(pdf, ifiCols, input.args.ifi)
 		removeName = os.path.join(discardDir, removeName)
 		removePdf.to_excel(removeName, sheet_name="Final Genotypes")
 	
@@ -98,6 +107,15 @@ def main():
 	sexes = gtFile.removeSex(pdf) #removes optional phenotypic sex data column
 	pops = gtFile.getPops(pdf) #remove populations column; variable 'pops' is a dict
 
+	# check for empty cells in SNP matrix
+	total_empty = pdf.isnull().sum().sum()
+	if total_empty > 0:
+		print("ERROR:")
+		print("There were " + str(total_empty) + " empty cells found in your SNP matrix.")
+		print("Please review the SNP data in your Excel file for empty cells before rerunning.")
+		print("")
+		raise SystemExit
+
 	# filter based upon missing data
 	pdf = gtFile.filterFile(pdf, input.args.pmissloc, input.args.pmissind, fileName, discardDir) #returns pandas dataframe with filtered data
 	keep = list(pdf.index) # make list of keys remaining in pdf - used to reduce 'pops' dict to only retained individuals after missing data filtering
@@ -114,9 +132,9 @@ def main():
 	pops = {k: pops[k] for k in keep} # reduce 'pops' dict to only individuals retained after missing data filtering
 	endPopCounts = collections.Counter(pops.values()) #count ending number of individuals per population
 	gtFile.printRetained(startPopCounts, endPopCounts) # print number of retained individuals to logfile
-	
+
 	#begin conversion process
-	conversion = GTconvert(pdf, pops, input.args.twoline, input.args.header, input.args.snppitmap, snppitCols, newhybCols, input.args.infile)
+	conversion = GTconvert(pdf, pops, input.args.twoline, input.args.header, input.args.snppitmap, snppitCols, newhybCols, input.args.infile, logfile)
 	conversion.convert(convDict)
 
 main()

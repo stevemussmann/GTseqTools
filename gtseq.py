@@ -6,6 +6,7 @@ import re
 import sys
 import pandas
 import matplotlib.pyplot
+import scipy
 
 class GTseq():
 	'Class for operating on GTseq genotype files'
@@ -28,45 +29,88 @@ class GTseq():
 	
 	def printRetained(self, start, end):
 		fh = open(self.logfile, 'a')
-		fh.write("The following table reports the number of individuals retained (Output) from each population:\n")
-		fh.write("Population\tInput\tOutput\n")
-		print("The following table reports the number of individuals retained (Output) from each population:")
-		print("Population\tInput\tOutput")
-		totalIn = 0
-		totalOut = 0
+		fh.write("The following table reports the number of individuals retained (Output) from each population.\n")
+		fh.write("The Output(expected) value assumes missing individuals are evenly distributed among sample groups.\n")
+		fh.write("Population\tInput\tOutput(observed)\tOutput(expected)\n")
+		print("The following table reports the number of individuals retained (Output) from each population.")
+		print("The Output(expected) value assumes missing individuals are evenly distributed among sample groups.")
+		print("Population\tInput\tOutput(observed)\tOutput(expected)")
+		totalIn = start.sum() # total samples input
+		totalOut = end.total() # total samples output
+		pctRetained = float(totalOut / totalIn) # percentage of retained individuals
+		obsList = list()
+		expList = list()
 		for k,v in start.items():
-			totalIn = totalIn + int(v)
 			if k in end:
-				print("{}\t{}\t{}".format(k, v, end[k]))
-				fh.write(str(k))
-				fh.write("\t")
-				fh.write(str(v))
-				fh.write("\t")
-				fh.write(str(end[k]))
-				fh.write("\n")
-				totalOut = totalOut + int(end[k])
+				exp = self.expected(start[k], end[k], pctRetained)
+				print("{}\t{}\t{}\t{}".format(k, v, end[k], "{:.2f}".format(exp)))
+				fh.write(str(k) + "\t" + str(v) + "\t" + str(end[k]) + "\t" + "{:.2f}".format(exp) + "\n")
+				obsList.append(float(end[k]))
+				expList.append(float(exp))
 			else:
-				print("{}\t{}\t{}".format(k, v, "0"))
-				fh.write(str(k))
-				fh.write("\t")
-				fh.write(str(v))
-				fh.write("\t")
-				fh.write(str("0"))
-				fh.write("\n")
-		print("{}\t{}\t{}".format("Total", str(totalIn), str(totalOut)))
+				exp = self.expected(start[k], 0, pctRetained)
+				print("{}\t{}\t{}\t{}".format(k, v, "0", "{:.2f}".format(exp)))
+				fh.write(str(k) + "\t" + str(v) + "\t" + str("0") + "\t" + "{:.2f}".format(exp) + "\n")
+				obsList.append(float(0))
+				expList.append(float(exp))
+		print("{}\t{}\t{}\t{}".format("Total", str(totalIn), str(totalOut), "N/A"))
 		print("")
-		fh.write(str("Total\t"))
-		fh.write(str(totalIn))
-		fh.write(str("\t"))
-		fh.write(str(totalOut))
-		fh.write(str("\n\n"))
+		fh.write(str("Total\t") + str(totalIn) + "\t" + str(totalOut) + "\tN/A" + "\n\n")
+
+		try:
+			# chisquare test using scipy library
+			chisq = scipy.stats.chisquare(obsList, f_exp=expList)
+			df = len(obsList)-1
+		
+			print("Performing chi squared test to evaluate if missing individuals are evenly distributed among sample groups")
+			print("chisq\tdf\tp")
+			print(str("{:.3f}".format(chisq[0])), "\t", str(df), "\t", str("{:.3f}".format(chisq[1])))
+			print("")
+		
+			fh.write("Performing chi squared test to evaluate if missing individuals are evenly distributed among sample groups\n")
+			fh.write("chisq\tdf\tp\n")
+			fh.write(str("{:.3f}".format(chisq[0])) + "\t" + str(df) + "\t" + str("{:.3f}".format(chisq[1])) + "\n\n")
+
+		except ValueError as e:
+			print("ERROR: chisquare test failed.")
+			print("Error message: " + str(e))
+			print("")
+
 		fh.close()
+
+	def expected(self, inInds, outInds, pctRet):
+		exp = inInds * pctRet
+
+		return exp
 
 	def parseFile(self):
 		print("Reading input xlsx file.")
 		print("")
 		with pandas.ExcelFile(self.gtFile) as xlsx:
-			data = pandas.read_excel(xlsx, 'Final Genotypes', index_col=0)
+			try:
+				data = pandas.read_excel(xlsx, 'Final Genotypes', index_col=0)
+			except ValueError as e:
+				print("ERROR:")
+				print(e)
+				print("Your GTseq data must be in a worksheet named exactly \"Final Genotypes\" (no quotes).")
+				print("Exiting program...")
+				print("")
+				raise SystemExit
+
+		# test for duplicate sample names
+		print("Checking for duplicate sample names...")
+		duplicateNames = data.index.duplicated().any()
+		if duplicateNames:
+			duplicateList = data.index[data.index.duplicated()].unique().tolist()
+			print("ERROR:")
+			print("Your input .xlsx file contains duplicate sample names.")
+			print("The following names are duplicated:")
+			print(*duplicateList, sep='\n')
+			print("Exiting program...")
+			print("")
+			raise SystemExit
+		else:
+			print("None Found!\n")
 
 		return data
 
@@ -127,6 +171,26 @@ class GTseq():
 
 		junk = self.removeColumns(df, remove)
 		return junk
+
+	def removeIFI(self, df):
+		print("Checking for presence of IFI score column.")
+		optionalCols = ['IFI']
+
+		remove = list()
+		ifiCols = pandas.DataFrame()
+
+		for col in optionalCols:
+			if col in df.columns:
+				remove.append(col)
+
+		if remove:
+			print("IFI score column is being removed.")
+			ifiCols = self.removeColumns(df, remove)
+		else:
+			print("IFI score column not detected in input file.")
+			print("")
+
+		return ifiCols
 	
 	def removeSnppit(self, df):
 		print("Checking for presence of optional SNPPIT columns.")
@@ -209,8 +273,17 @@ class GTseq():
 			if 0 not in alleledict.keys():
 				alleledict[0] = 0
 
-			missing=Decimal(alleledict[0]/numInds)
-			
+			try:
+				missing=Decimal(alleledict[0]/numInds)
+			except ZeroDivisionError as e:
+				print("ERROR at locus")
+				print(columnName)
+				print(e)
+				print("This error occurred when calculating the proportion of missing data per locus.")
+				print("Exiting program...")
+				print("")
+				raise SystemExit
+
 			missingDict[columnName] = missing
 
 		return missingDict
@@ -319,16 +392,24 @@ class GTseq():
 			for (locus, genotype) in rowData.items():
 				if genotype == 0:
 					numMissing = numMissing+1
-			missing = Decimal(numMissing/numLoci)
+			try:
+				missing = Decimal(numMissing/numLoci)
+			except ZeroDivisionError as e:
+				print("ERROR:")
+				print(e)
+				print("This error occurred when calculating the proportion of mising data per individual.")
+				print("This could result if all loci were discarded by missing data filter (option -l).")
+				print("Exiting program...")
+				print("")
+				raise SystemExit
+
 			missingInd[rowName] = missing
 
 		return missingInd
 	
 	def removeMissingInds(self, missingDict, df, pMissInd):
 		fh = open(self.logfile, 'a')
-		fh.write("Removed individuals with missing data proportion > ")
-		fh.write(str(pMissInd))
-		fh.write("\n")
+		fh.write("Removed individuals with missing data proportion > " + str(pMissInd) + "\n")
 		print("Removing individuals with missing data proportion >", pMissInd)
 
 		remove = list()
@@ -380,6 +461,44 @@ class GTseq():
 
 		return junk
 
+	def	removeIFIinds(self, df, ifiCols, ifiScore):
+		fh = open(self.logfile, 'a')
+		fh.write("Removed individuals with IFI score > " + str(ifiScore) + "\n")
+		remove = list()
+
+		# pull out columns greater than IFI score
+		toss = ifiCols[ifiCols['IFI'] > ifiScore]
+	
+		junk = pandas.DataFrame()
+
+		# convert the 'toss' pandas dataframe to a list of samples to be removed
+		if not toss.empty:
+			# write to file
+			fh.write("Individuals removed from dataset:\n")
+			fh.write("Sample\tIFI\n")
+
+			# print to terminal
+			print("Individuals removed from dataset:")
+			print("Sample\tIFI")
+
+			for index, value in toss['IFI'].items():
+				fh.write(str(index) + "\t" + str(value) + "\n")
+				print(str(index), "\t", str(value))
+
+			remove = toss.index.tolist()
+
+		if remove:
+			junk = self.removeRows(df, remove)
+			print("")
+		else:
+			print("No samples had IFI scores > " + str(ifiScore) + ".")
+			print("")
+
+		fh.write("\n")
+		fh.close()
+
+		return junk
+
 	def removeInds(self, df, removeFile):
 		remove = list()
 		with open(removeFile, 'r') as fh:
@@ -389,8 +508,14 @@ class GTseq():
 		junk = pandas.DataFrame()
 
 		if remove:
-			junk = self.removeRows(df, remove)
-			print("")
+			try:
+				junk = self.removeRows(df, remove)
+				print("")
+			except KeyError as e:
+				print("ERROR: " + removeFile + " contains individuals not found in Excel file.")
+				print(e)
+				print("")
+				raise SystemExit
 		else:
 			print("WARNING: removelist option (-r) was invoked but file " + removeFile + " was empty.")
 			print("")
@@ -416,7 +541,7 @@ class GTseq():
 		removeSamples = list()
 		
 		for (sampleName, pop) in df['Population ID'].items():
-			if pop not in popSet:
+			if str(pop) not in popSet:
 				removeSamples.append(sampleName)
 
 		return removeSamples
