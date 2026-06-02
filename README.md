@@ -94,7 +94,9 @@ Current supported file conversions:
 * **-a / --allelematch:** Prints a file formatted for the allelematch R package
 * **-b / --binary:** Prints a file in binary format (0 = major allele, 1 = minor allele, 2 = missing data).
 * **-c / --coancestry:** Prints a file formatted for coancestry (or 'related' R package)
+* **-C / --colony:** Prints a file formatted for colony. Inclusion of candidate parents not implemented yet - file only good for calculating sibship currently.
 * **-g / --genepop:** Prints a file in genepop format.
+* **-G / --grandma:** Prints a file in gRandma format.
 * **-n / --newhybrids:** Prints a file in newhybrids format.
 * **-p / --plink:** Prints a file in plink format. Result is similar to using the --recode12 option in plink. Output should be valid for the program [Admixture](https://dalexander.github.io/admixture/)
 * **-q / --sequoia:** Prints a sequoia formatted genotype file.
@@ -107,13 +109,15 @@ Outputs retain the input file (-x / --infile) base name, but change the output f
 
 <div align="center">
   
-| Format       | Extension(s)                       | Program Option |
+| Format       | File Name(s) / Extension(s)        | Program Option |
 | :----------- | :--------------------------------: | :------------: |
 | AlleleMatch  | .allelematch                       | -a             |
 | Binary       | .bin                               | -b             |
 | Coancestry   | .coancestry; coancestry.popmap.txt | -c             |
+| Colony       | Colony2.Dat                        | -C             |
 | Excel        | .xlsx                              | -X             |
 | Genepop      | .gen; genepop.popmap.txt           | -g             |
+| gRandma      | .grandma                           | -G             |
 | NewHybrids   | .newhyb; newhybrids.popmap.txt     | -n             |
 | Plink        | .ped and .map                      | -p             |
 | Sequoia      | .sequoia; sequoia.lh.txt           | -q             |
@@ -169,6 +173,15 @@ The allelematch file can be read into allelematch with the following R code, sub
 ```
 data <- read.table("filename.allelematch", header=TRUE, sep=",")
 amData <- amDataset(data, missingCode="-99", indexColumn=1, metaDataColumn=2)
+```
+
+### gRandma
+gRandma format can be read using the following R code:
+```
+library("gRandma")
+
+# read data
+genos <- read.csv("filename.grandma", sep="\t", header=TRUE, na.strings="")
 ```
 
 ### NewHybrids
