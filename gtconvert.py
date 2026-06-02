@@ -1,6 +1,7 @@
 from allelematch import AlleleMatch
 from binary import Binary
 from coancestry import Coancestry
+from colony import Colony
 from genepop import Genepop
 from grandma import gRandma
 from newhybrids import NewHybrids
@@ -24,7 +25,7 @@ class GTconvert():
 		self.pd = popdata
 		self.infile = infile
 		self.log = log
-		self.suffix = {'allelematch': 'allelematch', 'binary': 'bin', 'coancestry': 'coancestry', 'genepop': 'gen', 'grandma': 'grandma', 'newhybrids': 'newhyb', 'plink': 'ped', 'structure': 'str', 'snppit': 'snppit', 'sequoia': 'sequoia'}
+		self.suffix = {'allelematch': 'allelematch', 'binary': 'bin', 'coancestry': 'coancestry', 'colony': 'dat', 'genepop': 'gen', 'grandma': 'grandma', 'newhybrids': 'newhyb', 'plink': 'ped', 'structure': 'str', 'snppit': 'snppit', 'sequoia': 'sequoia'}
 		
 		self.convertedDir = "convertedFiles"
 		if os.path.exists(self.convertedDir) == False:
@@ -52,8 +53,14 @@ class GTconvert():
 	
 	def conv_coancestry(self):
 		#print("This function will convert to coancestry format.")
-		am = Coancestry(self.df, self.pd, self.convertedDir)
-		output = am.convert()
+		ca = Coancestry(self.df, self.pd, self.convertedDir)
+		output = ca.convert()
+		return output
+
+	def conv_colony(self):
+		#print("This function will convert to colony format")
+		cl = Colony(self.df)
+		output = cl.convert()
 		return output
 
 	def conv_newhybrids(self):
@@ -114,11 +121,14 @@ class GTconvert():
 
 	def printOutput(self, output, fileName, suffix):
 		# make new file name for writing
-		fileName = fileName.replace(" ", "_") #replace spaces in original filename if they exist
-		nameList = fileName.split('.')
-		nameList.pop() #remove old extension
-		nameList.append(suffix) #add new file extension
-		outName = '.'.join(nameList)
+		if suffix == "dat":
+			outName = "Colony2.Dat"
+		else:
+			fileName = fileName.replace(" ", "_") #replace spaces in original filename if they exist
+			nameList = fileName.split('.')
+			nameList.pop() #remove old extension
+			nameList.append(suffix) #add new file extension
+			outName = '.'.join(nameList)
 		outName = os.path.join(self.convertedDir, outName)
 
 		print("Writing to", outName)
