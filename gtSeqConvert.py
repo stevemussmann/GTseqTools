@@ -127,6 +127,14 @@ def main():
 		monoPdf = gtFile.removeMonomorphicLoci(pdf)
 		monoName = os.path.join(discardDir, monoName)
 		monoPdf.to_excel(monoName, sheet_name="Final Genotypes")
+	
+	# remove duplicate individuals
+	if input.args.dups:
+		print("Removing duplicate individuals (matching genotypes)")
+		dupsName = re.sub('.REPLACE.xlsx$', '.duplicateGenos.xlsx', fileName)
+		dupsPdf = gtFile.remDupGenos(pdf, input.args.dupthresh, input.args.keepdups)
+		dupsName = os.path.join(discardDir, dupsName)
+		dupsPdf.to_excel(dupsName, sheet_name="Final Genotypes")
 
 	# count individuals per population after all filters have been applied
 	pops = {k: pops[k] for k in keep} # reduce 'pops' dict to only individuals retained after missing data filtering

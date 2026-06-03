@@ -10,6 +10,7 @@ class ComLine():
 		parser = argparse.ArgumentParser()
 		parser._action_groups.pop()
 		required = parser.add_argument_group('required arguments')
+		filtering = parser.add_argument_group('filtering arguments')
 		optional = parser.add_argument_group('optional arguments')
 		conversion = parser.add_argument_group('conversion arguments')
 		structure = parser.add_argument_group('structure format arguments')
@@ -19,44 +20,62 @@ class ComLine():
 							required=True,
 							help="Specify an Excel file in xlsx format for input."
 		)
-		optional.add_argument("-d", "--sexid",
-							dest='sexid',
-							help="Specify a list of loci that are sex-identifying SNPs."
+		filtering.add_argument("-D", "--dups",
+							dest='dups',
+							action='store_true',
+							help="Detect duplicate genotypes (can take a while on large files; default = False)."
 		)
-		optional.add_argument("-i", "--pmissind",
+		filtering.add_argument("-i", "--pmissind",
 							dest='pmissind',
 							type=float,
 							default=0.2,
 							help="Enter the maximum allowable proportion of missing data for an individual (default = 0.2)."
 		)
-		optional.add_argument("-I", "--ifi",
+		filtering.add_argument("-I", "--ifi",
 							dest='ifi',
 							type=float,
 							default=2.5,
 							help="Enter the maximum allowable IFI score for a genotype (default = 2.5)."
 		)
-		optional.add_argument("-l", "--pmissloc",
+		filtering.add_argument("-k", "--keepdups",
+							dest='keepdups',
+							type=str,
+							default='none',
+							choices={'all','first','second','none'},
+							help="Methods for keeping duplicates. 'all' = keep all duplicates; 'first' = keep first encountered; 'second' = keep second; 'none' = keep none (default)"
+		)
+		filtering.add_argument("-l", "--pmissloc",
 							dest='pmissloc',
 							type=float,
 							default=0.1,
 							help="Enter the maximum allowable proportion of missing data for a locus (default = 0.1)."
 		)
-		optional.add_argument("-m", "--monomorphic",
+		filtering.add_argument("-m", "--monomorphic",
 							dest='monomorphic',
 							action='store_true',
 							help="Turn on filter to remove monomorphic loci."
 		)
-		optional.add_argument("-P", "--keeppops",
-							dest='keeppops',
-							help="Provide a text file of populations to retain. One population per line. Populations must match data in 'Population ID' column of your input Excel file."
-		)
-		optional.add_argument("-r", "--removeinds",
+		filtering.add_argument("-r", "--removeinds",
 							dest='removeinds',
 							help="Specify a list of individuals to remove from the converted files."
 		)
-		optional.add_argument("-R", "--removeloci",
+		filtering.add_argument("-R", "--removeloci",
 							dest='removeloci',
 							help="Specify a list of individuals to remove from the converted files."
+		)
+		filtering.add_argument("-T", "--dupthresh",
+							dest='dupthresh',
+							type=int,
+							default=3,
+							help="Maximum number of allelic mismatches for identifying duplicate individuals (default = 3)."
+		)
+		optional.add_argument("-d", "--sexid",
+							dest='sexid',
+							help="Specify a list of loci that are sex-identifying SNPs."
+		)
+		optional.add_argument("-P", "--keeppops",
+							dest='keeppops',
+							help="Provide a text file of populations to retain. One population per line. Populations must match data in 'Population ID' column of your input Excel file."
 		)
 		optional.add_argument("-s", "--species",
 							dest='species',

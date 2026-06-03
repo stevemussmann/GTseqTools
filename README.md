@@ -57,6 +57,7 @@ The program first conducts all filtering procedures prior to file format convers
 6) Remove loci that do not meet the minimum threshold (-l option).
 7) Remove individuals that do not meet the minimum threshold (-i option).
 8) Remove monomorphic loci (-m option).
+9) Remove individuals with duplicate genotypes (-D option).
 
 ## Input Requirements
 ### Required
@@ -65,7 +66,7 @@ The minimal input is a Microsoft Excel formatted file (.xlsx). All data should b
 If you are using the GTscore pipeline for genotyping, I have [forked a copy of this repository](https://github.com/stevemussmann/GTscore) and included my [transposeDataGTscore.pl](https://github.com/stevemussmann/GTscore/blob/master/transposeDataGTscore.pl) script which will mostly transform the GTscore genotype outputs to a format compatible with this conversion program. Just open the output of transposeDataGTscore.pl in Microsoft Excel, make sure the worksheet is titled 'Final Genotypes', add the 'Population ID' column, and save the file in .xlsx format.
 
 ### Optional
-Optionally, you can also provide plain text files with individuals or loci to be stripped from the input file (see -d, -r, and -s options in the [Optional Arguments](#optional) below). Each of these files should contain a single column of data listing a single individual or locus per line.
+Optionally, you can also provide plain text files with individuals or loci to be stripped from the input file (see -r, and -R options in the [Optional Arguments](#optional) below). Each of these files should contain a single column of data listing a single individual or locus per line.
 
 You can also add a 'Sex' column to your input .xlsx file. The column heading must be exactly 'Sex' (no quotes) to be processed properly. This column is intended to hold phenotypic sex data, and will be transferred to the .sexID.xlsx output if you use the -d option. All other functions in the program will ignore this option.
 
@@ -76,14 +77,20 @@ Required Inputs:
 Required for SNPPIT conversion only:
 * **-Z / --snppitmap:** Specify a tab-delimited map in which the first column lists each population, the second column lists its status as POP or OFFSPRING, and the third column lists the potential parental POP(s) for each OFFSPRING. See example snppitmap in 'example_files' folder. 
 
-Optional Arguments: <a name="optional"></a>
-* **-d / --sexid:** Provide a list of loci that are sex-identifying SNPs. This should be a plain text file with one locus per line. These loci will be removed from the dataset before any data filtering steps are executed. 
+Filtering Arguments: <a name="filtering"></a>
+* **-D / --dups:** Turn on filter to screen for individuals with duplicate genotypes.
 * **-i / --pmissind:** Enter the maximum allowable proportion of missing data for an individual sample. Default = 0.2.
+* **-I / --ifi:** Set maximum allowable IFI score to retain a genotype (default = 2.5).
+* **-k / --keepdups:** Method for retaining duplicates. 'all' = keep all duplicates; 'first' = keep first encountered; 'second' = keep second; 'none' = keep none (default)
 * **-l / --pmissloc:** Enter the maximum allowable proportion of missing data for a locus. Default = 0.1.
 * **-m / --monomorphic:** Turn on filter to remove monomorphic loci.
 * **-r / --removeinds:** Provide a list of individuals that should be removed from the input xlsx file. This should be a plain text file with each individual being specified on its own line. These individuals will be removed before missing data proportions are calculated. 
-* **-P / --keeppops:** Provide a list of populations that will be retained in final outputs. All individuals belonging to populations not specified in this file will be filtered. This input should be a plain text file with each population being specified on its own line. Population names must match those in the 'Population ID' column exactly.
 * **-R / --removeloci:** Provide a list of loci that should be removed from the input xlsx file. This should be a plain text file with each locus being specified on its own line. These loci will be removed before any other locus-filtering operations are performed. 
+* **-T / --dupthresh:** Maximum number of mismatching loci for identifying individuals with duplicate genotypes (default = 3).
+
+Optional Arguments: <a name="optional"></a>
+* **-d / --sexid:** Provide a list of loci that are sex-identifying SNPs. This should be a plain text file with one locus per line. These loci will be removed from the dataset before any data filtering steps are executed. 
+* **-P / --keeppops:** Provide a list of populations that will be retained in final outputs. All individuals belonging to populations not specified in this file will be filtered. This input should be a plain text file with each population being specified on its own line. Population names must match those in the 'Population ID' column exactly.
 * **-s / --species:** Provide a list of loci that are species identification SNPs. This should be a plain text file with one locus per line. These loci will be removed from the dataset before any other data filtering steps are executed. 
 
 Structure Format Arguments:
@@ -123,7 +130,6 @@ Outputs retain the input file (-x / --infile) base name, but change the output f
 | Sequoia      | .sequoia; sequoia.lh.txt           | -q             |
 | SNPPIT       | .snppit                            | -z             |
 | Structure    | .str; .distructLabels.txt          | -S             |
-  
 </div>
 
 Loci and individuals discarded via filtering options will be written to Excel files. All outputs retain the input file (-x / --infile) base name, but change slightly according to filtering step:
@@ -132,6 +138,7 @@ Loci and individuals discarded via filtering options will be written to Excel fi
   
 | Filtering Step                            | Name                        | Program Option |
 | :---------------------------------------- | :-------------------------: | :------------: |
+| Individuals with duplicate genotypes      | .duplicateGenos.xlsx        | -D             |  
 | Missing data proportion for individuals   | .filteredIndividuals.xlsx   | -i             |
 | Missing data proportion for loci          | .filteredLoci.xlsx          | -l             |
 | Monomorphic loci                          | .monomorphic.xlsx           | -m             |

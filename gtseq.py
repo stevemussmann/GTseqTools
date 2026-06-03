@@ -1,4 +1,5 @@
 from decimal import Decimal
+from duplicates import Duplicates
 from stats import GTStats
 
 import os
@@ -113,6 +114,14 @@ class GTseq():
 			print("None Found!\n")
 
 		return data
+
+	# remove duplicate individuals
+	def remDupGenos(self, df, dupThresh, keepDups):
+		dups = Duplicates(df, dupThresh, keepDups, self.logfile)
+		dups.findDups()
+		removeList = dups.removeDups() # get list of individuals to remove
+		removedDups = self.removeRows(df, removeList)
+		return removedDups
 
 	def getPops(self, df):
 		pops = df.pop('Population ID').to_dict()
