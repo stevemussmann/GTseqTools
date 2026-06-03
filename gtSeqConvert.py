@@ -142,7 +142,7 @@ def main():
 	gtFile.printRetained(startPopCounts, endPopCounts) # print number of retained individuals to logfile
 
 	#begin conversion process
-	conversion = GTconvert(pdf, pops, input.args.twoline, input.args.header, input.args.snppitmap, snppitCols, newhybCols, input.args.infile, logfile)
+	conversion = GTconvert(pdf, pops, input.args.twoline, input.args.header, input.args.snppitmap, snppitCols, newhybCols, input.args.infile, input.args.droperr, input.args.genoerr, input.args.runlength, input.args.pmale, input.args.pfemale, logfile)
 	conversion.convert(convDict)
 
 main()

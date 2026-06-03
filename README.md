@@ -93,6 +93,13 @@ Optional Arguments: <a name="optional"></a>
 * **-P / --keeppops:** Provide a list of populations that will be retained in final outputs. All individuals belonging to populations not specified in this file will be filtered. This input should be a plain text file with each population being specified on its own line. Population names must match those in the 'Population ID' column exactly.
 * **-s / --species:** Provide a list of loci that are species identification SNPs. This should be a plain text file with one locus per line. These loci will be removed from the dataset before any other data filtering steps are executed. 
 
+Colony Format Arguments:
+* **-e / --droperr:** Enter the assumed allelic dropout rate (default = 0.0005).
+* **-E / --genoerr:** Enter the assumed genotyping error rate (default = 0.0005).
+* **-L / --runlength:** 1/2/3/4 = Short/Medium/Long/VeryLong run (default = 2).
+* **-M / --pmale:** Enter the assumed probability of father being among candidate parents (default = 0.5). Value is ignored if no candidate fathers provided in the dataset. **NOT IMPLEMENTED YET**
+* **-F / --pfemale:** Enter the assumed probability of mother being among candidate parents (default = 0.5). Value is ignored if no candidate mothers provided in the dataset. **NOT IMPLEMENTED YET**
+
 Structure Format Arguments:
 * **-H / --header:** Turn off printing of header line with locus names for Structure output
 * **-t / --twoline:** Use this option to write structure files in two-line format. Default = single-line Structure format.

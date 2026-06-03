@@ -7,7 +7,7 @@ import random
 class Colony():
 	'Class for converting pandas dataframe to colony format'
 
-	def __init__(self, df):
+	def __init__(self, df, droperr, genoerr, pmale, pfemale, runlen):
 		self.df = df
 		self.ldict = df.columns.tolist()
 
@@ -15,13 +15,13 @@ class Colony():
 		self.nucleotides = {'A': '01', 'C': '02', 'G': '03', 'T': '04', '-': '05', '0': '00'}
 
 		## CHANGE THESE DYNAMICALLY AT SOME POINT
-		self.derr = 0.0005 # allelic dropout rate
-		self.gerr = 0.0005 # genotyping error rate
-		#self.pmale = pm # probability of father being present among candidates
-		#self.pfemale = pf # probability of mother being present among candidates
+		self.derr = droperr # allelic dropout rate
+		self.gerr = genoerr # genotyping error rate
+		#self.pmale = pmale # probability of father being present among candidates
+		#self.pfemale = pfemale # probability of mother being present among candidates
 		self.runname = "gtSeqConvert"
 		self.inbreed = 0
-		self.runlen = 2
+		self.runlen = runlen
 
 	def convert(self):
 		output = list()

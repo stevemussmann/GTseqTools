@@ -13,6 +13,7 @@ class ComLine():
 		filtering = parser.add_argument_group('filtering arguments')
 		optional = parser.add_argument_group('optional arguments')
 		conversion = parser.add_argument_group('conversion arguments')
+		colony = parser.add_argument_group('colony format arguments')
 		structure = parser.add_argument_group('structure format arguments')
 		snppit = parser.add_argument_group('snppit format arguments')
 		required.add_argument("-x", "--infile",
@@ -80,6 +81,48 @@ class ComLine():
 		optional.add_argument("-s", "--species",
 							dest='species',
 							help="Specify a list of loci that are species identification SNPs."
+		)
+		colony.add_argument("-e", "--droperr",
+							dest='droperr',
+							type=float,
+							default=0.0005,
+							help="Enter the assumed allelic dropout rate (default = 0.0005)."
+		)
+		colony.add_argument("-E", "--genoerr",
+							dest='genoerr',
+							type=float,
+							default=0.0005,
+							help="Enter the assumed genotyping error rate (default = 0.0005)."
+		)
+#		colony.add_argument("-e", "--genoerrfile", ## NEED TO USE DIFFERENT LETTER
+#							dest='genoerrfile',
+#							help='Specify a list of marker-specific genotyping error rates (optional).'
+#		)
+#		colony.add_argument("-I", "--inbreed", ## NEED TO USE DIFFERENT LETTER
+#							dest='inbreed',
+#							type=int,
+#							default=0,
+#							choices={0,1},
+#							help="0 = inbreeding absent; 1 = inbreeding present (default = 0)."
+#		)
+		colony.add_argument("-L", "--runlength",
+							dest='runlength',
+							type=int,
+							default=2,
+							choices={1,2,3,4},
+							help="1/2/3/4 = Short/Medium/Long/VeryLong run (default = 2)."
+		)
+		colony.add_argument("-M", "--pmale",
+							dest='pmale',
+							type=float,
+							default=0.5,
+							help="Enter the assumed probability of father being among candidate parents (default = 0.5). Value is ignored if no candidate fathers provided in the dataset."
+		)
+		colony.add_argument("-F", "--pfemale",
+							dest='pfemale',
+							type=float,
+							default=0.5,
+							help="Enter the assumed probability of mother being among candidate parents (default = 0.5). Value is ignored if no candidate mothers provided in the dataset."
 		)
 		structure.add_argument("-t", "--twoline",
 							dest='twoline',

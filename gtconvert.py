@@ -15,9 +15,7 @@ import os
 class GTconvert():
 	'Class for converting pandas dataframes into various genotype files'
 
-	def __init__(self, pdf, popdata, struBool, headBool, snppitmap, snppitCols, newhybCols, infile, log):
-		self.structureTwoLine = struBool
-		self.structureHeader = headBool
+	def __init__(self, pdf, popdata, struBool, headBool, snppitmap, snppitCols, newhybCols, infile, droperr, genoerr, runlen, pmale, pfemale, log):
 		self.snppitmap = snppitmap
 		self.snppitCols = snppitCols
 		self.newhybCols = newhybCols
@@ -25,6 +23,18 @@ class GTconvert():
 		self.pd = popdata
 		self.infile = infile
 		self.log = log
+		
+		# structure args
+		self.structureTwoLine = struBool
+		self.structureHeader = headBool
+		
+		# colony args
+		self.droperr = droperr
+		self.genoerr = genoerr
+		self.runlen = runlen
+		self.pmale = pmale
+		self.pfemale = pfemale
+
 		self.suffix = {'allelematch': 'allelematch', 'binary': 'bin', 'coancestry': 'coancestry', 'colony': 'dat', 'genepop': 'gen', 'grandma': 'grandma', 'newhybrids': 'newhyb', 'plink': 'ped', 'structure': 'str', 'snppit': 'snppit', 'sequoia': 'sequoia'}
 		
 		self.convertedDir = "convertedFiles"
@@ -59,7 +69,7 @@ class GTconvert():
 
 	def conv_colony(self):
 		#print("This function will convert to colony format")
-		cl = Colony(self.df)
+		cl = Colony(self.df, self.droperr, self.genoerr, self.pmale, self.pfemale, self.runlen)
 		output = cl.convert()
 		return output
 
