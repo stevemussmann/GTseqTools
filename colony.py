@@ -7,7 +7,7 @@ import random
 class Colony():
 	'Class for converting pandas dataframe to colony format'
 
-	def __init__(self, df, droperr, genoerr, pmale, pfemale, runlen):
+	def __init__(self, df, droperr, genoerr, pmale, pfemale, runlen, inbreed):
 		self.df = df
 		self.ldict = df.columns.tolist()
 
@@ -20,7 +20,7 @@ class Colony():
 		#self.pmale = pmale # probability of father being present among candidates
 		#self.pfemale = pfemale # probability of mother being present among candidates
 		self.runname = "gtSeqConvert"
-		self.inbreed = 0
+		self.inbreed = inbreed
 		self.runlen = runlen
 
 	def convert(self):

@@ -82,6 +82,13 @@ class ComLine():
 							dest='species',
 							help="Specify a list of loci that are species identification SNPs."
 		)
+		colony.add_argument("-B", "--inbreed",
+							dest='inbreed',
+							type=int,
+							default=0,
+							choices={0,1},
+							help="0 = inbreeding absent; 1 = inbreeding present (default = 0)."
+		)
 		colony.add_argument("-e", "--droperr",
 							dest='droperr',
 							type=float,
@@ -97,13 +104,6 @@ class ComLine():
 #		colony.add_argument("-e", "--genoerrfile", ## NEED TO USE DIFFERENT LETTER
 #							dest='genoerrfile',
 #							help='Specify a list of marker-specific genotyping error rates (optional).'
-#		)
-#		colony.add_argument("-I", "--inbreed", ## NEED TO USE DIFFERENT LETTER
-#							dest='inbreed',
-#							type=int,
-#							default=0,
-#							choices={0,1},
-#							help="0 = inbreeding absent; 1 = inbreeding present (default = 0)."
 #		)
 		colony.add_argument("-L", "--runlength",
 							dest='runlength',
