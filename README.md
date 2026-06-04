@@ -10,36 +10,41 @@ This program has only been tested in Python v3.10. However, it should be compati
 ## Dependencies
 - matplotlib
 - pandas
+- scipy
 
 ## Installation
-One option for installation is the setup of a conda environment. This can be accomplished by first installing [Miniconda](https://docs.conda.io/en/latest/miniconda.html), and might be the easiest option if you do not have admin privileges on your computer. Once conda is setup, configure it so that the base environment does not automatically load on startup.
-```
-conda config --set auto_activate_base false
-```
+One option for installation is the setup of a conda environment. This can be accomplished by first installing [Miniconda](https://docs.conda.io/en/latest/miniconda.html), and might be the easiest option if you do not have admin privileges on your computer. See the [basic account configuration, conda installation, etc.](https://github.com/stevemussmann/ca_chinook?tab=readme-ov-file#basic-account-configuration-conda-installation-etc-) section in one of my other repositories to see how I typically install custom software. You do not need to repeat this part of the installation procedure if you have already done it for another one of my packages.
 
 Next, create a conda environment in which this program can be run. Use the following command, which should install a sufficiently recent version of python:
 ```
-conda create -n GTseqTools -c conda-forge python=3 pandas openpyxl matplotlib
+conda create -n GTseqTools -c conda-forge python=3 pandas openpyxl matplotlib scipy
 ```
-The environment can be activated and deactivated as needed with the following commands:
+The environment can be activated when needed with the following command. Make sure the `GTseqTools` environment is active before running the software.
 ```
 conda activate GTseqTools
-conda deactivate
 ```
 
-Next, download this package to the location of your choice with the following command.
+Next, download this package to your `~/local/src` directory with the following commands:
 ```
+cd ~/local/src
 git clone https://github.com/stevemussmann/GTseqTools.git
 ```
 
-If necessary, make the software executable:
+Make sure the software is executable:
 ```
+cd ~/local/src/GTseqTools
 chmod u+x gtSeqConvert.py
 ```
 
-Finally, put the software in your $PATH. There are many ways of accomplishing this. For example, add the following line (replacing '/path/to/GTseqTools' with the correct path) to the end of your .bashrc file and reload your .bashrc:
+Finally, link the software in your $PATH.
 ```
-export PATH=/path/to/GTseqTools:$PATH
+cd ~/local/bin
+ln -s $HOME/local/src/GTseqTools/gtSeqConvert.py
+```
+
+You can test if the software works by printing the help menu. If successfull, the full list of command line options should print to the screen:
+```
+gtSeqConvert.py --help
 ```
 
 ## Development Notes
@@ -51,13 +56,14 @@ export PATH=/path/to/GTseqTools:$PATH
 The program first conducts all filtering procedures prior to file format conversion. Filtering procedures are conducted in the following order:
 1) Remove user-specified individuals (-r option).
 2) Remove all individuals not belonging to retained populations (-P option).
-3) Remove unwanted locus list (-R option).
-4) Remove species-identification loci (-s option).
-5) Remove sex-identifying loci (-d option).
-6) Remove loci that do not meet the minimum threshold (-l option).
-7) Remove individuals that do not meet the minimum threshold (-i option).
-8) Remove monomorphic loci (-m option).
-9) Remove individuals with duplicate genotypes (-D option).
+3) Remove individuals that do not pass IFI score threshold (`-I`).
+4) Remove unwanted locus list (-R option).
+5) Remove species-identification loci (-s option).
+6) Remove sex-identifying loci (-d option).
+7) Remove loci that do not meet the minimum threshold (-l option).
+8) Remove individuals that do not meet the minimum threshold (-i option).
+9) Remove monomorphic loci (-m option).
+10) Remove individuals with duplicate genotypes (-D option).
 
 ## Input Requirements
 ### Required
@@ -66,9 +72,9 @@ The minimal input is a Microsoft Excel formatted file (.xlsx). All data should b
 If you are using the GTscore pipeline for genotyping, I have [forked a copy of this repository](https://github.com/stevemussmann/GTscore) and included my [transposeDataGTscore.pl](https://github.com/stevemussmann/GTscore/blob/master/transposeDataGTscore.pl) script which will mostly transform the GTscore genotype outputs to a format compatible with this conversion program. Just open the output of transposeDataGTscore.pl in Microsoft Excel, make sure the worksheet is titled 'Final Genotypes', add the 'Population ID' column, and save the file in .xlsx format.
 
 ### Optional
-Optionally, you can also provide plain text files with individuals or loci to be stripped from the input file (see -r, and -R options in the [Optional Arguments](#optional) below). Each of these files should contain a single column of data listing a single individual or locus per line.
+Optionally, you can also provide plain text files with individuals or loci to be stripped from the input file (see -r, and -R options in the [Filtering Arguments](#filtering) below). Each of these files should contain a single column of data listing a single individual or locus per line.
 
-You can also add a 'Sex' column to your input .xlsx file. The column heading must be exactly 'Sex' (no quotes) to be processed properly. This column is intended to hold phenotypic sex data, and will be transferred to the .sexID.xlsx output if you use the -d option. All other functions in the program will ignore this option.
+You can also add a 'Sex' column to your input .xlsx file. The column heading must be exactly 'Sex' (no quotes) to be processed properly. This column is intended to hold phenotypic sex data, and will be transferred to the .sexID.xlsx output if you use the -d option.
 
 ## Program Options
 Required Inputs:
@@ -80,7 +86,7 @@ Required for SNPPIT conversion only:
 Filtering Arguments: <a name="filtering"></a>
 * **-D / --dups:** Turn on filter to screen for individuals with duplicate genotypes.
 * **-i / --pmissind:** Enter the maximum allowable proportion of missing data for an individual sample. Default = 0.2.
-* **-I / --ifi:** Set maximum allowable IFI score to retain a genotype (default = 2.5).
+* **-I / --ifi:** Set maximum allowable IFI score to retain an individual (default = 2.5).
 * **-k / --keepdups:** Method for retaining duplicates. 'all' = keep all duplicates; 'first' = keep first encountered; 'second' = keep second; 'none' = keep none (default)
 * **-l / --pmissloc:** Enter the maximum allowable proportion of missing data for a locus. Default = 0.1.
 * **-m / --monomorphic:** Turn on filter to remove monomorphic loci.
@@ -125,18 +131,18 @@ Outputs retain the input file (-x / --infile) base name, but change the output f
   
 | Format       | File Name(s) / Extension(s)        | Program Option |
 | :----------- | :--------------------------------: | :------------: |
-| AlleleMatch  | .allelematch                       | -a             |
-| Binary       | .bin                               | -b             |
-| Coancestry   | .coancestry; coancestry.popmap.txt | -c             |
-| Colony       | Colony2.Dat                        | -C             |
-| Excel        | .xlsx                              | -X             |
-| Genepop      | .gen; genepop.popmap.txt           | -g             |
-| gRandma      | .grandma                           | -G             |
-| NewHybrids   | .newhyb; newhybrids.popmap.txt     | -n             |
-| Plink        | .ped and .map                      | -p             |
-| Sequoia      | .sequoia; sequoia.lh.txt           | -q             |
-| SNPPIT       | .snppit                            | -z             |
-| Structure    | .str; .distructLabels.txt          | -S             |
+| AlleleMatch  | .allelematch                       | `-a`           |
+| Binary       | .bin                               | `-b`           |
+| Coancestry   | .coancestry; coancestry.popmap.txt | `-c`           |
+| Colony       | Colony2.Dat                        | `-C`           |
+| Excel        | .xlsx                              | `-X`           |
+| Genepop      | .gen; genepop.popmap.txt           | `-g`           |
+| gRandma      | .grandma                           | `-G`           |
+| NewHybrids   | .newhyb; newhybrids.popmap.txt     | `-n`           |
+| Plink        | .ped and .map                      | `-p`           |
+| Sequoia      | .sequoia; sequoia.lh.txt           | `-q`           |
+| SNPPIT       | .snppit                            | `-z`           |
+| Structure    | .str; .distructLabels.txt          | `-S`           |
 </div>
 
 Loci and individuals discarded via filtering options will be written to Excel files. All outputs retain the input file (-x / --infile) base name, but change slightly according to filtering step:
@@ -145,21 +151,29 @@ Loci and individuals discarded via filtering options will be written to Excel fi
   
 | Filtering Step                            | Name                        | Program Option |
 | :---------------------------------------- | :-------------------------: | :------------: |
-| Individuals with duplicate genotypes      | .duplicateGenos.xlsx        | -D             |  
-| Missing data proportion for individuals   | .filteredIndividuals.xlsx   | -i             |
-| Missing data proportion for loci          | .filteredLoci.xlsx          | -l             |
-| Monomorphic loci                          | .monomorphic.xlsx           | -m             |
-| Discard unwanted populations              | .removed.pops.xlsx          | -P             |
-| List of individuals for removal           | .removed.xlsx               | -r             |
-| List of loci for removal                  | .removed.loci.xlsx          | -R             |
-| Sex-identifying loci                      | .sexID.xlsx                 | -d             |
-| Species-identifying loci                  | .speciesID.xlsx             | -s             |
+| Individuals with duplicate genotypes      | .duplicateGenos.xlsx        | `-D`           |  
+| Missing data proportion for individuals   | .filteredIndividuals.xlsx   | `-i`           |
+| Missing data proportion for loci          | .filteredLoci.xlsx          | `-l`           |
+| Monomorphic loci                          | .monomorphic.xlsx           | `-m`           |
+| Discard unwanted populations              | .removed.pops.xlsx          | `-P`           |
+| IFI score filtering                       | .removed.ifi.xlsx           | `-I`           |
+| List of individuals for removal           | .removed.xlsx               | `-r`           |
+| List of loci for removal                  | .removed.loci.xlsx          | `-R`           |
+| Sex-identifying loci                      | .sexID.xlsx                 | `-d`           |
+| Species-identifying loci                  | .speciesID.xlsx             | `-s`           |
 
 </div>
 
-A log file is also created that documents missing data proportions per individual and locus, and the number of individuals/loci removed at each step. The log file is a plain text file that retains the input file (-x / --infile) base name, but ends in .log.
+A log file (plain text format) is also created that documents the following:
+* The command used to execute gtSeqConvert.py
+* Missing data proportions per individual and locus
+* The number of individuals/loci removed at each step
+* The number of individuals retained from each sample group (observed and expected)
+* A chisquare test that evaluates whether missing individuals are evenly distributed among sample groups
+The log file is named using the input file (`-x` / `--infile`) base name with the file suffix `.log`.
 
 I am currently working on implementing plots to show distributions of missing data per locus and individual sample. These are a work in progress.
+
 ## Example Commands
 You can print the program help menu using the -h option:
 ```
@@ -185,26 +199,32 @@ gtSeqConvert.py -x GTseqData.xlsx -z -Z snppitmap.txt
 ### AlleleMatch
 The allelematch file can be read into allelematch with the following R code, substituting "filename.allelematch" for your actual file name:
 ```
+library("allelematch")
+
 data <- read.table("filename.allelematch", header=TRUE, sep=",")
 amData <- amDataset(data, missingCode="-99", indexColumn=1, metaDataColumn=2)
 ```
 
 ### gRandma
-gRandma format can be read using the following R code:
+A special filter is applied to the gRandma-formatted output to retain only biallelic SNPs for which each of the following conditions is met by at least one individual in the data file:
+1. Homozygous for allele 1
+2. Homozygous for allele 2
+3. Heterozygous for alleles 1 and 2
+
+The output file can be read into gRandma with the following command:
 ```
 library("gRandma")
 
-# read data
-genos <- read.csv("filename.grandma", sep="\t", header=TRUE, na.strings="")
+genotypes <- read.csv("output.grandma.txt", sep="\t", header=TRUE, na.strings="")
 ```
 
 ### NewHybrids
-The NewHybrids conversion allows for optional use of the 'z' option. To use this option, add an extra column to your input .xlsx file titled exactly 'ZOPT' (no quotes). The naming of the column is important so that it will be ignored in conversions for other file formats. 
+The NewHybrids conversion allows for optional use of its 'z' option to specify known genotypes. To use this option, add an extra column to your input .xlsx file titled exactly `ZOPT`. The naming of the column is important so that it will be ignored in conversions for other file formats.
 
-Fill the column with data to designate individuals belonging to the different classes (e.g., z0 for Pure_0, z1 for Pure_1, etc). If you do not want to provide a 'z' designation for a sample then leave that cell empty and it will be ignored. Any data in the 'ZOPT' column will be transferred to your converted file exactly as it appears in your input .xlsx file, so it is important to only enter information that will be valid in a NewHybrids input file.
+Fill the column with data to designate individuals belonging to the different classes (e.g., z0 for Pure_0, z1 for Pure_1, etc). If you do not want to provide a 'z' designation for a sample then leave that cell empty and it will be ignored. Any data in the `ZOPT` column will be transferred to your converted file exactly as it appears in your input .xlsx file, so it is important to only enter information that will be valid in a NewHybrids input file.
 
 ### Sequoia
-The Sequoia conversion relies upon some of the optional SNPPIT columns that are also used for the SNPPIT file conversion (see below). Use the POPCOLUMN_SEX column to specify sex data for all individuals. Only case insensitive versions of 'f', 'female', 'm', and 'male' will be recognized. All other values and blank cells will be converted to unknown sex data value in sequoia (3). 
+The Sequoia conversion relies upon some of the optional SNPPIT columns that are also used for the SNPPIT file conversion (see below). Use the POPCOLUMN_SEX column to specify sex data for all individuals. Only case insensitive versions of `f`, `female`, `m`, and `male` will be recognized. All other values and blank cells will be converted to unknown sex data value in sequoia (3).
 
 The OFFSPRINGCOLUMN_BORN_YEAR is used to specify the birth year for all individuals. You can enter birth year data in this column even for the 'parental' populations. This will not cause any problems for the SNPPIT file conversion as listed below.
 
@@ -212,6 +232,8 @@ The code for creating the life history data file has not yet been robustly teste
 
 Files can be read into sequoia with the following commands:
 ```
+library("sequoia")
+
 # genotypes file
 geno <- as.matrix(read.csv("filename.sequoia", sep="\t", header=FALSE, row.names=1))
 
@@ -229,3 +251,4 @@ Generally, the values you input in these optional columns should exactly match t
 * Values in columns containing year data (POPCOLUMN_REPRO_YEARS, OFFSPRINGCOLUMN_BORN_YEAR, OFFSPRINGCOLUMN_SAMPLE_YEAR) must be valid four-digit integers.
 * Currently there are no data validation measures implemented for the other two optional columns (POPCOLUMN_SPAWN_GROUP and OFFSPRINGCOLUMN_AGE_AT_SAMPLING) so please make sure anything you enter in these columns is exactly as you want it to appear in the final file.
 * Unnecessary data can be left as blank cells. An example of this is that you would not need to enter sex data for OFFSPRING groups in the POPCOLUMN_SEX column.
+
