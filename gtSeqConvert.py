@@ -108,6 +108,7 @@ def main():
 	pops = gtFile.getPops(pdf) #remove populations column; variable 'pops' is a dict
 
 	# check for empty cells in SNP matrix
+	print(pdf)
 	total_empty = pdf.isnull().sum().sum()
 	if total_empty > 0:
 		print("ERROR:")

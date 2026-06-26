@@ -120,7 +120,11 @@ class GTseq():
 		dups = Duplicates(df, dupThresh, keepDups, self.logfile)
 		dups.findDups()
 		removeList = dups.removeDups() # get list of individuals to remove
-		removedDups = self.removeRows(df, removeList)
+		removedDups = pandas.DataFrame() # initialize empty dataframe
+		if not removeList:
+			print("No duplicates to be removed.")
+		else:
+			removedDups = self.removeRows(df, removeList)
 		return removedDups
 
 	def getPops(self, df):
