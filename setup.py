@@ -8,7 +8,7 @@ with open(os.path.join(setup_directory, "README.md"), encoding="utf-8") as f:
 
 setup(
 	name="GTseqTools",
-	version="1.0.2",
+	version="1.0.3",
 	author="Steven Mussmann",
 	author_email="smussmann@gmail.com",
 	description="Filtering, file conversion, and QA/QC of GTseq data.",
@@ -28,5 +28,10 @@ setup(
 		"Operating System :: OS Independent",
 	],
 	python_requires=">=3.12",
+    py_modules=['gtSeqConvert'],
+    entry_points={
+        'console_scripts': ['gtseqconvert = gtSeqConvert:main'],
+    },
+        
 )
 
