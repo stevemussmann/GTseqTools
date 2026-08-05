@@ -85,18 +85,33 @@ class GTseq():
 		return exp
 
 	def parseFile(self):
-		print("Reading input xlsx file.")
+		print("Reading input file.")
 		print("")
-		with pandas.ExcelFile(self.gtFile) as xlsx:
+		# test if .xlsx file and read it into pandas dataframe
+		if self.gtFile.endswith(".xlsx"):
+			with pandas.ExcelFile(self.gtFile) as xlsx:
+				try:
+					data = pandas.read_excel(xlsx, 'Final Genotypes', index_col=0)
+				except ValueError as e:
+					print("ERROR:")
+					print(e)
+					print("Your GTseq data must be in a worksheet named exactly \"Final Genotypes\" (no quotes).")
+					print("Exiting program...")
+					print("")
+					raise SystemExit
+		# if not .xlsx, test if .csv file and read it into pandas dataframe
+		elif self.gtFile.endswith(".csv"):
 			try:
-				data = pandas.read_excel(xlsx, 'Final Genotypes', index_col=0)
-			except ValueError as e:
-				print("ERROR:")
-				print(e)
-				print("Your GTseq data must be in a worksheet named exactly \"Final Genotypes\" (no quotes).")
+				data = pandas.read_csv(self.gtFile, on_bad_lines="error", index_col=0, header=0, engine="python")
+			except pandas.errors.ParserError as e:
+				print(f"ERROR: Malformed CSV rows. Details: {e}")
 				print("Exiting program...")
 				print("")
 				raise SystemExit
+		# exit with error if not .xlsx or .csv
+		else:
+			print("Input file not .xlsx or .csv. How did you get here?\n")
+			raise SystemExit
 
 		# test for duplicate sample names
 		print("Checking for duplicate sample names...")
@@ -132,6 +147,9 @@ class GTseq():
 		return pops
 
 	def filterFile(self, df, pMissLoci, pMissInd, fileName, discardDir):
+		# this converts the '0' character from .csv files to 0 integer (as read from .xlsx files)
+		df = df.replace('0', 0)
+		
 		# start by calculating proportion of missing data in loci
 		missingDictLoci = self.calcMissingLoci(df)
 		# plot missing loci data here

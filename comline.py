@@ -2,6 +2,8 @@ import argparse
 import os.path
 #import distutils.util
 
+from pathlib import Path
+
 class ComLine():
 	'Class for implementing command line options'
 
@@ -19,7 +21,7 @@ class ComLine():
 		required.add_argument("-x", "--infile",
 							dest='infile',
 							required=True,
-							help="Specify an Excel file in xlsx format for input."
+							help="Specify either an Excel file (xlsx) or a csv file for input."
 		)
 		filtering.add_argument("-D", "--dups",
 							dest='dups',
@@ -209,9 +211,10 @@ class ComLine():
 			raise SystemExit
 
 		#check if input file ends with .xlsx
-		if not self.args.infile.endswith(".xlsx"):
-			print("ERROR: Input file " + self.args.infile + " does not end with .xlsx file extension.")
-			print("Is this a valid excel file?")
+		fileSuffix = Path(self.args.infile).suffix.lower()
+		if fileSuffix not in [".xlsx", ".csv"]:
+			print("ERROR: Input file " + self.args.infile + " does not end with .csv or .xlsx file extension.")
+			print("Is this a valid input file?")
 			print("Exiting Program...")
 			print("")
 			raise SystemExit

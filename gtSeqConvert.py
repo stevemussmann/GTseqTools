@@ -23,9 +23,9 @@ def main():
 			convDict[key] = value
 	#print(convDict)
 	
-	# modify input .xslx filename to replace space with _ and remove .xlsx extension
+	# modify input .xslx or .csv filename to replace space with _ and remove file extension
 	fileName = input.args.infile.replace(" ", "_") #replace spaces in original filename if they exist
-	fileName = re.sub('.xlsx$', '.REPLACE.xlsx', fileName)
+	fileName = re.sub('.(xlsx|csv)$', '.REPLACE.xlsx', fileName)
 	logfile = re.sub('.REPLACE.xlsx$', '.log', fileName)
 
 	# make directory to hold discarded data files
@@ -108,7 +108,6 @@ def main():
 	pops = gtFile.getPops(pdf) #remove populations column; variable 'pops' is a dict
 
 	# check for empty cells in SNP matrix
-	print(pdf)
 	total_empty = pdf.isnull().sum().sum()
 	if total_empty > 0:
 		print("ERROR:")
