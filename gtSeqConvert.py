@@ -55,7 +55,8 @@ def main():
 		print("Keeping only individuals from populations specified by '-P' option.")
 		print("")
 		removeName = re.sub('.REPLACE.xlsx$', '.removed.pops.xlsx', fileName)
-		removePdf = gtFile.removePops(pdf, input.args.keeppops)
+		keepSet = gtFile.parseRemovePops(input.args.keeppops) # parse the keeppops file
+		removePdf = gtFile.removePops(pdf, keepSet)
 		removeName = os.path.join(discardDir, removeName)
 		removePdf.to_excel(removeName, sheet_name="Final Genotypes")
 	
@@ -139,7 +140,11 @@ def main():
 	# count individuals per population after all filters have been applied
 	pops = {k: pops[k] for k in keep} # reduce 'pops' dict to only individuals retained after missing data filtering
 	endPopCounts = collections.Counter(pops.values()) #count ending number of individuals per population
-	gtFile.printRetained(startPopCounts, endPopCounts) # print number of retained individuals to logfile
+	if input.args.keeppops:
+		gtFile.printRetained(startPopCounts, endPopCounts, keepSet) # pass set of populations to be retained
+	else:
+		gtFile.printRetained(startPopCounts, endPopCounts) # print number of retained individuals to logfile
+
 
 	#begin conversion process
 	conversion = GTconvert(pdf, pops, input.args.twoline, input.args.header, input.args.snppitmap, snppitCols, newhybCols, input.args.infile, input.args.droperr, input.args.genoerr, input.args.runlength, input.args.pmale, input.args.pfemale, input.args.inbreed, logfile)

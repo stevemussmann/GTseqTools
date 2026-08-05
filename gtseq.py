@@ -1,3 +1,4 @@
+from collections import Counter
 from decimal import Decimal
 from duplicates import Duplicates
 from stats import GTStats
@@ -28,7 +29,10 @@ class GTseq():
 		if os.path.exists(self.plotDir) == False:
 			os.mkdir(self.plotDir)
 	
-	def printRetained(self, start, end):
+	def printRetained(self, start, end, keepPops=None):
+		## start is a pandas series
+		## end is of type 'collections.Counter'
+
 		fh = open(self.logfile, 'a')
 		fh.write("The following table reports the number of individuals retained (Output) from each population.\n")
 		fh.write("The Output(expected) value assumes missing individuals are evenly distributed among sample groups.\n")
@@ -36,6 +40,17 @@ class GTseq():
 		print("The following table reports the number of individuals retained (Output) from each population.")
 		print("The Output(expected) value assumes missing individuals are evenly distributed among sample groups.")
 		print("Population\tInput\tOutput(observed)\tOutput(expected)")
+
+		start = start.sort_index() # sort start pandas series so table prints in consistent order
+
+		# check if keeppops (-P) option used
+		if keepPops is not None:
+			discardStart = start[~start.index.isin(keepPops)]
+			start = start[start.index.isin(keepPops)]
+			end = Counter({k: end[k] for k in keepPops if k in end})
+
+		print(discardEnd)
+
 		totalIn = start.sum() # total samples input
 		totalOut = end.total() # total samples output
 		pctRetained = float(totalOut / totalIn) # percentage of retained individuals
@@ -553,8 +568,12 @@ class GTseq():
 
 		return junk
 
-	def removePops(self, df, removeFile):
+	# moved this to its own function so I could pass the set of kept populations to other functions
+	def parseRemovePops(self, removeFile):
 		popSet = set(line.strip() for line in open(removeFile))
+		return popSet
+
+	def removePops(self, df, popSet):
 
 		junk = pandas.DataFrame()
 
