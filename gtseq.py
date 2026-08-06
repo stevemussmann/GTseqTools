@@ -34,23 +34,41 @@ class GTseq():
 
 		# prepare dict of lists to contain data for sankey diagrams
 		sankeyKeys = ['Source', 'Filter', 'Count']
-		self.sankeyDict = {key: [] for key in sankeyKeys}
+		self.sankeyIndDict = {key: [] for key in sankeyKeys}
+		self.sankeyLocDict = {key: [] for key in sankeyKeys}
 
 
-	def printSankey(self):
-		sankeyDF = pandas.DataFrame(self.sankeyDict) # convert sankey data to pandas dataframe
-		sankeyDF['Count'] = pandas.to_numeric(sankeyDF['Count'], errors='coerce') # force count data to be numeric
+	def printSankey(self, pdf):
+		print("Writing sankey diagrams...")
 
-		discardSum = sankeyDF.loc[sankeyDF['Source'] == 'Discarded', 'Count'].sum() # sum discarded values
+		## individuals
+		sankeyIndDF = pandas.DataFrame(self.sankeyIndDict) # convert sankey data to pandas dataframe
+		sankeyIndDF['Count'] = pandas.to_numeric(sankeyIndDF['Count'], errors='coerce') # force count data to be numeric
+		discardSum = sankeyIndDF.loc[sankeyIndDF['Source'] == 'Discarded', 'Count'].sum() # sum discarded values
+		sankeyIndDF.loc[len(sankeyIndDF)] = ['All', 'Discarded', discardSum] # add discarded value sum to dataframe
+		#print(sankeyIndDF)
 
-		sankeyDF.loc[len(sankeyDF)] = ['All', 'Discarded', discardSum] # add discarded value sum to dataframe
-		#print(sankeyDF)
+		## loci
+		self.sankeyLocDict["Source"].append("All")
+		self.sankeyLocDict["Filter"].append("Retained")
+		self.sankeyLocDict["Count"].append(len(pdf.columns))
+		sankeyLocDF = pandas.DataFrame(self.sankeyLocDict)
+		sankeyLocDF['Count'] = pandas.to_numeric(sankeyLocDF['Count'], errors='coerce') # force count data to be numeric
+		discardSumLoc = sankeyLocDF.loc[sankeyLocDF['Source'] == 'Discarded', 'Count'].sum() # sum discarded values
+		sankeyLocDF.loc[len(sankeyLocDF)] = ['All', 'Discarded', discardSumLoc] # add discarded value sum to dataframe
+		#print(sankeyLocDF)
 
-		sankey = holoviews.Sankey(sankeyDF, label='Individuals') # make sankey object
-		sp = sankey.opts(label_position='left', edge_color='Filter', node_color='index', cmap='tab20') # make sankey plot
-		sankeyPath = os.path.join(self.plotDir, "sankey_plot_individuals.html") # make path for sankey output
-		holoviews.save(sp, sankeyPath, fmt="html") # print sankey plot - opted for html because .png and .svg options have too many dependencies
+		sankeyInd = holoviews.Sankey(sankeyIndDF, label='Individuals') # make sankey object
+		spInd = sankeyInd.opts(label_position='left', edge_color='Filter', node_color='index', cmap='tab20') # make sankey plot
+		sankeyIndPath = os.path.join(self.plotDir, "sankey_plot_individuals.html") # make path for sankey output
+		holoviews.save(spInd, sankeyIndPath, fmt="html") # print sankey plot - opted for html because .png and .svg options have too many dependencies
+		print("Sankey diagram for individuals written to", str(sankeyIndPath))
 
+		sankeyLoc = holoviews.Sankey(sankeyLocDF, label='Loci') # make sankey object
+		spLoc = sankeyLoc.opts(label_position='left', edge_color='Filter', node_color='index', cmap='tab20') # make sankey plot
+		sankeyLocPath = os.path.join(self.plotDir, "sankey_plot_loci.html") # make path for sankey output
+		holoviews.save(spLoc, sankeyIndPath, fmt="html") # print sankey plot - opted for html because .png and .svg options have too many dependencies
+		print("Sankey diagram for loci written to", str(sankeyLocPath), "\n")
 	
 	def printRetained(self, start, end, keepPops=None):
 		## start is a pandas series
@@ -79,9 +97,9 @@ class GTseq():
 		pctRetained = float(totalOut / totalIn) # percentage of retained individuals
 
 		# track retained individuals for sankey plot
-		self.sankeyDict["Source"].append("All")
-		self.sankeyDict["Filter"].append("Retained")
-		self.sankeyDict["Count"].append(str(totalOut))
+		self.sankeyIndDict["Source"].append("All")
+		self.sankeyIndDict["Filter"].append("Retained")
+		self.sankeyIndDict["Count"].append(str(totalOut))
 
 		obsList = list()
 		expList = list()
@@ -205,9 +223,9 @@ class GTseq():
 			removedDups = self.removeRows(df, removeList)
 
 		# track removed individuals for sankey plot
-		self.sankeyDict["Source"].append("Discarded")
-		self.sankeyDict["Filter"].append("keepdups")
-		self.sankeyDict["Count"].append(str(len(removeList)))
+		self.sankeyIndDict["Source"].append("Discarded")
+		self.sankeyIndDict["Filter"].append("keepdups")
+		self.sankeyIndDict["Count"].append(str(len(removeList)))
 
 		return removedDups
 
@@ -263,11 +281,16 @@ class GTseq():
 		fig.savefig(fn, dpi=300)
 
 
-	def removeSpecial(self, df, snps):
+	def removeSpecial(self, df, snps, locfilter):
 		remove = list()
 		with open(snps, 'r') as fh:
 			for line in fh:
 				remove.append(line.strip())
+
+		# track number of loci being removed per filter
+		self.sankeyLocDict["Source"].append("Discarded")
+		self.sankeyLocDict["Filter"].append(locfilter)
+		self.sankeyLocDict["Count"].append(len(remove))
 
 		junk = self.removeColumns(df, remove)
 		return junk
@@ -422,6 +445,10 @@ class GTseq():
 
 		junk = pandas.DataFrame()
 
+		self.sankeyLocDict["Source"].append("Discarded")
+		self.sankeyLocDict["Filter"].append("pmissloc")
+		self.sankeyLocDict["Count"].append(len(remove))
+
 		if remove:
 			junk = self.removeColumns(df, remove)
 
@@ -458,6 +485,10 @@ class GTseq():
 			if counter == 1:
 				remove.append(columnName)
 
+		self.sankeyLocDict["Source"].append("Discarded")
+		self.sankeyLocDict["Filter"].append("monomorphic")
+		self.sankeyLocDict["Count"].append(len(remove))
+		
 		junk = pandas.DataFrame()
 
 		if remove:
@@ -545,9 +576,9 @@ class GTseq():
 		print("")
 
 		# track number of removed individuals for sankey plot
-		self.sankeyDict["Source"].append("Discarded")
-		self.sankeyDict["Filter"].append("pmissind")
-		self.sankeyDict["Count"].append(str(len(removeMiss)))
+		self.sankeyIndDict["Source"].append("Discarded")
+		self.sankeyIndDict["Filter"].append("pmissind")
+		self.sankeyIndDict["Count"].append(str(len(removeMiss)))
 
 		## calculate statistics
 		# plot missing data from removeMiss Dict
@@ -601,9 +632,9 @@ class GTseq():
 			fh.write("\nNo samples had IFI scores > " + str(ifiScore) + ".\n\n")
 
 		# track number of removed individuals for sankey plot
-		self.sankeyDict["Source"].append("Discarded")
-		self.sankeyDict["Filter"].append("ifi")
-		self.sankeyDict["Count"].append(str(len(remove)))
+		self.sankeyIndDict["Source"].append("Discarded")
+		self.sankeyIndDict["Filter"].append("ifi")
+		self.sankeyIndDict["Count"].append(str(len(remove)))
 
 		fh.write("\n")
 		fh.close()
@@ -621,9 +652,9 @@ class GTseq():
 		if remove:
 
 			# track removed individuals for sankey plot
-			self.sankeyDict["Source"].append("Discarded")
-			self.sankeyDict["Filter"].append("removeinds")
-			self.sankeyDict["Count"].append(str(len(remove)))
+			self.sankeyIndDict["Source"].append("Discarded")
+			self.sankeyIndDict["Filter"].append("removeinds")
+			self.sankeyIndDict["Count"].append(str(len(remove)))
 
 			try:
 				junk = self.removeRows(df, remove)
@@ -652,9 +683,9 @@ class GTseq():
 			remove = self.findInds(df, popSet)
 			
 			# track removed individuals for sankey plot
-			self.sankeyDict["Source"].append("Discarded")
-			self.sankeyDict["Filter"].append("keeppops")
-			self.sankeyDict["Count"].append(str(len(remove)))
+			self.sankeyIndDict["Source"].append("Discarded")
+			self.sankeyIndDict["Filter"].append("keeppops")
+			self.sankeyIndDict["Count"].append(str(len(remove)))
 			
 			junk = self.removeRows(df, remove)
 			print("")

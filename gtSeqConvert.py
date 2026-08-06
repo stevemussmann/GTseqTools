@@ -79,7 +79,7 @@ def main():
 		print("Removing loci specified by '-R' option.")
 		print("")
 		removeLociName = re.sub('.REPLACE.xlsx$', '.removed.loci.xlsx', fileName)
-		removeLociPdf = gtFile.removeSpecial(pdf,input.args.removeloci) #only runs if '-R' option is used
+		removeLociPdf = gtFile.removeSpecial(pdf,input.args.removeloci,"removeloci") #only runs if '-R' option is used
 		removeLociName = os.path.join(discardDir, removeLociName)
 		removeLociPdf.to_excel(removeLociName, sheet_name="Final Genotypes")
 
@@ -88,7 +88,7 @@ def main():
 		print("Removing species-identifying SNPs")
 		print("")
 		speciesName = re.sub('.REPLACE.xlsx$', '.speciesID.xlsx', fileName)
-		speciesPdf = gtFile.removeSpecial(pdf,input.args.species) #only runs if species file is used
+		speciesPdf = gtFile.removeSpecial(pdf,input.args.species,"species") #only runs if species file is used
 		speciesPdf.to_excel(speciesName, sheet_name="Final Genotypes")
 
 	# remove sex-identifying SNPs (if option invoked)
@@ -96,7 +96,7 @@ def main():
 		print("Removing sex-identifying SNPs")
 		print("")
 		sexName = re.sub('.REPLACE.xlsx$', '.sexID.xlsx', fileName)
-		sexPdf = gtFile.removeSpecial(pdf,input.args.sexid) #only runs if sexid file is used
+		sexPdf = gtFile.removeSpecial(pdf,input.args.sexid,"sexid") #only runs if sexid file is used
 		sexPdf['Population ID'] = pdf['Population ID']
 		if 'Sex' in pdf.columns:
 			sexPdf['Sex'] = pdf['Sex']
@@ -146,7 +146,7 @@ def main():
 		gtFile.printRetained(startPopCounts, endPopCounts) # print number of retained individuals to logfile
 
 	# print sankey
-	gtFile.printSankey()
+	gtFile.printSankey(pdf)
 
 	#begin conversion process
 	conversion = GTconvert(pdf, pops, input.args.twoline, input.args.header, input.args.snppitmap, snppitCols, newhybCols, input.args.infile, input.args.droperr, input.args.genoerr, input.args.runlength, input.args.pmale, input.args.pfemale, input.args.inbreed, logfile)
