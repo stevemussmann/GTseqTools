@@ -49,7 +49,7 @@ class GTseq():
 			start = start[start.index.isin(keepPops)]
 			end = Counter({k: end[k] for k in keepPops if k in end})
 
-		print(discardEnd)
+		#print(discardEnd)
 
 		totalIn = start.sum() # total samples input
 		totalOut = end.total() # total samples output
@@ -73,17 +73,18 @@ class GTseq():
 		print("")
 		fh.write(str("Total\t") + str(totalIn) + "\t" + str(totalOut) + "\tN/A" + "\n\n")
 
+
 		try:
 			# chisquare test using scipy library
 			chisq = scipy.stats.chisquare(obsList, f_exp=expList)
 			df = len(obsList)-1
 		
-			print("Performing chi squared test to evaluate if missing individuals are evenly distributed among sample groups")
+			print("Performing chi squared test to evaluate if missing individuals are evenly distributed among sample groups.")
 			print("chisq\tdf\tp")
 			print(str("{:.3f}".format(chisq[0])), "\t", str(df), "\t", str("{:.3f}".format(chisq[1])))
 			print("")
 		
-			fh.write("Performing chi squared test to evaluate if missing individuals are evenly distributed among sample groups\n")
+			fh.write("Performing chi squared test to evaluate if missing individuals are evenly distributed among sample groups.\n")
 			fh.write("chisq\tdf\tp\n")
 			fh.write(str("{:.3f}".format(chisq[0])) + "\t" + str(df) + "\t" + str("{:.3f}".format(chisq[1])) + "\n\n")
 
@@ -92,6 +93,24 @@ class GTseq():
 			print("Error message: " + str(e))
 			print("")
 
+		# if keeppops filter was used, print discarded populations
+		if keepPops is not None:
+			totalDiscardIn = discardStart.sum() # total samples input
+
+			print("These populations were discarded by the -P / --keeppops filter:")
+			print("Population\tInput\tOutput(observed)\tOutput(expected)")
+
+			fh.write("These populations were discarded by the -P / --keeppops filter:\n")
+			fh.write("Population\tInput\tOutput(observed)\tOutput(expected)\n")
+
+			# print / write to log counts for discarded populations
+			for k, v in discardStart.items():
+				print("{}\t{}\t{}\t{}".format(k, v, "0", "0.0"))
+				fh.write(str(k) + "\t" + str(v) + "\t" + str("0") + "\t" + "0.0\n")
+			print("{}\t{}\t{}\t{}".format("Total", str(totalDiscardIn), "0", "N/A"))
+			print("")
+			fh.write(str("Total\t") + str(totalDiscardIn) + "\t0\tN/A\n\n")
+				
 		fh.close()
 
 	def expected(self, inInds, outInds, pctRet):
