@@ -554,10 +554,11 @@ class GTseq():
 
 		if remove:
 			junk = self.removeRows(df, remove)
-			print("")
+			print("\nRemoved "+ str(len(remove)) + " individuals with IFI score > " + str(ifiScore) + ".\n\n")
+			fh.write("\nRemoved "+ str(len(remove)) + " individuals with IFI score > " + str(ifiScore) + ".\n\n")
 		else:
-			print("No samples had IFI scores > " + str(ifiScore) + ".")
-			print("")
+			print("No samples had IFI scores > " + str(ifiScore) + ".\n\n")
+			fh.write("\nNo samples had IFI scores > " + str(ifiScore) + ".\n\n")
 
 		fh.write("\n")
 		fh.close()
