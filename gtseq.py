@@ -7,8 +7,11 @@ import os
 import re
 import sys
 import pandas
+import holoviews
 import matplotlib.pyplot
 import scipy
+
+holoviews.extension('bokeh')
 
 class GTseq():
 	'Class for operating on GTseq genotype files'
@@ -28,6 +31,26 @@ class GTseq():
 
 		if os.path.exists(self.plotDir) == False:
 			os.mkdir(self.plotDir)
+
+		# prepare dict of lists to contain data for sankey diagrams
+		sankeyKeys = ['Source', 'Filter', 'Count']
+		self.sankeyDict = {key: [] for key in sankeyKeys}
+
+
+	def printSankey(self):
+		sankeyDF = pandas.DataFrame(self.sankeyDict) # convert sankey data to pandas dataframe
+		sankeyDF['Count'] = pandas.to_numeric(sankeyDF['Count'], errors='coerce') # force count data to be numeric
+
+		discardSum = sankeyDF.loc[sankeyDF['Source'] == 'Discarded', 'Count'].sum() # sum discarded values
+
+		sankeyDF.loc[len(sankeyDF)] = ['All', 'Discarded', discardSum] # add discarded value sum to dataframe
+		#print(sankeyDF)
+
+		sankey = holoviews.Sankey(sankeyDF, label='Individuals') # make sankey object
+		sp = sankey.opts(label_position='left', edge_color='Filter', node_color='index', cmap='tab20') # make sankey plot
+		sankeyPath = os.path.join(self.plotDir, "sankey_plot_individuals.html") # make path for sankey output
+		holoviews.save(sp, sankeyPath, fmt="html") # print sankey plot - opted for html because .png and .svg options have too many dependencies
+
 	
 	def printRetained(self, start, end, keepPops=None):
 		## start is a pandas series
@@ -54,6 +77,12 @@ class GTseq():
 		totalIn = start.sum() # total samples input
 		totalOut = end.total() # total samples output
 		pctRetained = float(totalOut / totalIn) # percentage of retained individuals
+
+		# track retained individuals for sankey plot
+		self.sankeyDict["Source"].append("All")
+		self.sankeyDict["Filter"].append("Retained")
+		self.sankeyDict["Count"].append(str(totalOut))
+
 		obsList = list()
 		expList = list()
 		for k,v in start.items():
@@ -174,6 +203,12 @@ class GTseq():
 			print("No duplicates to be removed.")
 		else:
 			removedDups = self.removeRows(df, removeList)
+
+		# track removed individuals for sankey plot
+		self.sankeyDict["Source"].append("Discarded")
+		self.sankeyDict["Filter"].append("Duplicates")
+		self.sankeyDict["Count"].append(str(len(removeList)))
+
 		return removedDups
 
 	def getPops(self, df):
@@ -509,6 +544,11 @@ class GTseq():
 
 		print("")
 
+		# track number of removed individuals for sankey plot
+		self.sankeyDict["Source"].append("Discarded")
+		self.sankeyDict["Filter"].append("Missing_Data")
+		self.sankeyDict["Count"].append(str(len(removeMiss)))
+
 		## calculate statistics
 		# plot missing data from removeMiss Dict
 		sampPostfilterRemovedHisto = os.path.join(self.plotDir, "histogram.samples.removed.postfilter.png")
@@ -560,6 +600,11 @@ class GTseq():
 			print("No samples had IFI scores > " + str(ifiScore) + ".\n\n")
 			fh.write("\nNo samples had IFI scores > " + str(ifiScore) + ".\n\n")
 
+		# track number of removed individuals for sankey plot
+		self.sankeyDict["Source"].append("Discarded")
+		self.sankeyDict["Filter"].append("IFI")
+		self.sankeyDict["Count"].append(str(len(remove)))
+
 		fh.write("\n")
 		fh.close()
 
@@ -574,6 +619,12 @@ class GTseq():
 		junk = pandas.DataFrame()
 
 		if remove:
+
+			# track removed individuals for sankey plot
+			self.sankeyDict["Source"].append("Discarded")
+			self.sankeyDict["Filter"].append("Blacklist")
+			self.sankeyDict["Count"].append(str(len(remove)))
+
 			try:
 				junk = self.removeRows(df, remove)
 				print("")
@@ -599,6 +650,12 @@ class GTseq():
 
 		if popSet:
 			remove = self.findInds(df, popSet)
+			
+			# track removed individuals for sankey plot
+			self.sankeyDict["Source"].append("Discarded")
+			self.sankeyDict["Filter"].append("keeppops_filter")
+			self.sankeyDict["Count"].append(str(len(remove)))
+			
 			junk = self.removeRows(df, remove)
 			print("")
 		else:

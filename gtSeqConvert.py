@@ -119,7 +119,6 @@ def main():
 
 	# filter based upon missing data
 	pdf = gtFile.filterFile(pdf, input.args.pmissloc, input.args.pmissind, fileName, discardDir) #returns pandas dataframe with filtered data
-	keep = list(pdf.index) # make list of keys remaining in pdf - used to reduce 'pops' dict to only retained individuals after missing data filtering
 
 	# remove monomorphic loci (if option invoked)
 	if input.args.monomorphic:
@@ -138,6 +137,7 @@ def main():
 		dupsPdf.to_excel(dupsName, sheet_name="Final Genotypes")
 
 	# count individuals per population after all filters have been applied
+	keep = list(pdf.index) # make list of keys remaining in pdf - used to reduce 'pops' dict to only retained individuals after all data filtering completed
 	pops = {k: pops[k] for k in keep} # reduce 'pops' dict to only individuals retained after missing data filtering
 	endPopCounts = collections.Counter(pops.values()) #count ending number of individuals per population
 	if input.args.keeppops:
@@ -145,6 +145,8 @@ def main():
 	else:
 		gtFile.printRetained(startPopCounts, endPopCounts) # print number of retained individuals to logfile
 
+	# print sankey
+	gtFile.printSankey()
 
 	#begin conversion process
 	conversion = GTconvert(pdf, pops, input.args.twoline, input.args.header, input.args.snppitmap, snppitCols, newhybCols, input.args.infile, input.args.droperr, input.args.genoerr, input.args.runlength, input.args.pmale, input.args.pfemale, input.args.inbreed, logfile)
