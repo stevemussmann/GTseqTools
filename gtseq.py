@@ -46,7 +46,7 @@ class GTseq():
 		sankeyIndDF['Count'] = pandas.to_numeric(sankeyIndDF['Count'], errors='coerce') # force count data to be numeric
 		discardSum = sankeyIndDF.loc[sankeyIndDF['Source'] == 'Discarded', 'Count'].sum() # sum discarded values
 		sankeyIndDF.loc[len(sankeyIndDF)] = ['All', 'Discarded', discardSum] # add discarded value sum to dataframe
-		#print(sankeyIndDF)
+		#print(sankeyIndDF, "\n")
 
 		## loci
 		self.sankeyLocDict["Source"].append("All")
@@ -56,7 +56,7 @@ class GTseq():
 		sankeyLocDF['Count'] = pandas.to_numeric(sankeyLocDF['Count'], errors='coerce') # force count data to be numeric
 		discardSumLoc = sankeyLocDF.loc[sankeyLocDF['Source'] == 'Discarded', 'Count'].sum() # sum discarded values
 		sankeyLocDF.loc[len(sankeyLocDF)] = ['All', 'Discarded', discardSumLoc] # add discarded value sum to dataframe
-		#print(sankeyLocDF)
+		#print(sankeyLocDF, "\n")
 
 		sankeyInd = holoviews.Sankey(sankeyIndDF, label='Individuals') # make sankey object
 		spInd = sankeyInd.opts(label_position='left', edge_color='Filter', node_color='index', cmap='tab20') # make sankey plot
@@ -67,7 +67,7 @@ class GTseq():
 		sankeyLoc = holoviews.Sankey(sankeyLocDF, label='Loci') # make sankey object
 		spLoc = sankeyLoc.opts(label_position='left', edge_color='Filter', node_color='index', cmap='tab20') # make sankey plot
 		sankeyLocPath = os.path.join(self.plotDir, "sankey_plot_loci.html") # make path for sankey output
-		holoviews.save(spLoc, sankeyIndPath, fmt="html") # print sankey plot - opted for html because .png and .svg options have too many dependencies
+		holoviews.save(spLoc, sankeyLocPath, fmt="html") # print sankey plot - opted for html because .png and .svg options have too many dependencies
 		print("Sankey diagram for loci written to", str(sankeyLocPath), "\n")
 	
 	def printRetained(self, start, end, keepPops=None):
@@ -485,9 +485,10 @@ class GTseq():
 			if counter == 1:
 				remove.append(columnName)
 
-		self.sankeyLocDict["Source"].append("Discarded")
-		self.sankeyLocDict["Filter"].append("monomorphic")
-		self.sankeyLocDict["Count"].append(len(remove))
+		if remove:
+			self.sankeyLocDict["Source"].append("Discarded")
+			self.sankeyLocDict["Filter"].append("monomorphic")
+			self.sankeyLocDict["Count"].append(len(remove))
 		
 		junk = pandas.DataFrame()
 
