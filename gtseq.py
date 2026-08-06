@@ -206,7 +206,7 @@ class GTseq():
 
 		# track removed individuals for sankey plot
 		self.sankeyDict["Source"].append("Discarded")
-		self.sankeyDict["Filter"].append("Duplicates")
+		self.sankeyDict["Filter"].append("keepdups")
 		self.sankeyDict["Count"].append(str(len(removeList)))
 
 		return removedDups
@@ -546,7 +546,7 @@ class GTseq():
 
 		# track number of removed individuals for sankey plot
 		self.sankeyDict["Source"].append("Discarded")
-		self.sankeyDict["Filter"].append("Missing_Data")
+		self.sankeyDict["Filter"].append("pmissind")
 		self.sankeyDict["Count"].append(str(len(removeMiss)))
 
 		## calculate statistics
@@ -602,7 +602,7 @@ class GTseq():
 
 		# track number of removed individuals for sankey plot
 		self.sankeyDict["Source"].append("Discarded")
-		self.sankeyDict["Filter"].append("IFI")
+		self.sankeyDict["Filter"].append("ifi")
 		self.sankeyDict["Count"].append(str(len(remove)))
 
 		fh.write("\n")
@@ -622,7 +622,7 @@ class GTseq():
 
 			# track removed individuals for sankey plot
 			self.sankeyDict["Source"].append("Discarded")
-			self.sankeyDict["Filter"].append("Blacklist")
+			self.sankeyDict["Filter"].append("removeinds")
 			self.sankeyDict["Count"].append(str(len(remove)))
 
 			try:
@@ -653,7 +653,7 @@ class GTseq():
 			
 			# track removed individuals for sankey plot
 			self.sankeyDict["Source"].append("Discarded")
-			self.sankeyDict["Filter"].append("keeppops_filter")
+			self.sankeyDict["Filter"].append("keeppops")
 			self.sankeyDict["Count"].append(str(len(remove)))
 			
 			junk = self.removeRows(df, remove)
