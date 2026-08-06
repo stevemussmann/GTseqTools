@@ -17,7 +17,7 @@ One option for installation is the setup of a conda environment. This can be acc
 
 Next, create a conda environment in which this program can be run. Use the following command, which should install a sufficiently recent version of python:
 ```
-conda create -n GTseqTools -c conda-forge python=3 pandas openpyxl matplotlib scipy
+conda create -n GTseqTools -c conda-forge python=3 pandas openpyxl matplotlib scipy holoviews
 ```
 The environment can be activated when needed with the following command. Make sure the `GTseqTools` environment is active before running the software.
 ```
