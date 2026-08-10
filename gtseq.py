@@ -6,6 +6,7 @@ from stats import GTStats
 import os
 import re
 import sys
+import numpy
 import pandas
 import holoviews
 import matplotlib.pyplot
@@ -123,7 +124,10 @@ class GTseq():
 
 		try:
 			# chisquare test using scipy library
-			chisq = scipy.stats.chisquare(obsList, f_exp=expList)
+			#chisq = scipy.stats.chisquare(obsList, f_exp=expList) # old code
+			## folowing example from here: https://github.com/scipy/scipy/issues/12282
+			expList_scaled = numpy.array(expList) * (numpy.sum(obsList) / numpy.sum(expList)) # new code
+			chisq = scipy.stats.chisquare(f_obs=obsList, f_exp=expList_scaled) # new code
 			df = len(obsList)-1
 		
 			print("Performing chi squared test to evaluate if missing individuals are evenly distributed among sample groups.")
