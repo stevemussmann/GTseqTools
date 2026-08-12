@@ -39,6 +39,65 @@ class GTseq():
 		self.sankeyLocDict = {key: [] for key in sankeyKeys}
 
 
+	def makeHistos(self, df, prepost):
+		deepcopy = df.copy() # make deep copy of dataframe
+		print(f"\nCalculating {prepost} missing data statistics.")
+
+		# remove metadata columns so they are not potentially counted in missing data
+		metadataCols = ['Population ID', 'IFI', 'ZOPT', 'Sex', 'POPCOLUMN_SEX', 'POPCOLUMN_REPRO_YEARS', 'POPCOLUMN_SPAWN_GROUP', 'OFFSPRINGCOLUMN_BORN_YEAR', 'OFFSPRINGCOLUMN_SAMPLE_YEAR', 'OFFSPRINGCOLUMN_AGE_AT_SAMPLING'] # list of all possible metadata columns. All others will be treated as genotype data
+
+		remove = list() # track list of columns to be removed
+		metaCols = pandas.DataFrame() # make empty dataframe to hold removed columns
+
+		for col in metadataCols:
+			if col in deepcopy.columns:
+				remove.append(col)
+
+		if remove:
+			print(f"Ignoring metadata columns for {prepost} missing data calculations and plots.\n")
+			metaCols = self.removeColumns(deepcopy, remove)
+
+		# metadata removed; can now calculate number of loci and individuals
+		inds = str(len(deepcopy)) # number of individuals
+		loci = str(len(deepcopy.columns)) # number of loci
+
+		print(f"Printing {prepost} stats for {inds} individuals and {loci} loci.\n")
+
+		# convert the '0' character from .csv files to 0 integer (as read from .xlsx files)
+		deepcopy = deepcopy.replace('0', 0)
+		
+		# calculate pre- or post-filter proportion of missing data in loci 
+		missingDictLoci = self.calcMissingLoci(deepcopy)
+		lociMissVals = list(missingDictLoci.values()) # get missing data proportions as list
+
+		# calculate pre- or post-filter missing data statistics per locus
+		lociStats = GTStats(lociMissVals)
+		lociStats.calcStats()
+		lociStats.printStats(self.logfile, prepost, "loci")
+
+		# plot pre- or post-filter missing loci data here
+		lociFn = "histogram.loci." + prepost + ".png"
+		lociHisto = os.path.join(self.plotDir, lociFn)
+		self.plotMissing(missingDictLoci, lociHisto)
+
+		# calculate pre- or post-filter missing data per individual
+		missingDictInds = self.calcMissingInds(deepcopy)
+		indsMissVals = list(missingDictInds.values()) # get missing data proportions as list
+
+		# calculate pre- or post-filter missing data statistics per individual
+		indsStats = GTStats(indsMissVals)
+		indsStats.calcStats()
+		indsStats.printStats(self.logfile, prepost, "individuals")
+
+		# make plot of pre- or post-filter missing data per individual
+		indsFn = "histogram.individuals." + prepost + ".png"
+		sampPrefilterHisto = os.path.join(self.plotDir, indsFn)
+		self.plotMissing(missingDictInds, sampPrefilterHisto)
+
+		del metaCols # make sure memory used by removed columns is freed
+		del deepcopy # make sure memory used by the deep copy is freed
+
+
 	def printSankey(self, pdf):
 		print("Writing sankey diagrams...")
 
@@ -243,15 +302,9 @@ class GTseq():
 		
 		# start by calculating proportion of missing data in loci
 		missingDictLoci = self.calcMissingLoci(df)
-		# plot missing loci data here
-		lociPrefilterHisto = os.path.join(self.plotDir, "histogram.loci.prefilter.png")
-		self.plotMissing(missingDictLoci, lociPrefilterHisto)
 
 		# also calculate missing data per individual before removing loci with high missingness
 		missingDictTemp = self.calcMissingInds(df)
-		# make plot of pre-filter missing data per individual
-		sampPrefilterHisto = os.path.join(self.plotDir, "histogram.samples.prefilter.png")
-		self.plotMissing(missingDictTemp, sampPrefilterHisto)
 
 		removedLoci = self.removeMissingLoci(missingDictLoci, df, pMissLoci)
 		lociName = re.sub('.REPLACE.xlsx$', '.filteredLoci.xlsx', fileName)
@@ -259,9 +312,6 @@ class GTseq():
 		removedLoci.to_excel(lociName, sheet_name="Final Genotypes")
 
 		missingDictInd = self.calcMissingInds(df)
-
-		# put plotting of missingDict here - do I need this?
-		#self.plotMissing(missingDictInd, "histogram.samples.prefilter.png")
 
 		removedInds = self.removeMissingInds(missingDictInd, df, pMissInd)
 		indsName = re.sub('.REPLACE.xlsx$', '.filteredIndividuals.xlsx', fileName)
@@ -458,21 +508,6 @@ class GTseq():
 
 		print("")
 		
-		# calculate statistics
-		# plot missing data from removeMiss Dict
-		lociPostfilterRemovedHisto = os.path.join(self.plotDir, "histogram.loci.removed.postfilter.png")
-		self.plotMissing(removeMiss, lociPostfilterRemovedHisto)
-		removeStats = GTStats(removeMiss)
-		removeStats.calcStats()
-		removeStats.printStats(self.logfile, "removed", "loci")
-	
-		# plot missing data from removeMiss Dict
-		lociPostfilterRetainedHisto = os.path.join(self.plotDir, "histogram.loci.retained.postfilter.png")
-		self.plotMissing(keepMiss, lociPostfilterRetainedHisto)
-		keepStats = GTStats(keepMiss)
-		keepStats.calcStats()
-		keepStats.printStats(self.logfile, "retained", "loci")
-
 		return junk
 
 	def removeMonomorphicLoci(self, df):
@@ -584,21 +619,6 @@ class GTseq():
 		self.sankeyIndDict["Source"].append("Discarded")
 		self.sankeyIndDict["Filter"].append("pmissind")
 		self.sankeyIndDict["Count"].append(str(len(removeMiss)))
-
-		## calculate statistics
-		# plot missing data from removeMiss Dict
-		sampPostfilterRemovedHisto = os.path.join(self.plotDir, "histogram.samples.removed.postfilter.png")
-		self.plotMissing(removeMiss, sampPostfilterRemovedHisto)
-		removeStats = GTStats(removeMiss)
-		removeStats.calcStats()
-		removeStats.printStats(self.logfile, "removed", "individuals")
-	
-		# plot missing data from removeMiss Dict
-		sampPostfilterRetainedHisto = os.path.join(self.plotDir, "histogram.samples.retained.postfilter.png")
-		self.plotMissing(keepMiss, sampPostfilterRetainedHisto)
-		keepStats = GTStats(keepMiss)
-		keepStats.calcStats()
-		keepStats.printStats(self.logfile, "retained", "individuals")
 
 		return junk
 

@@ -39,6 +39,7 @@ def main():
 
 	gtFile = GTseq(input.args.infile, logfile)
 	pdf = gtFile.parseFile() #returns pandas dataframe with unfiltered data
+	gtFile.makeHistos(pdf, "prefilter") # makes pre-filter missing data plots for loci and individuals
 	startPopCounts = pdf['Population ID'].value_counts() #count starting number of individuals per population
 
 	# remove blacklisted individuals
@@ -147,6 +148,12 @@ def main():
 
 	# print sankey
 	gtFile.printSankey(pdf)
+
+	# print stats and plots for retained data
+	print("Final missing data Statistics:")
+	gtFile.makeHistos(pdf, "postfilter") # makes post-filter missing data plots for loci and individuals
+	if input.args.monomorphic:
+		print("IMPORTANT: Maximum missing data values may exceed your chosen thresholds because the monomorphic locus filter is applied after all others.\n")
 
 	#begin conversion process
 	conversion = GTconvert(pdf, pops, input.args.twoline, input.args.header, input.args.snppitmap, snppitCols, newhybCols, input.args.infile, input.args.droperr, input.args.genoerr, input.args.runlength, input.args.pmale, input.args.pfemale, input.args.inbreed, logfile)
