@@ -57,7 +57,10 @@ class GTStats():
 			return Decimal((sl[i] + sl[i+1])/Decimal(2))
 
 	def printStats(self, fn, mode1, mode2):
-		print("Proportion of missing data summary for " + mode1 + " " + mode2 + ".")
+		if mode1 == "ifi scores":
+			print(f"IFI score summary for {mode2} individuals.")
+		else:
+			print(f"Proportion of missing data summary for {mode1} {mode2}.")
 		print("Mean\tStDev\tMedian\tMin\tMax")
 
 		fh = open(fn, 'a')

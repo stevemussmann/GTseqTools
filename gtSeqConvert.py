@@ -37,9 +37,15 @@ def main():
 	if os.path.isfile(logfile):
 		os.remove(logfile)
 
+	# make new GTseq object and read in file
 	gtFile = GTseq(input.args.infile, logfile)
 	pdf = gtFile.parseFile() #returns pandas dataframe with unfiltered data
+
+	# make pre-filter plots and calculate summary statistics
 	gtFile.makeHistos(pdf, "prefilter") # makes pre-filter missing data plots for loci and individuals
+	ifiCols = gtFile.removeIFI(pdf) #removes optional IFI score column. Need to do this here so can test whether column exists for plotting of IFI score values
+	if not ifiCols.empty:
+		gtFile.plotIFI(ifiCols, "prefilter") # makes pre-filter ifi score plot (if IFI column found)
 	startPopCounts = pdf['Population ID'].value_counts() #count starting number of individuals per population
 
 	# remove blacklisted individuals
@@ -62,11 +68,13 @@ def main():
 		removePdf.to_excel(removeName, sheet_name="Final Genotypes")
 	
 	# discard individuals not passing IFI score filter
-	ifiCols = gtFile.removeIFI(pdf) #removes optional IFI score column
 	if not ifiCols.empty:
+		# extract ifi scores for list of retained individuals at this point during filtering. Need to do this so removed individual counts are accurate.
+		intermediateIFIcols = ifiCols.loc[pdf.index] 
+		
 		print("Removing individuals with IFI score > " + str(input.args.ifi) + ".")
 		removeName = re.sub('.REPLACE.xlsx$', '.removed.ifi.xlsx', fileName)
-		removePdf = gtFile.removeIFIinds(pdf, ifiCols, input.args.ifi)
+		removePdf = gtFile.removeIFIinds(pdf, intermediateIFIcols, input.args.ifi)
 		removeName = os.path.join(discardDir, removeName)
 		removePdf.to_excel(removeName, sheet_name="Final Genotypes")
 	
@@ -146,14 +154,15 @@ def main():
 	else:
 		gtFile.printRetained(startPopCounts, endPopCounts) # print number of retained individuals to logfile
 
-	# print sankey
+	# print plots and final statistics
 	gtFile.printSankey(pdf)
-
-	# print stats and plots for retained data
 	print("Final missing data Statistics:")
 	gtFile.makeHistos(pdf, "postfilter") # makes post-filter missing data plots for loci and individuals
 	if input.args.monomorphic:
 		print("IMPORTANT: Maximum missing data values may exceed your chosen thresholds because the monomorphic locus filter is applied after all others.\n")
+	if not ifiCols.empty:
+		filteredIFIcols = ifiCols.loc[pdf.index] # extract ifi scores for final list of retained individuals
+		gtFile.plotIFI(filteredIFIcols, "postfilter") # makes post-filter ifi score plot
 
 	#begin conversion process
 	conversion = GTconvert(pdf, pops, input.args.twoline, input.args.header, input.args.snppitmap, snppitCols, newhybCols, input.args.infile, input.args.droperr, input.args.genoerr, input.args.runlength, input.args.pmale, input.args.pfemale, input.args.inbreed, logfile)

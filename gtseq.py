@@ -39,6 +39,22 @@ class GTseq():
 		self.sankeyLocDict = {key: [] for key in sankeyKeys}
 
 
+	def plotIFI(self, df, prepost):
+		ifiScores = df['IFI'].tolist() # extract as list for stats calculations
+		ifiScores = [Decimal(x) for x in ifiScores] # cast all list elements as Decimal
+		
+		ifiScoresDict = df['IFI'].to_dict() # extract as dict for plotting
+
+		# calculate stats
+		ifiStats = GTStats(ifiScores)
+		ifiStats.calcStats()
+		ifiStats.printStats(self.logfile, "ifi scores", prepost)
+	
+		# make histogram plot
+		ifiFn = "histogram.ifi." + prepost + ".png"
+		ifiHisto = os.path.join(self.plotDir, ifiFn)
+		self.makeIFIplot(ifiScoresDict, ifiHisto)
+
 	def makeHistos(self, df, prepost):
 		deepcopy = df.copy() # make deep copy of dataframe
 		print(f"\nCalculating {prepost} missing data statistics.")
@@ -320,19 +336,38 @@ class GTseq():
 
 		return df
 
+
+	def makeIFIplot(self, d, fn):
+		matplotlib.pyplot.figure().clear()
+		ifiSeries = pandas.Series(d)
+
+		# get maximum IFI value
+		maxIFI = ifiSeries.max()
+
+		# give about 40 bins per 5.0 IFI score units
+		binCount = int(maxIFI/0.125)
+
+		ifiSeries = pandas.to_numeric(ifiSeries)
+		histo = ifiSeries.plot.hist(grid=False, bins=binCount, range=(0.0,maxIFI), rwidth=0.9, color='#607c8e')
+		histo.set_xlim(0.0, maxIFI)
+		fig = histo.get_figure()
+		matplotlib.pyplot.title('IFI Score Distribution')
+		matplotlib.pyplot.xlabel('IFI Scores')
+		matplotlib.pyplot.ylabel('Counts')
+		fig.savefig(fn, dpi=600)
+
+
 	def plotMissing(self, d, fn):
 		matplotlib.pyplot.figure().clear()
 		missSeries = pandas.Series(d)
 		missSeries = pandas.to_numeric(missSeries)
-		#print(missSeries)
 		histo = missSeries.plot.hist(grid=False, bins=40, range=(0.0,1.0), rwidth=0.9, color='#607c8e')
 		histo.set_xlim(0.0, 1.0)
 		fig = histo.get_figure()
 		matplotlib.pyplot.title('Proportion of Missing GTseq Data')
 		matplotlib.pyplot.xlabel('Proportion Missing')
 		matplotlib.pyplot.ylabel('Counts')
-		#matplotlib.pyplot.grid(axis='y', alpha=0.75)
-		fig.savefig(fn, dpi=300)
+		fig.savefig(fn, dpi=600)
 
 
 	def removeSpecial(self, df, snps, locfilter):
@@ -734,7 +769,12 @@ class GTseq():
 		return junk
 
 	def removeRows(self, df, removelist):
-		junk = pandas.concat([self.popRow(df, x) for x in removelist], axis=0)
+		junk = pandas.DataFrame()
+		try:
+			junk = pandas.concat([self.popRow(df, x) for x in removelist], axis=0)
+		except KeyError as e:
+			print(f"\nWARNING while removing pandas dataframe rows: {e}")
+			print("Check if this individual was in your input file. Final counts of removed individuals may be incorrect.")
 		return junk
 		
 	def popRow(self, df, index):
