@@ -1,9 +1,9 @@
 # GTseqTools
 [![DOI](https://zenodo.org/badge/520264976.svg)](https://zenodo.org/badge/latestdoi/520264976)
-Program for filtering GTseq genotype data, conducting QA/QC, and converting to various file formats
+Program for filtering GTseq genotype data, conducting data quality assessment, and converting to various file formats.
 
 ## Python Version Compatibility and Dependencies
-This program has been tested with Python >= 3.12 but it should be compatible with Python >= 3.8. The GTconvert class uses syntax that was introduced to Python in version 3.8. Testing and development was conducted with the following versions of Python libraries:
+This program has been tested with Python = 3.14 but it should be compatible with Python >= 3.8 (Syntax is used that was first introduced to Python in v3.8). Testing and development was conducted with the following versions of Python libraries:
 - holoviews = 1.23.1
 - matplotlib = 3.10.7
 - numpy = 2.3.4
@@ -12,37 +12,37 @@ This program has been tested with Python >= 3.12 but it should be compatible wit
 - scipy = 1.16.3
 
 ## Installation
-I recommend setting up a conda environment. This can be accomplished by first installing [Miniconda](https://docs.conda.io/en/latest/miniconda.html). See the [basic account configuration, conda installation, etc.](https://github.com/stevemussmann/ca_chinook?tab=readme-ov-file#basic-account-configuration-conda-installation-etc-) section in one of my other repositories to see how I install custom software. You do not need to repeat this part of the installation procedure if you have already done it for another one of my packages.
+1. Set up a conda environment. This is accomplished by first installing [Miniconda](https://docs.conda.io/en/latest/miniconda.html). See the [basic account configuration](https://github.com/stevemussmann/ca_chinook?tab=readme-ov-file#basic-account-configuration-conda-installation-etc-) instructions in another of my repositories to see how I install custom software. Do steps 1 - 8 under the heading "Basic account configuration, conda installation, etc." These instructions are written for Windows Subsystem for Linux (WSL) but should be translatable to any Unix-based operating system. You do not need to repeat this procedure if you have already done it for another one of my packages.
 
-Next, create a conda environment in which this program can be run. Use the following command, which should install a sufficiently recent version of python:
+2. Next, create a conda environment in which this program can be run. Use the following command, which should install a sufficiently recent version of python:
 ```
 conda create -n GTseqTools -c conda-forge python=3 holoviews matplotlib numpy openpyxl pandas scipy
 ```
 
-The environment can be activated when needed with the following command. Make sure the `GTseqTools` environment is active before running the software.
+3. The environment can be activated when needed with the following command. Make sure the `GTseqTools` environment is active before running the software.
 ```
 conda activate GTseqTools
 ```
 
-Next, download this package to your `~/local/src` directory with the following commands:
+4. Next, download this package to your `~/local/src` directory with the following commands:
 ```
 cd ~/local/src
 git clone https://github.com/stevemussmann/GTseqTools.git
 ```
 
-Make sure the software is executable:
+5. Make sure the software is executable:
 ```
 cd ~/local/src/GTseqTools
 chmod u+x gtSeqConvert.py
 ```
 
-Finally, link the software in your $PATH.
+6. Finally, link the software in your $PATH.
 ```
 cd ~/local/bin
 ln -s $HOME/local/src/GTseqTools/gtSeqConvert.py
 ```
 
-You can test if the software works by printing the help menu. If successfull, the full list of command line options should print to the screen:
+7. You can test if the software works by printing the help menu. If successfull, the full list of command line options should print to the screen:
 ```
 gtSeqConvert.py --help
 ```
@@ -53,27 +53,28 @@ gtSeqConvert.py --help
 
 ## Order of operations
 The program conducts all filtering procedures prior to file format conversion. Filtering is conducted in the following order:
-1) Remove user-specified individuals (`-r / --removeinds` option).
-2) Remove all individuals not belonging to retained populations (`-P / --keeppops` option).
-3) Remove individuals that do not pass IFI score threshold (`-I / --ifi` option).
-4) Remove unwanted locus list (`-R / --removeloci` option).
-5) Remove species-identification loci (`-s / --species` option).
-6) Remove sex-identifying loci (`-d / --sexid` option).
-7) Remove loci that do not meet the minimum threshold (`-l / --pmissloc` option).
-8) Remove individuals that do not meet the minimum threshold (`-i / --pmissind` option).
-9) Remove monomorphic loci (`-m / --monomorphic` option).
-10) Remove individuals with duplicate genotypes (`-D / --dups` option).
+1. Remove user-specified individuals (`-r / --removeinds`).
+2. Remove all individuals not belonging to retained populations (`-P / --keeppops`).
+3. Remove individuals that do not pass IFI score threshold (`-I / --ifi`).
+4. Remove unwanted locus list (`-R / --removeloci`).
+5. Remove species-identification loci (`-s / --species`).
+6. Remove sex-identifying loci (`-d / --sexid`).
+7. Remove loci (`-l / --pmissloc`) and individuals (`-i / --pmissind`) that do not meet the minimum thresholds. Default behavior is to apply the locus filter first, but the user can opt to apply the individual filter first if desired (`-o / --order individuals`).
+8. Remove monomorphic loci (`-m / --monomorphic` option).
+9. Remove individuals with duplicate genotypes (`-D / --dups` option).
+
+**IMPORTANT:** Note that since the `-m / --monomorphic` and `-D / --dups` filters (steps 8. and 9.) are applied after the missing data filters (step 7.), the final calculations of missing data may show that a few loci or individuals have missing data values that slightly exceed the user-defined thresholds of `-l / --pmissloc` and `-i / --pmissind`.
 
 ## Input Requirements
 ### Required
 - The minimal input is either a .csv file or a Microsoft Excel formatted file (.xlsx). 
-- If using a .xlsx file, all data should be in a worksheet titled 'Final Genotypes'. 
+- If using a .xlsx file, all data should be in a worksheet titled 'Final Genotypes'. Any other worksheets in an .xlsx file will be ignored.
 - Regardless of input file type the first row will be a header line containing the following:
     - Cell A1 will specify the individual sample column
 	- Cell B1 will contain the text 'Population ID'. This column will contain collection group information for all individuals
 	- The remaining columns of the file can appear in any order. Columns containing genotype data should be contain locus names.
 	- Special columns need to be included for certain file formats (e.g., SNPPIT, Sequoia, etc.) These columns need to contain specific names in the header line (see explanations below in [File Conversion Input Details](#conversion)) and can appear as the columns either before or after the genotype data.
-	- You can include the IFI score column from the [GTseq-Pipeline](https://github.com/GTseq/GTseq-Pipeline) output.
+	- You are encouraged to include the IFI score column from the [GTseq-Pipeline](https://github.com/GTseq/GTseq-Pipeline) output, but this is not required.
 - Alleles for a genotype should be concatenated per locus (e.g., AA, AT, etc.). A missing genotype for a locus should be recorded as '0'. This is the format output natively by the [GTseq-Pipeline](https://github.com/GTseq/GTseq-Pipeline)
 
 If you are using the GTscore pipeline for genotyping, I have [forked a copy of this repository](https://github.com/stevemussmann/GTscore) and included my [transposeDataGTscore.pl](https://github.com/stevemussmann/GTscore/blob/master/transposeDataGTscore.pl) script which will mostly transform the GTscore genotype outputs to a format compatible with this conversion program. Just add the 'Population ID' column and any optional columns, then save the file in .csv or .xlsx format. Make sure the worksheet is titled 'Final Genotypes' if using .xlsx format.
@@ -105,6 +106,7 @@ Filtering Arguments: <a name="filtering"></a>
 
 Optional Arguments: <a name="optional"></a>
 * **-d / --sexid:** Provide a list of loci that are sex-identifying SNPs. This should be a plain text file with one locus per line. These loci will be removed from the dataset before any data filtering steps are executed. 
+* **-o / --order:** Specify whether missing data filters will first be applied to loci or individuals (options: 'loci' = loci filtered first (default), 'individuals' = individuals filtered first).
 * **-P / --keeppops:** Provide a list of populations that will be retained in final outputs. All individuals belonging to populations not specified in this file will be filtered. This input should be a plain text file with each population being specified on its own line. Population names must match those in the 'Population ID' column exactly.
 * **-s / --species:** Provide a list of loci that are species identification SNPs. This should be a plain text file with one locus per line. These loci will be removed from the dataset before any other data filtering steps are executed. 
 
@@ -119,7 +121,7 @@ Structure Format Arguments:
 * **-H / --header:** Turn off printing of header line with locus names for Structure output
 * **-t / --twoline:** Use this option to write structure files in two-line format. Default = single-line Structure format.
 
-Current supported file conversions:
+Current supported file conversions (**You are required to specify at least one conversion format**):
 * **-a / --allelematch:** Prints a file formatted for the allelematch R package
 * **-b / --binary:** Prints a file in binary format (0 = major allele, 1 = minor allele, 2 = missing data).
 * **-c / --coancestry:** Prints a file formatted for coancestry (or 'related' R package)
@@ -183,9 +185,11 @@ A log file (plain text format) is also created that documents the following:
 The log file is named using the input file (`-x` / `--infile`) base name with the file suffix `.log`.
 
 Plots:
-- The program produces sankey plots to show the number of loci and individuals removed by each filter. 
-- Other plots are produced to show the distributions of missing data per locus and individual sample.
-- All plots can be found in the `plots` subdirectory that is created when the program is run.
+The program produces several plots to help the user assess quality of data both before and after filtering, as well as plots that transparently show the number of individuals and loci removed by each filtering step.
+* Sankey plots are produced to show the number of loci and individuals removed by each filter. Labels correspond to the long-form command line option for each filter (e.g., pmissind, monomorphic, etc.)
+* Histograms are produced that show the distributions of missing data per locus and individual sample both before and after filtering.
+* If the IFI score column is included, histograms will be produced to show the distribution of IFI scores both before and after filtering.
+* All plots can be found in the `plots` subdirectory that is created when the program is run.
 
 ## Example Commands
 You can print the program help menu using the -h option:
@@ -234,14 +238,12 @@ genotypes <- read.csv("output.grandma.txt", sep="\t", header=TRUE, na.strings=""
 ### NewHybrids
 The NewHybrids conversion allows for optional use of its 'z' option to specify known genotypes. To use this option, add an extra column to your input .xlsx file titled exactly `ZOPT`. The naming of the column is important so that it will be ignored in conversions for other file formats.
 
-Fill the column with data to designate individuals belonging to the different classes (e.g., z0 for Pure_0, z1 for Pure_1, etc). If you do not want to provide a 'z' designation for a sample then leave that cell empty and it will be ignored. Any data in the `ZOPT` column will be transferred to your converted file exactly as it appears in your input .xlsx file, so it is important to only enter information that will be valid in a NewHybrids input file.
+Fill the column with data to designate individuals belonging to the different classes (i.e., `z0` for Pure_0, `z1` for Pure_1). If you do not want to provide a 'z' designation for a sample then leave that cell empty and it will be ignored. Any data in the `ZOPT` column will be transferred to your converted file exactly as it appears in your input .xlsx file, so it is important to only enter information that will be valid in a NewHybrids input file.
 
 ### Sequoia
 The Sequoia conversion relies upon some of the optional SNPPIT columns that are also used for the SNPPIT file conversion (see below). Use the POPCOLUMN_SEX column to specify sex data for all individuals. Only case insensitive versions of `f`, `female`, `m`, and `male` will be recognized. All other values and blank cells will be converted to unknown sex data value in sequoia (3).
 
 The OFFSPRINGCOLUMN_BORN_YEAR is used to specify the birth year for all individuals. You can enter birth year data in this column even for the 'parental' populations. This will not cause any problems for the SNPPIT file conversion as listed below.
-
-The code for creating the life history data file has not yet been robustly tested, so there could be bugs.
 
 Files can be read into sequoia with the following commands:
 ```
