@@ -60,8 +60,8 @@ The program conducts all filtering procedures prior to file format conversion. F
 5. Remove species-identification loci (`-s / --species`).
 6. Remove sex-identifying loci (`-d / --sexid`).
 7. Remove loci (`-l / --pmissloc`) and individuals (`-i / --pmissind`) that do not meet the minimum thresholds. Default behavior is to apply the locus filter first, but the user can opt to apply the individual filter first if desired (`-o / --order individuals`).
-8. Remove monomorphic loci (`-m / --monomorphic` option).
-9. Remove individuals with duplicate genotypes (`-D / --dups` option).
+8. Remove monomorphic loci (`-m / --monomorphic`).
+9. Remove individuals with duplicate genotypes (`-D / --dups`).
 
 **IMPORTANT:** Note that since the `-m / --monomorphic` and `-D / --dups` filters (steps 8. and 9.) are applied after the missing data filters (step 7.), the final calculations of missing data may show that a few loci or individuals have missing data values that slightly exceed the user-defined thresholds of `-l / --pmissloc` and `-i / --pmissind`.
 
