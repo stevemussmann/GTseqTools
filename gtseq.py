@@ -312,24 +312,55 @@ class GTseq():
 		pops = df.pop('Population ID').to_dict()
 		return pops
 
-	def filterFile(self, df, pMissLoci, pMissInd, fileName, discardDir):
+	def filterFile(self, df, pMissLoci, pMissInd, fileName, discardDir, order):
 		# this converts the '0' character from .csv files to 0 integer (as read from .xlsx files)
 		df = df.replace('0', 0)
-		
-		# start by calculating proportion of missing data in loci
-		missingDictLoci = self.calcMissingLoci(df)
 
+		## REMOVE IN FUTURE REVISION - this is never being used again - why am I calculating this?
 		# also calculate missing data per individual before removing loci with high missingness
-		missingDictTemp = self.calcMissingInds(df)
+		#missingDictTemp = self.calcMissingInds(df)
 
-		removedLoci = self.removeMissingLoci(missingDictLoci, df, pMissLoci)
+		# initialize empty pandas dataframes
+		removedLoci = pandas.DataFrame()
+		removedInds = pandas.DataFrame()
+
+		if order == "loci":
+			# start by calculating proportion of missing data in loci
+			missingDictLoci = self.calcMissingLoci(df)
+
+			# remove loci
+			removedLoci = self.removeMissingLoci(missingDictLoci, df, pMissLoci)
+
+			# calculate proportion of missing data in individuals
+			missingDictInd = self.calcMissingInds(df)
+
+			# remove individuals and print discarded data to file
+			removedInds = self.removeMissingInds(missingDictInd, df, pMissInd)
+
+		elif order == "individuals":
+			# start by calculating proportion of missing data in individuals
+			missingDictInd = self.calcMissingInds(df)
+
+			# remove individuals
+			removedInds = self.removeMissingInds(missingDictInd, df, pMissInd)
+
+			# calculate proportion of missing data in individuals
+			missingDictLoci = self.calcMissingLoci(df)
+
+			# remove individuals and print discarded data to file
+			removedLoci = self.removeMissingLoci(missingDictLoci, df, pMissLoci)
+
+		else:
+			print(f"\nERROR: requested to filter {order} first (-o / --order option).")
+			print("Code should be unreachable - how did you get here?\n")
+			SystemExit(1)
+
+		# print discarded locus data to file
 		lociName = re.sub('.REPLACE.xlsx$', '.filteredLoci.xlsx', fileName)
 		lociName = os.path.join(discardDir, lociName)
 		removedLoci.to_excel(lociName, sheet_name="Final Genotypes")
 
-		missingDictInd = self.calcMissingInds(df)
-
-		removedInds = self.removeMissingInds(missingDictInd, df, pMissInd)
+		# print discarded individual data to file
 		indsName = re.sub('.REPLACE.xlsx$', '.filteredIndividuals.xlsx', fileName)
 		indsName = os.path.join(discardDir, indsName)
 		removedInds.to_excel(indsName, sheet_name="Final Genotypes")

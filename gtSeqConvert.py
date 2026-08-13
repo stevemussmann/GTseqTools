@@ -127,7 +127,7 @@ def main():
 		raise SystemExit
 
 	# filter based upon missing data
-	pdf = gtFile.filterFile(pdf, input.args.pmissloc, input.args.pmissind, fileName, discardDir) #returns pandas dataframe with filtered data
+	pdf = gtFile.filterFile(pdf, input.args.pmissloc, input.args.pmissind, fileName, discardDir, input.args.order) #returns pandas dataframe with filtered data
 
 	# remove monomorphic loci (if option invoked)
 	if input.args.monomorphic:

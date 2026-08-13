@@ -76,6 +76,13 @@ class ComLine():
 							dest='sexid',
 							help="Specify a list of loci that are sex-identifying SNPs."
 		)
+		optional.add_argument("-o", "--order",
+							dest='order',
+							type=str,
+							default='loci',
+							choices={'loci','individuals'},
+							help="Specify whether missing data filters will first be applied to loci or individuals (options: 'loci' = loci filtered first (default), 'individuals' = individuals filtered first)."
+		)
 		optional.add_argument("-P", "--keeppops",
 							dest='keeppops',
 							help="Provide a text file of populations to retain. One population per line. Populations must match data in 'Population ID' column of your input Excel file."
