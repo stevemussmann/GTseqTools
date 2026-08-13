@@ -13,9 +13,14 @@ class Duplicates():
 		self.keep = k # method for keeping duplicates
 		self.log = l # log file
 
+		self.allMismatches = list()
+
 		# lists of duplicates
 		self.first = list()
 		self.second = list()
+	
+	def returnMismatches(self):
+		return self.allMismatches
 
 	def findDups(self):
 		print(f"\nScreening for potential duplicate samples with up to {self.thresh} mismatching loci.")
@@ -27,6 +32,7 @@ class Duplicates():
 		results = []
 		for i, j in rowPairs:
 			mismatches = numpy.sum((self.npArr[i] != self.npArr[j]) & (self.npArr[i] == self.npArr[i]) & (self.npArr[j] == self.npArr[j])) # works to exclude nan values because expression 'a == a' evaluates to 'false' if a is nan
+			self.allMismatches.append(mismatches)
 			if mismatches <= self.thresh:
 				self.first.append(self.origIndex[i])
 				self.second.append(self.origIndex[j])

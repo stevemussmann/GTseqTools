@@ -21,7 +21,6 @@ class GTStats():
 			self.mmin = min(self.l)
 			self.mmax = max(self.l)
 		
-		
 	def calcMean(self,l):
 		total = self.calcSum(l)
 		mean = (total/len(l))

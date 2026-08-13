@@ -144,6 +144,7 @@ def main():
 		dupsPdf = gtFile.remDupGenos(pdf, input.args.dupthresh, input.args.keepdups)
 		dupsName = os.path.join(discardDir, dupsName)
 		dupsPdf.to_excel(dupsName, sheet_name="Final Genotypes")
+		gtFile.plotMismatches()
 
 	# count individuals per population after all filters have been applied
 	keep = list(pdf.index) # make list of keys remaining in pdf - used to reduce 'pops' dict to only retained individuals after all data filtering completed

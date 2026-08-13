@@ -39,6 +39,23 @@ class GTseq():
 		self.sankeyLocDict = {key: [] for key in sankeyKeys}
 
 
+	# This function can only be run after the GTseq.remDupGenos() function because it will add an object of type Duplicates to this class as a member variable (self.dups)
+	def plotMismatches(self):
+		# mismatches is a list of numpy type np.int64
+		mismatches = self.dups.returnMismatches()
+		mismatchDict = dict(enumerate(mismatches)) # enumerate to add dummy key values for purpose of making dict to plot data
+
+		# calculate stats
+		mismatchStats = GTStats(mismatches)
+		mismatchStats.calcStats()
+
+		# make histogram and qq plots
+		histoFN = "histogram.mismatch.png"
+		qqFN = "q-q.plot.mismatch.png"
+		mismatchHisto = os.path.join(self.plotDir, histoFN)
+		mismatchQQ = os.path.join(self.plotDir, qqFN)
+		self.makeMismatchPlots(mismatchDict, mismatchHisto, mismatchQQ)
+
 	def plotIFI(self, df, prepost):
 		ifiScores = df['IFI'].tolist() # extract as list for stats calculations
 		ifiScores = [Decimal(x) for x in ifiScores] # cast all list elements as Decimal
@@ -306,6 +323,8 @@ class GTseq():
 		self.sankeyIndDict["Filter"].append("keepdups")
 		self.sankeyIndDict["Count"].append(str(len(removeList)))
 
+		self.dups = dups # add Duplicates() object as member variable
+
 		return removedDups
 
 	def getPops(self, df):
@@ -344,10 +363,10 @@ class GTseq():
 			# remove individuals
 			removedInds = self.removeMissingInds(missingDictInd, df, pMissInd)
 
-			# calculate proportion of missing data in individuals
+			# calculate proportion of missing data in loci
 			missingDictLoci = self.calcMissingLoci(df)
 
-			# remove individuals and print discarded data to file
+			# remove loci and print discarded data to file
 			removedLoci = self.removeMissingLoci(missingDictLoci, df, pMissLoci)
 
 		else:
@@ -367,6 +386,64 @@ class GTseq():
 
 		return df
 
+	def makeMismatchPlots(self, d, histoFN, qqFN):
+		matplotlib.pyplot.figure().clear()
+		mismatchSeries = pandas.Series(d)
+
+		# get maximum mismatch value
+		maxMismatch = mismatchSeries.max()
+
+		# Set number of bins to number of mismatches
+		binCount = maxMismatch
+
+		# histogram plot
+		mismatchSeries = pandas.to_numeric(mismatchSeries)
+		histo = mismatchSeries.plot.hist(grid=False, bins=binCount, range=(0.0,maxMismatch), rwidth=0.9, color='#607c8e')
+		#histo = mismatchSeries.plot.hist(grid=False, bins=60, range=(0.0,60), rwidth=0.9, color='#607c8e')
+		histo.set_xlim(0.0, maxMismatch)
+		fig = histo.get_figure()
+		matplotlib.pyplot.title('Mismatch Distribution for Detecting Duplicates')
+		matplotlib.pyplot.xlabel('Mismatches')
+		matplotlib.pyplot.ylabel('Counts')
+		fig.savefig(histoFN, dpi=600)
+
+		# qq plot
+		matplotlib.pyplot.figure().clear()
+		matplotlib.pyplot.figure(figsize=(6,6))
+		vallist = list(d.values())
+		res = scipy.stats.probplot(vallist, dist="norm", plot=matplotlib.pyplot)
+
+		matplotlib.pyplot.title("Normal Q-Q Plot (Genotype Mismatch Counts)", fontsize=14)
+		matplotlib.pyplot.xlabel("Theoretical Quantiles", fontsize=12)
+		matplotlib.pyplot.ylabel("Number of Mismatching Loci", fontsize=12)
+		matplotlib.pyplot.grid(True, linestyle="--", alpha=0.6)
+		matplotlib.pyplot.savefig("qq_plot.png", dpi=600, bbox_inches="tight")
+
+		# might not end up using outlier calculations
+		#self.calcOutliers(res)
+
+	def calcOutliers(self, res):
+		# 2. Find the equation of the red reference line (y = mx + c)
+		# res[1][0] is the slope (m), res[1][1] is the intercept (c)
+		x = res[0][0]
+		y = res[0][1]
+
+		slope = res[1][0]
+		intercept = res[1][1]
+
+		# 3. Calculate expected y-values on the line and find the distance (residuals)
+		expected_y = slope * x + intercept
+		distances = y - expected_y
+
+		# 4. Set a threshold for what constitutes an "outlier"
+		# Using 2 or 3 standard deviations of the distances is a reliable standard
+		threshold = 4.5 * numpy.std(distances)
+
+		# 5. Extract the actual outlier values from your original data
+		outliers = y[distances < -threshold]
+
+		print(f"Found {len(outliers)} outlier values.")
+		print("Top 10 most extreme outliers:", outliers[:10])
 
 	def makeIFIplot(self, d, fn):
 		matplotlib.pyplot.figure().clear()
