@@ -75,7 +75,12 @@ The program conducts all filtering procedures prior to file format conversion. F
 	- The remaining columns of the file can appear in any order. Columns containing genotype data should be contain locus names.
 	- Special columns need to be included for certain file formats (e.g., SNPPIT, Sequoia, etc.) These columns need to contain specific names in the header line (see explanations below in [File Conversion Input Details](#conversion)) and can appear as the columns either before or after the genotype data.
 	- You are encouraged to include the IFI score column from the [GTseq-Pipeline](https://github.com/GTseq/GTseq-Pipeline) output, but this is not required.
-- Alleles for a genotype should be concatenated per locus (e.g., AA, AT, etc.). A missing genotype for a locus should be recorded as '0'. This is the format output natively by the [GTseq-Pipeline](https://github.com/GTseq/GTseq-Pipeline)
+- Genotype data should be encoded using the output format native to the [GTseq Pipeline](https://github.com/GTseq/GTseq-Pipeline). In other words:
+	- Only characters 'A', 'C', 'G', 'T', and '-' will be recognized as valid alleles. 
+	- The alleles for a genotype should be concatenated per locus (e.g., genotype = `AA`, `AT`, etc.). 
+	- Indel alleles should be coded as '-' (e.g., genotype = `A-`, `--`, etc.). 
+	- A missing genotype for a locus should be recorded as a single '0' (e.g., genotype = `0`). 
+	- Sex ID loci can be coded as sex genotypes (e.g., `XX`, `XY`, etc.), but only if the `-d / --sexid` option is used since this option will strip these loci from the data file before any file conversions take place.
 
 If you are using the GTscore pipeline for genotyping, I have [forked a copy of this repository](https://github.com/stevemussmann/GTscore) and included my [transposeDataGTscore.pl](https://github.com/stevemussmann/GTscore/blob/master/transposeDataGTscore.pl) script which will mostly transform the GTscore genotype outputs to a format compatible with this conversion program. Just add the 'Population ID' column and any optional columns, then save the file in .csv or .xlsx format. Make sure the worksheet is titled 'Final Genotypes' if using .xlsx format.
 
@@ -175,20 +180,23 @@ Loci and individuals discarded via filtering options will be written to Excel fi
 
 </div>
 
-## Log files and Plots
+## Log file
 A log file (plain text format) is also created that documents the following:
 * The command used to execute gtSeqConvert.py
 * Missing data proportions per individual and locus
 * The number of individuals/loci removed at each step
 * The number of individuals retained from each sample group (observed and expected)
-* A chisquare test that evaluates whether missing individuals are evenly distributed among sample groups
+* A chi-square test that evaluates whether missing individuals are evenly distributed among sample groups (only performed if >1 sample group is analyzed)
 The log file is named using the input file (`-x` / `--infile`) base name with the file suffix `.log`.
 
-Plots:
+## Plots
 The program produces several plots to help the user assess quality of data both before and after filtering, as well as plots that transparently show the number of individuals and loci removed by each filtering step.
-* Sankey plots are produced to show the number of loci and individuals removed by each filter. Labels correspond to the long-form command line option for each filter (e.g., pmissind, monomorphic, etc.)
+* Sankey plots are produced to show the number of loci and individuals removed by each filter. Labels correspond to the long-form command line option for each filter (e.g., `pmissind`, `monomorphic`, etc.)
 * Histograms are produced that show the distributions of missing data per locus and individual sample both before and after filtering.
 * If the IFI score column is included, histograms will be produced to show the distribution of IFI scores both before and after filtering.
+* Two plots are produced if the program is used to identify duplicate genotypes:
+	* A histogram showing the distribution of pairwise genotype mismatches among all pairs of individuals.
+	* A quantile-quantile (QQ) plot that shows whether mismatch distribution is normally distributed. Duplicated individuals, if any, should be isolated in the lower left corner of the plot, usually with approximately 0-5 mismatching loci. This plot can be used to help identify an appropriate `-T / --dupthresh` threshold (default = 3 mismatching loci).
 * All plots can be found in the `plots` subdirectory that is created when the program is run.
 
 ## Example Commands
