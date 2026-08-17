@@ -190,14 +190,14 @@ A log file (plain text format) is also created that documents the following:
 The log file is named using the input file (`-x` / `--infile`) base name with the file suffix `.log`.
 
 ## Plots
-The program produces several plots to help the user assess quality of data both before and after filtering, as well as plots that transparently show the number of individuals and loci removed by each filtering step.
+The program produces several plots to help the user assess quality of data both before and after filtering, as well as plots that transparently show the number of individuals and loci removed by each filtering step. All plots can be found in the `plots` subdirectory that is created when the program is run.
 * Sankey plots are produced to show the number of loci and individuals removed by each filter. Labels correspond to the long-form command line option for each filter (e.g., `pmissind`, `monomorphic`, etc.)
 * Histograms are produced that show the distributions of missing data per locus and individual sample both before and after filtering.
 * If the IFI score column is included, histograms will be produced to show the distribution of IFI scores both before and after filtering.
 * Two plots are produced if the program is used to identify duplicate genotypes:
 	* A histogram showing the distribution of pairwise genotype mismatches among all pairs of individuals.
-	* A quantile-quantile (QQ) plot that shows whether mismatch distribution is normally distributed. Duplicated individuals, if any, should be isolated in the lower left corner of the plot, usually with approximately 0-5 mismatching loci. This plot can be used to help identify an appropriate `-T / --dupthresh` threshold (default = 3 mismatching loci).
-* All plots can be found in the `plots` subdirectory that is created when the program is run.
+	* A quantile-quantile (QQ) plot that shows whether mismatch distribution is normally distributed. Duplicated individuals, if any, should be isolated in the lower left corner of the plot, usually with approximately 0-5 mismatching loci. This plot can be used to help identify an appropriate `-T / --dupthresh` threshold (default = 3 mismatching loci). See the two examples below:
+<img width="3257" height="3299" alt="qqplot mismatch" src="https://github.com/user-attachments/assets/99707773-b106-4c41-9668-cf8e64d445da" /><img width="3257" height="3299" alt="qqplot mismatch" src="https://github.com/user-attachments/assets/6407389f-b33d-4a8e-96cc-3e0dd1617b5d" />
 
 ## Example Commands
 You can print the program help menu using the -h option:
