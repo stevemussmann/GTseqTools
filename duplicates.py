@@ -9,7 +9,6 @@ class Duplicates():
 	def __init__(self, df, t, k, l):
 		self.npArr = df.to_numpy() # convert pandas df to numpy array
 		self.npArr[self.npArr == 0] = numpy.nan # make sure 0 is converted to nan value
-		print(self.npArr)
 		self.origIndex = df.index.to_numpy() # retain original indexes to lookup matching samples
 		self.thresh = t # threshold for mismatches
 		self.keep = k # method for keeping duplicates
