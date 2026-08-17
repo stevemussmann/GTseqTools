@@ -51,10 +51,11 @@ class GTseq():
 
 		# make histogram and qq plots
 		histoFN = "histogram.mismatch.png"
-		qqFN = "q-q.plot.mismatch.png"
+		qqFN = "qqplot.mismatch.png"
 		mismatchHisto = os.path.join(self.plotDir, histoFN)
 		mismatchQQ = os.path.join(self.plotDir, qqFN)
-		self.makeMismatchPlots(mismatchDict, mismatchHisto, mismatchQQ)
+		self.makeMismatchHisto(mismatchDict, mismatchHisto)
+		self.makeMismatchQQ(mismatchDict, mismatchQQ)
 
 	def plotIFI(self, df, prepost):
 		ifiScores = df['IFI'].tolist() # extract as list for stats calculations
@@ -386,7 +387,7 @@ class GTseq():
 
 		return df
 
-	def makeMismatchPlots(self, d, histoFN, qqFN):
+	def makeMismatchHisto(self, d, histoFN):
 		matplotlib.pyplot.figure().clear()
 		mismatchSeries = pandas.Series(d)
 
@@ -399,14 +400,15 @@ class GTseq():
 		# histogram plot
 		mismatchSeries = pandas.to_numeric(mismatchSeries)
 		histo = mismatchSeries.plot.hist(grid=False, bins=binCount, range=(0.0,maxMismatch), rwidth=0.9, color='#607c8e')
-		#histo = mismatchSeries.plot.hist(grid=False, bins=60, range=(0.0,60), rwidth=0.9, color='#607c8e')
 		histo.set_xlim(0.0, maxMismatch)
 		fig = histo.get_figure()
-		matplotlib.pyplot.title('Mismatch Distribution for Detecting Duplicates')
+		matplotlib.pyplot.title('Distribution of Genotype Mismatches')
 		matplotlib.pyplot.xlabel('Mismatches')
 		matplotlib.pyplot.ylabel('Counts')
 		fig.savefig(histoFN, dpi=600)
 
+
+	def makeMismatchQQ(self, d, qqFN):
 		# qq plot
 		matplotlib.pyplot.figure().clear()
 		matplotlib.pyplot.figure(figsize=(6,6))
@@ -417,29 +419,27 @@ class GTseq():
 		matplotlib.pyplot.xlabel("Theoretical Quantiles", fontsize=12)
 		matplotlib.pyplot.ylabel("Number of Mismatching Loci", fontsize=12)
 		matplotlib.pyplot.grid(True, linestyle="--", alpha=0.6)
-		matplotlib.pyplot.savefig("qq_plot.png", dpi=600, bbox_inches="tight")
+		matplotlib.pyplot.savefig(qqFN, dpi=600, bbox_inches="tight")
 
-		# might not end up using outlier calculations
-		#self.calcOutliers(res)
-
+	## This function is unused - leaving it here in case I want it later for any reason
+	## previously called from within makeMismatchPlots() function to look for outliers in qq plot
 	def calcOutliers(self, res):
-		# 2. Find the equation of the red reference line (y = mx + c)
-		# res[1][0] is the slope (m), res[1][1] is the intercept (c)
+		# Find the equation of the reference line (y = mx + b)
+		# res[1][0] = slope (m), res[1][1] = intercept (b)
 		x = res[0][0]
 		y = res[0][1]
-
 		slope = res[1][0]
 		intercept = res[1][1]
 
-		# 3. Calculate expected y-values on the line and find the distance (residuals)
+		# Calculate expected y-values on the reference line and find the distance (residuals)
 		expected_y = slope * x + intercept
 		distances = y - expected_y
 
-		# 4. Set a threshold for what constitutes an "outlier"
-		# Using 2 or 3 standard deviations of the distances is a reliable standard
+		# Set a threshold for what constitutes an "outlier"
+		# Using standard deviations of the distances (4.5 standard deviations in code below)
 		threshold = 4.5 * numpy.std(distances)
 
-		# 5. Extract the actual outlier values from your original data
+		# Extract the actual outlier values from your original data
 		outliers = y[distances < -threshold]
 
 		print(f"Found {len(outliers)} outlier values.")
@@ -795,15 +795,16 @@ class GTseq():
 			junk = self.removeRows(df, remove)
 			print("\nRemoved "+ str(len(remove)) + " individuals with IFI score > " + str(ifiScore) + ".\n\n")
 			fh.write("\nRemoved "+ str(len(remove)) + " individuals with IFI score > " + str(ifiScore) + ".\n\n")
+		
+			# track number of removed individuals for sankey plot
+			self.sankeyIndDict["Source"].append("Discarded")
+			self.sankeyIndDict["Filter"].append("ifi")
+			self.sankeyIndDict["Count"].append(str(len(remove)))
+
 		else:
 			print("No samples had IFI scores > " + str(ifiScore) + ".\n\n")
 			fh.write("\nNo samples had IFI scores > " + str(ifiScore) + ".\n\n")
-
-		# track number of removed individuals for sankey plot
-		self.sankeyIndDict["Source"].append("Discarded")
-		self.sankeyIndDict["Filter"].append("ifi")
-		self.sankeyIndDict["Count"].append(str(len(remove)))
-
+		
 		fh.write("\n")
 		fh.close()
 
