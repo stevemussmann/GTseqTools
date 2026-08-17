@@ -197,7 +197,7 @@ The program produces several plots to help the user assess quality of data both 
 * Two plots are produced if the program is used to identify duplicate genotypes:
 	* A histogram showing the distribution of pairwise genotype mismatches among all pairs of individuals.
 	* A quantile-quantile (QQ) plot that shows whether mismatch distribution is normally distributed. Duplicated individuals, if any, should be isolated in the lower left corner of the plot, usually with approximately 0-5 mismatching loci. This plot can be used to help identify an appropriate `-T / --dupthresh` threshold (default = 3 mismatching loci). See the two examples below:
-<img width="3257" height="3299" alt="qqplot mismatch" src="https://github.com/user-attachments/assets/99707773-b106-4c41-9668-cf8e64d445da" /><img width="3257" height="3299" alt="qqplot mismatch" src="https://github.com/user-attachments/assets/6407389f-b33d-4a8e-96cc-3e0dd1617b5d" />
+<img width="1628" height="1649" alt="qqplot mismatch" src="https://github.com/user-attachments/assets/99707773-b106-4c41-9668-cf8e64d445da" /><img width="1628" height="1649" alt="qqplot mismatch" src="https://github.com/user-attachments/assets/6407389f-b33d-4a8e-96cc-3e0dd1617b5d" />
 
 ## Example Commands
 You can print the program help menu using the -h option:
