@@ -196,7 +196,7 @@ The program produces several plots to help the user assess quality of data both 
 * If the IFI score column is included, histograms will be produced to show the distribution of IFI scores both before and after filtering.
 * Two plots are produced if the program is used to identify duplicate genotypes:
 	* A histogram showing the distribution of pairwise genotype mismatches among all pairs of individuals.
-	* A quantile-quantile (QQ) plot that shows whether mismatch distribution is normally distributed. Duplicated individuals, if any, should be isolated in the lower left corner of the plot, usually with approximately 0-5 mismatching loci. This plot can be used to help identify an appropriate `-T / --dupthresh` threshold (default = 3 mismatching loci). See the two examples below:
+	* A quantile-quantile (QQ) plot that shows whether mismatch distribution is normally distributed. Duplicate pairs of individuals, if any, should be represented by the isolated cluster of points in the lower left corner of the plot. Duplicated individuals will usually have approximately 0-5 mismatching loci. This plot can be used to help identify an appropriate `-T / --dupthresh` threshold (default = 3 mismatching loci). See the two examples below:
 <img width="407" height="412" alt="qqplot mismatch" src="https://github.com/user-attachments/assets/99707773-b106-4c41-9668-cf8e64d445da" /><img width="407" height="412" alt="qqplot mismatch" src="https://github.com/user-attachments/assets/6407389f-b33d-4a8e-96cc-3e0dd1617b5d" />
 
 ## Example Commands
