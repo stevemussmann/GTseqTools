@@ -1,0 +1,47 @@
+schema_version: 1
+
+context:
+  version: "1.0.1"
+  python_min: "3.14"
+
+package:
+  name: gtseqtools
+  version: ${{ version }}
+
+source:
+  url: https://github.com/stevemussmann/GTseqTools/archive/v${{ version }}.tar.gz
+  sha256: ba0ba6bc4ec9485834f126d176d658f33551291b3182974ad9a6a21363abbe00
+
+build:
+  number: 0
+  noarch: python
+  script: ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+
+requirements:
+  host:
+    - python ${{ python_min }}.*
+    - pip
+    - setuptools
+  run:
+    - python >=${{ python_min }}
+    - matplotlib-base >=3.10.7
+    - numpy >=2.3.4
+    - openpyxl >=3.1.5
+    - pandas >=2.3.3
+
+tests:
+  - python:
+      imports:
+        - GTseqTools
+      pip_check: true
+      python_version: ${{ python_min }}.*
+
+about:
+  license: GPL-3.0-only
+  license_file: LICENSE
+  homepage: https://github.com/stevemussmann/GTseqTools
+  summary: "Filtering, file conversion, and QA/QC of GTseq data."
+
+extra:
+  recipe-maintainers:
+    - stevemussmann
