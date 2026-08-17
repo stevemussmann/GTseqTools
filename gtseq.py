@@ -759,13 +759,13 @@ class GTseq():
 
 		if remove:
 			junk = self.removeRows(df, remove)
+			# track number of removed individuals for sankey plot
+			self.sankeyIndDict["Source"].append("Discarded")
+			self.sankeyIndDict["Filter"].append("pmissind")
+			self.sankeyIndDict["Count"].append(str(len(removeMiss)))
+
 
 		print("")
-
-		# track number of removed individuals for sankey plot
-		self.sankeyIndDict["Source"].append("Discarded")
-		self.sankeyIndDict["Filter"].append("pmissind")
-		self.sankeyIndDict["Count"].append(str(len(removeMiss)))
 
 		return junk
 
