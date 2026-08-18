@@ -114,6 +114,12 @@ class ComLine():
 							dest='genoerrfile',
 							help='Specify a list of marker-specific genotyping error rates (optional).'
 		)
+		colony.add_argument("-F", "--pfemale",
+							dest='pfemale',
+							type=float,
+							default=0.5,
+							help="Enter the assumed probability of mother being among candidate parents (default = 0.5). Value is ignored if no candidate mothers provided in the dataset."
+		)
 		colony.add_argument("-L", "--runlength",
 							dest='runlength',
 							type=int,
@@ -121,23 +127,17 @@ class ComLine():
 							choices={1,2,3,4},
 							help="1/2/3/4 = Short/Medium/Long/VeryLong run (default = 2)."
 		)
-		colony.add_argument("-N", "--runname",
-							dest='runname',
-							type=str,
-							default='gtSeqConvert',
-							help="Run name for colony file format (default = 'gtSeqConvert')"
-		)
 		colony.add_argument("-M", "--pmale",
 							dest='pmale',
 							type=float,
 							default=0.5,
 							help="Enter the assumed probability of father being among candidate parents (default = 0.5). Value is ignored if no candidate fathers provided in the dataset."
 		)
-		colony.add_argument("-F", "--pfemale",
-							dest='pfemale',
-							type=float,
-							default=0.5,
-							help="Enter the assumed probability of mother being among candidate parents (default = 0.5). Value is ignored if no candidate mothers provided in the dataset."
+		colony.add_argument("-N", "--runname",
+							dest='runname',
+							type=str,
+							default='gtSeqConvert',
+							help="Run name for colony file format (default = 'gtSeqConvert')"
 		)
 		colony.add_argument("-y", "--mpoly",
 							dest='mpoly',
@@ -153,15 +153,15 @@ class ComLine():
 							choices={0,1},
 							help="0/1 = Polygamy/Monogamy for females [default = 0 (polygamy)]."
 		)
-		structure.add_argument("-t", "--twoline",
-							dest='twoline',
-							action='store_true',
-							help="Turn on twoline format version for Structure output"
-		)
 		structure.add_argument("-H", "--header",
 							dest='header',
 							action='store_false',
 							help="Turn off printing of header line with locus names for Structure output"
+		)
+		structure.add_argument("-t", "--twoline",
+							dest='twoline',
+							action='store_true',
+							help="Turn on twoline format version for Structure output"
 		)
 		conversion.add_argument("-a", "--allelematch",
 							dest='allelematch',

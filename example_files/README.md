@@ -4,10 +4,12 @@ This directory contains example files to help with properly formatting inputs an
 
 ## Files
 This directory contains the following files:
-* **`exampleData.xlsx`**: This is the example genotype data file. It contains extra data columns for NewHybrids, Sequoia, and SNPPIT data file conversions. 
+* **`exampleData.xlsx`**: This is the example genotype data file. It contains extra data columns for Colony2, NewHybrids, Sequoia, and SNPPIT data file conversions. 
+* **`markerErrorRates.txt`**: This file contains locus-specific genotype error rates that can be applied to the Colony2 output format. 
 * **`sexID.txt`**: This is an example file for listing sex ID markers to be removed from the genotype file. Similar formats are used for processes such as removing species ID markers, unwanted individual samples, and other purposes. 
 * **`snppitMap.txt`**: This is a SNPPIT map file that is required for the SNPPIT conversion. 
 
+**All files in the `example_files` directory contain 'dummy' data that were generated and modified solely for the purpose of testing and validating outputs of GTseqTools.**
 
 ## Example Processing
 The bash script in the code block below shows an example of how to process the example data file in this directory.
@@ -58,3 +60,4 @@ The fourth line lists the various output formats I have requested:
 * `--newhybrids`: Output a file in NewHybrids format
 * `--snppit`: Output a file in SNPPIT format
 * `--sequoia`: Output a file in Sequoia format
+
