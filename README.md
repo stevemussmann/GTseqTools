@@ -119,8 +119,9 @@ Colony Format Arguments:
 * **-e / --droperr:** Enter the assumed allelic dropout rate (default = 0.0005).
 * **-E / --genoerr:** Enter the assumed genotyping error rate (default = 0.0005).
 * **-L / --runlength:** 1/2/3/4 = Short/Medium/Long/VeryLong run (default = 2).
-* **-M / --pmale:** Enter the assumed probability of father being among candidate parents (default = 0.5). Value is ignored if no candidate fathers provided in the dataset. **NOT IMPLEMENTED YET**
-* **-F / --pfemale:** Enter the assumed probability of mother being among candidate parents (default = 0.5). Value is ignored if no candidate mothers provided in the dataset. **NOT IMPLEMENTED YET**
+* **-N / --runname:** Enter the name for the colony file format (default = 'gtSeqConvert').
+* **-M / --pmale:** Enter the assumed probability of father being among candidate parents (default = 0.5). Value is ignored if no candidate fathers provided in the dataset.
+* **-F / --pfemale:** Enter the assumed probability of mother being among candidate parents (default = 0.5). Value is ignored if no candidate mothers provided in the dataset.
 
 Structure Format Arguments:
 * **-H / --header:** Turn off printing of header line with locus names for Structure output

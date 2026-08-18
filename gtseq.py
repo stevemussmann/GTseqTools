@@ -527,7 +527,7 @@ class GTseq():
 				remove.append(col)
 
 		if remove:
-			print("Colony2 column is being removed.")
+			print("Colony2 column is being removed.\n")
 			colonyCol = self.removeColumns(df, remove)
 		else:
 			print("Colony2 column not detected in input file.\n")
