@@ -78,7 +78,7 @@ class GTseq():
 		print(f"\nCalculating {prepost} missing data statistics.")
 
 		# remove metadata columns so they are not potentially counted in missing data
-		metadataCols = ['Population ID', 'IFI', 'ZOPT', 'Sex', 'POPCOLUMN_SEX', 'POPCOLUMN_REPRO_YEARS', 'POPCOLUMN_SPAWN_GROUP', 'OFFSPRINGCOLUMN_BORN_YEAR', 'OFFSPRINGCOLUMN_SAMPLE_YEAR', 'OFFSPRINGCOLUMN_AGE_AT_SAMPLING'] # list of all possible metadata columns. All others will be treated as genotype data
+		metadataCols = ['Population ID', 'colony2', 'IFI', 'ZOPT', 'Sex', 'POPCOLUMN_SEX', 'POPCOLUMN_REPRO_YEARS', 'POPCOLUMN_SPAWN_GROUP', 'OFFSPRINGCOLUMN_BORN_YEAR', 'OFFSPRINGCOLUMN_SAMPLE_YEAR', 'OFFSPRINGCOLUMN_AGE_AT_SAMPLING'] # list of all possible metadata columns. All others will be treated as genotype data
 
 		remove = list() # track list of columns to be removed
 		metaCols = pandas.DataFrame() # make empty dataframe to hold removed columns
@@ -511,11 +511,29 @@ class GTseq():
 			print("IFI score column is being removed.")
 			ifiCols = self.removeColumns(df, remove)
 		else:
-			print("IFI score column not detected in input file.")
-			print("")
+			print("IFI score column not detected in input file.\n")
 
 		return ifiCols
-	
+
+	def removeColony(self, df):
+		print("Checking for presence of optional Colony2 column.")
+		optionalCols = ['colony2']
+
+		remove = list()
+		colonyCol = pandas.DataFrame()
+
+		for col in optionalCols:
+			if col in df.columns:
+				remove.append(col)
+
+		if remove:
+			print("Colony2 column is being removed.")
+			colonyCol = self.removeColumns(df, remove)
+		else:
+			print("Colony2 column not detected in input file.\n")
+
+		return colonyCol
+
 	def removeSnppit(self, df):
 		print("Checking for presence of optional SNPPIT columns.")
 		#list of all possible optional snppit columns

@@ -24,7 +24,7 @@ SNPPIT="snppitMap.txt"
 
 gtSeqConvert.py -x $FILE -d $SEX -Z $SNPPIT \
 	-m -l 0.1 -i 0.2 -o "individuals" -D \
-	--genepop --newhybrids --snppit --sequoia
+	--colony --genepop --newhybrids --snppit --sequoia
 
 exit
 ```
@@ -38,6 +38,7 @@ This set of options will perform the following operations:
 * `-i 0.2`: Remove individuals with >20% missing data
 * `-o "individuals"`: This option will cause the `-i` filter to be applied before the `-l` filter
 * `-D`: Screen the input file for duplicate genotypes
+* `--colony`: Output a file in Colony2 format
 * `--genepop`: Output a file in Genepop format
 * `--newhybrids`: Output a file in NewHybrids format
 * `--snppit`: Output a file in SNPPIT format

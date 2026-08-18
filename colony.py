@@ -7,8 +7,9 @@ import random
 class Colony():
 	'Class for converting pandas dataframe to colony format'
 
-	def __init__(self, df, droperr, genoerr, pmale, pfemale, runlen, inbreed):
+	def __init__(self, df, colonyCol, droperr, genoerr, pmale, pfemale, runlen, inbreed):
 		self.df = df
+		self.colonyCol = colonyCol
 		self.ldict = df.columns.tolist()
 
 		# dict to convert alleles to number-coded genotypes

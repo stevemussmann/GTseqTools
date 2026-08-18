@@ -15,10 +15,11 @@ import os
 class GTconvert():
 	'Class for converting pandas dataframes into various genotype files'
 
-	def __init__(self, pdf, popdata, struBool, headBool, snppitmap, snppitCols, newhybCols, infile, droperr, genoerr, runlen, pmale, pfemale, inbreed, log):
+	def __init__(self, pdf, popdata, struBool, headBool, snppitmap, snppitCols, newhybCols, infile, droperr, genoerr, runlen, pmale, pfemale, inbreed, colonyCol, log):
 		self.snppitmap = snppitmap
 		self.snppitCols = snppitCols
 		self.newhybCols = newhybCols
+		self.colonyCol = colonyCol
 		self.df = pdf
 		self.pd = popdata
 		self.infile = infile
@@ -70,7 +71,7 @@ class GTconvert():
 
 	def conv_colony(self):
 		#print("This function will convert to colony format")
-		cl = Colony(self.df, self.droperr, self.genoerr, self.pmale, self.pfemale, self.runlen, self.inbreed)
+		cl = Colony(self.df, self.colonyCol, self.droperr, self.genoerr, self.pmale, self.pfemale, self.runlen, self.inbreed)
 		output = cl.convert()
 		return output
 

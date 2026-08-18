@@ -231,6 +231,9 @@ data <- read.table("filename.allelematch", header=TRUE, sep=",")
 amData <- amDataset(data, missingCode="-99", indexColumn=1, metaDataColumn=2)
 ```
 
+### Colony
+Add a column to the file titled exactly `colony2`. In this column, identify all potential offspring as `offspring` and all candidate parents by their sex (`male` or `female`). The terms `offspring`, `male`, and `female` are all case-insensitive.
+
 ### gRandma
 A special filter is applied to the gRandma-formatted output to retain only biallelic SNPs for which each of the following conditions is met by at least one individual in the data file:
 1. Homozygous for allele 1
