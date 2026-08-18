@@ -167,7 +167,7 @@ def main():
 		gtFile.plotIFI(filteredIFIcols, "postfilter") # makes post-filter ifi score plot
 
 	#begin conversion process
-	conversion = GTconvert(pdf, pops, input.args.twoline, input.args.header, input.args.snppitmap, snppitCols, newhybCols, input.args.infile, input.args.droperr, input.args.genoerr, input.args.runlength, input.args.pmale, input.args.pfemale, input.args.inbreed, colonyCol, input.args.runname, logfile)
+	conversion = GTconvert(pdf, pops, input.args.twoline, input.args.header, input.args.snppitmap, snppitCols, newhybCols, input.args.infile, input.args.droperr, input.args.genoerr, input.args.runlength, input.args.pmale, input.args.pfemale, input.args.inbreed, colonyCol, input.args.runname, input.args.mpoly, input.args.fpoly, input.args.genoerrfile, logfile)
 	conversion.convert(convDict)
 
 main()

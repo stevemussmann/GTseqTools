@@ -7,7 +7,7 @@ import random
 class Colony():
 	'Class for converting pandas dataframe to colony format'
 
-	def __init__(self, df, cDat, droperr, genoerr, pmale, pfemale, runlen, inbreed, runname):
+	def __init__(self, df, cDat, droperr, genoerr, pmale, pfemale, runlen, inbreed, runname, mpoly, fpoly, colErr):
 		self.df = df
 		self.ldict = df.columns.tolist()
 
@@ -18,7 +18,6 @@ class Colony():
 		# dict to convert alleles to number-coded genotypes
 		self.nucleotides = {'A': '101', 'C': '102', 'G': '103', 'T': '104', '-': '105', '0': '00'}
 
-		## CHANGE THESE DYNAMICALLY AT SOME POINT
 		self.derr = droperr # allelic dropout rate
 		self.gerr = genoerr # genotyping error rate
 		self.pmale = pmale # probability of father being present among candidates
@@ -26,6 +25,14 @@ class Colony():
 		self.runname = runname
 		self.inbreed = inbreed
 		self.runlen = runlen
+		self.mpoly = str(mpoly) # male polygamy/monogamy
+		self.fpoly = str(fpoly) # female polygamy/monogamy
+		self.colErr = colErr # file of locus error rates
+		self.errDict = dict() # dict of locus error rates
+
+		# test if genotype error file used and parse if it exists
+		if self.colErr != None:
+			self.parseColErr()
 	
 	def convert(self):
 		output = list()
@@ -66,7 +73,7 @@ class Colony():
 		output.append(inbreedline)
 
 		output.append("0         ! 0/1=Diploid species/HaploDiploid species")
-		output.append("0  0      ! 0/1=Polygamy/Monogamy for males & females") # FUTURE UPDATE: change this line so polyandry and polygyny settings taken into account
+		output.append(f"{self.mpoly}  {self.fpoly}      ! 0/1=Polygamy/Monogamy for males & females")
 		output.append("0         ! 0/1 = Clone inference = No/Yes")
 		output.append("1         ! 0/1=Scale full sibship=No/Yes")
 		output.append("0         ! 0/1/2/3/4=No/Weak/Medium/Strong sibship prior; 4=Optimal sibship prior for Ne")
@@ -97,7 +104,14 @@ class Colony():
 		output.append(adrString)
 
 		# print string of genotyping error rates
-		gerString = self.prepValues(loci, self.gerr)
+		if not self.errDict:
+			gerString = self.prepValues(loci, self.gerr)
+		else:
+			errList = list()
+			for l in locusNames:
+				val = Decimal(str(self.errDict[l])).quantize(Decimal('0.0001'), rounding=ROUND_HALF_EVEN)
+				errList.append(str(val))
+			gerString = " ".join(errList)
 		output.append(gerString)
 
 		
@@ -249,6 +263,7 @@ class Colony():
 
 		return output
 
+
 	def parseColErr(self):
 		print("Using user-specified error rates from", str(self.colErr))
 		with open(self.colErr, 'r') as fh:
@@ -259,7 +274,6 @@ class Colony():
 					self.errDict[locusErr[0]] = self.gerr # if locus error < self.gerr value, the locus will be set to self.gerr. This is because it is unlikely any locus actually has 0 genotyping error. 
 				else:
 					self.errDict[locusErr[0]] = locusErr[1]
-		#print(self.errDict)
 
 
 	def checkNameLengths(self):

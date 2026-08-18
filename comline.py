@@ -108,12 +108,12 @@ class ComLine():
 							dest='genoerr',
 							type=float,
 							default=0.0005,
-							help="Enter the assumed genotyping error rate (default = 0.0005)."
+							help="Enter the assumed genotyping error rate (default = 0.0005). If the -f/--genoerrfile option is used, the value of -E/--genoerr will override error values < -E/--genoerr."
 		)
-#		colony.add_argument("-e", "--genoerrfile", ## NEED TO USE DIFFERENT LETTER
-#							dest='genoerrfile',
-#							help='Specify a list of marker-specific genotyping error rates (optional).'
-#		)
+		colony.add_argument("-f", "--genoerrfile",
+							dest='genoerrfile',
+							help='Specify a list of marker-specific genotyping error rates (optional).'
+		)
 		colony.add_argument("-L", "--runlength",
 							dest='runlength',
 							type=int,
@@ -138,6 +138,20 @@ class ComLine():
 							type=float,
 							default=0.5,
 							help="Enter the assumed probability of mother being among candidate parents (default = 0.5). Value is ignored if no candidate mothers provided in the dataset."
+		)
+		colony.add_argument("-y", "--mpoly",
+							dest='mpoly',
+							type=int,
+							default=0,
+							choices={0,1},
+							help="0/1 = Polygamy/Monogamy for males [default = 0 (polygamy)]."
+		)
+		colony.add_argument("-Y", "--fpoly",
+							dest='fpoly',
+							type=int,
+							default=0,
+							choices={0,1},
+							help="0/1 = Polygamy/Monogamy for females [default = 0 (polygamy)]."
 		)
 		structure.add_argument("-t", "--twoline",
 							dest='twoline',
@@ -244,6 +258,8 @@ class ComLine():
 			self.exists(self.args.removeloci)
 		if self.args.keeppops:
 			self.exists(self.args.keeppops)
+		if self.args.genoerrfile:
+			self.exists(self.args.genoerrfile)
 		if self.args.snppit == True:
 			if self.args.snppitmap is None:
 				print("")

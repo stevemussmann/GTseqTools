@@ -3,7 +3,8 @@
 Program for filtering GTseq genotype data, conducting data quality assessment, and converting to various file formats.
 
 ## Python Version Compatibility and Dependencies
-This program has been tested with Python = 3.14 but it should be compatible with Python >= 3.8 (Syntax is used that was first introduced to Python in v3.8). Testing and development was conducted with the following versions of Python libraries:
+This program has been tested with Python = 3.14 but it should be compatible with Python >= 3.8 (Syntax is used that was first introduced to Python in v3.8). 
+Testing and development was conducted with the following versions of Python libraries:
 - holoviews = 1.23.1
 - matplotlib = 3.10.7
 - numpy = 2.3.4
@@ -49,7 +50,7 @@ gtSeqConvert.py --help
 
 ## Development Notes
 - Additional file format conversion options will be considered upon request.
-- Please report any bugs encountered via the github 'issues' menu above. If possible, please attach copies of all input files and include the exact command that caused the error. 
+- Please report any bugs encountered via the github 'issues' menu above. I must be able to replicate errors to fix them, so please attach copies of all input files and include the exact command that caused the error. 
 
 ## Order of operations
 The program conducts all filtering procedures prior to file format conversion. Filtering is conducted in the following order:
@@ -70,19 +71,20 @@ The program conducts all filtering procedures prior to file format conversion. F
 - The minimal input is either a .csv file or a Microsoft Excel formatted file (.xlsx). 
 - If using a .xlsx file, all data should be in a worksheet titled 'Final Genotypes'. Any other worksheets in an .xlsx file will be ignored.
 - Regardless of input file type the first row will be a header line containing the following:
-    - Cell A1 will specify the individual sample column
-	- Cell B1 will contain the text 'Population ID'. This column will contain collection group information for all individuals
+    - Cell A1 will specify the individual sample column, and must contain the exact text `Sample`.
+	- Cell B1 must contain the exact text `Population ID`. This column will contain collection group information for all individuals
 	- The remaining columns of the file can appear in any order. Columns containing genotype data should be contain locus names.
-	- Special columns need to be included for certain file formats (e.g., SNPPIT, Sequoia, etc.) These columns need to contain specific names in the header line (see explanations below in [File Conversion Input Details](#conversion)) and can appear as the columns either before or after the genotype data.
+	- Special columns need to be included for certain file formats (e.g., Colony, SNPPIT, Sequoia, etc.) These columns need to contain specific names in the header line (see explanations below in [File Conversion Input Details](#conversion)) and can appear as the columns either before or after the genotype data.
 	- You are encouraged to include the IFI score column from the [GTseq-Pipeline](https://github.com/GTseq/GTseq-Pipeline) output, but this is not required.
 - Genotype data should be encoded using the output format native to the [GTseq Pipeline](https://github.com/GTseq/GTseq-Pipeline). In other words:
 	- Only characters 'A', 'C', 'G', 'T', and '-' will be recognized as valid alleles. 
 	- The alleles for a genotype should be concatenated per locus (e.g., genotype = `AA`, `AT`, etc.). 
 	- Indel alleles should be coded as '-' (e.g., genotype = `A-`, `--`, etc.). 
 	- A missing genotype for a locus should be recorded as a single '0' (e.g., genotype = `0`). 
-	- Sex ID loci can be coded as sex genotypes (e.g., `XX`, `XY`, etc.), but only if the `-d / --sexid` option is used since this option will strip these loci from the data file before any file conversions take place.
+	- Usage of other characters in the genotype data will likely result in the program throwing error messages. 
+	- Exceptions to this rule exist for the sex ID loci, which can be coded as sex genotypes (e.g., `XX`, `XY`, etc.), **but only if the `-d / --sexid` option is used** since this option will strip these loci from the data file before any file conversions take place.
 
-If you are using the GTscore pipeline for genotyping, I have [forked a copy of this repository](https://github.com/stevemussmann/GTscore) and included my [transposeDataGTscore.pl](https://github.com/stevemussmann/GTscore/blob/master/transposeDataGTscore.pl) script which will mostly transform the GTscore genotype outputs to a format compatible with this conversion program. Just add the 'Population ID' column and any optional columns, then save the file in .csv or .xlsx format. Make sure the worksheet is titled 'Final Genotypes' if using .xlsx format.
+If you are using the GTscore pipeline for genotyping, I have [forked a copy of this repository](https://github.com/stevemussmann/GTscore) and included my [transposeDataGTscore.pl](https://github.com/stevemussmann/GTscore/blob/master/transposeDataGTscore.pl) script which will mostly transform the GTscore genotype outputs to a format compatible with `GTseqTools`. Just add and populate the 'Population ID' column, do the same for any desired / necessary optional columns, and then save the file in .csv or .xlsx format. Make sure the worksheet is titled 'Final Genotypes' if using .xlsx format.
 
 ### Optional Inputs
 You can provide plain text files with individuals or loci to be stripped from the input file (see `-r`, and `-R` options in the [Filtering Arguments](#filtering) below). Each of these files should contain a single column of data listing a single individual or locus per line.
@@ -117,11 +119,14 @@ Optional Arguments: <a name="optional"></a>
 
 Colony Format Arguments:
 * **-e / --droperr:** Enter the assumed allelic dropout rate (default = 0.0005).
-* **-E / --genoerr:** Enter the assumed genotyping error rate (default = 0.0005).
-* **-L / --runlength:** 1/2/3/4 = Short/Medium/Long/VeryLong run (default = 2).
-* **-N / --runname:** Enter the name for the colony file format (default = 'gtSeqConvert').
-* **-M / --pmale:** Enter the assumed probability of father being among candidate parents (default = 0.5). Value is ignored if no candidate fathers provided in the dataset.
+* **-E / --genoerr:** Enter the assumed genotyping error rate (default = 0.0005). If the `-f / --genoerrfile` option is used, the value of `-E / --genoerr` will override error values < `-E / --genoerr`.
+* **-f / --genoerrfile:** Specify a list of marker-specific genotyping error rates (optional). This should be in a tab-delmited format, one locus per line. Column 1 = locus name, Column 2 = error rate.
 * **-F / --pfemale:** Enter the assumed probability of mother being among candidate parents (default = 0.5). Value is ignored if no candidate mothers provided in the dataset.
+* **-L / --runlength:** 1/2/3/4 = Short/Medium/Long/VeryLong run (default = 2).
+* **-M / --pmale:** Enter the assumed probability of father being among candidate parents (default = 0.5). Value is ignored if no candidate fathers provided in the dataset.
+* **-N / --runname:** Enter the name for the colony file format (default = 'gtSeqConvert').
+* **-y / --mpoly:** 0/1 = Polygamy/Monogamy for males [default = 0 (polygamy)].
+* **-Y / --fpoly:** 0/1 = Polygamy/Monogamy for females [default = 0 (polygamy)].
 
 Structure Format Arguments:
 * **-H / --header:** Turn off printing of header line with locus names for Structure output
@@ -142,7 +147,10 @@ Current supported file conversions (**You are required to specify at least one c
 * **-z / --snppit:** (under development) Prints a file in snppit format (-Z option is also required for snppit conversion as specified above).
 
 ## Outputs
-Outputs retain the input file (-x / --infile) base name, but change the output file extension depending upon format. Most file conversions result in a single file. Examples of exceptions include Plink and Structure format. The Structure conversion creates a .distructLabels.txt file which contains a list of population numbers and their associated population names. This file can be input into [distruct](https://rosenberglab.stanford.edu/distruct.html), or used in the [CLUMPAK](http://clumpak.tau.ac.il/) pipeline for visualizing outputs of the program [Structure](https://web.stanford.edu/group/pritchardlab/structure.html). File formats are output with the file extensions in the table below. Population maps are also provided for the Coancestry, Genepop, and NewHybrids formats. These provide you with the order of the samples as they appear in the converted genotype files, as well as the population for each individual (pulled from the 'Population ID' column in your input file). The Sequoia option will output the life history file that is required for this program (i.e., `sequoia.lh.txt`).
+* Most outputs retain the input file (-x / --infile) base name, but change the output file extension depending upon format. The Colony format is an exception, because the Colony output will always be named `colony2.dat`. 
+* Most file conversions result in a single file. Examples of exceptions include Plink and Structure format. The Structure conversion creates a .distructLabels.txt file which contains a list of population numbers and their associated population names. This file can be input into [distruct](https://rosenberglab.stanford.edu/distruct.html), or used in the [CLUMPAK](http://clumpak.tau.ac.il/) pipeline for visualizing outputs of the program [Structure](https://web.stanford.edu/group/pritchardlab/structure.html). 
+* Population maps are also provided for the Coancestry, Genepop, and NewHybrids formats. These provide you with the order of the samples as they appear in the converted genotype files, as well as the population for each individual (pulled from the 'Population ID' column in your input file). The Sequoia option will output the life history file that is required for this program (i.e., `sequoia.lh.txt`).
+* File formats are output with the file extensions in the table below: 
 
 <div align="center">
   
@@ -234,6 +242,8 @@ amData <- amDataset(data, missingCode="-99", indexColumn=1, metaDataColumn=2)
 
 ### Colony
 Add a column to the file titled exactly `colony2`. In this column, identify all potential offspring as `offspring` and all candidate parents by their sex (`male` or `female`). The terms `offspring`, `male`, and `female` are all case-insensitive.
+
+You can also specify locus-specific genotyping error rates with the `-f / --genoerrfile` command line option. The input file for this option should be a tab-delimited plain text file. One locus per line. Column 1 = locus name, column 2 = error rate. See the example file `markerErrorRates.txt` in the `example_files` directory of this repository. All error rates in this file that are < `-E / genoerr` will be overwritten with the value of `-E / genoerr`. The purpose of this is primarily to remove any zero values, since it is unlikely that any locus actually has a genotyping error rate = 0. All error rates will also be rounded to four decimal places (e.g., 0.0001). 
 
 ### gRandma
 A special filter is applied to the gRandma-formatted output to retain only biallelic SNPs for which each of the following conditions is met by at least one individual in the data file:
