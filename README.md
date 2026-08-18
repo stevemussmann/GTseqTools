@@ -209,6 +209,8 @@ The program produces several plots to help the user assess quality of data both 
 
 <img width="407" height="412" alt="qqplot mismatch" src="https://github.com/user-attachments/assets/99707773-b106-4c41-9668-cf8e64d445da" /><img width="407" height="412" alt="qqplot mismatch" src="https://github.com/user-attachments/assets/6407389f-b33d-4a8e-96cc-3e0dd1617b5d" />
 
+The y-axis values are useful for identifying a proper threshold. In the left example, all pairs of duplicate individuals had =< 3 mismatching loci. In the right example, all duplicate pairs had =< 5 mismatching loci. There is usually a large gap between the pairs of duplicates and pairs of non-duplicated individuals. 
+
 ## Example Commands
 You can print the program help menu using the -h option:
 ```
