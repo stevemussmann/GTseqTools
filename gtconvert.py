@@ -134,7 +134,7 @@ class GTconvert():
 	def printOutput(self, output, fileName, suffix):
 		# make new file name for writing
 		if suffix == "dat":
-			outName = "Colony2.Dat"
+			outName = "colony2.dat"
 		else:
 			fileName = fileName.replace(" ", "_") #replace spaces in original filename if they exist
 			nameList = fileName.split('.')

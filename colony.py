@@ -7,13 +7,16 @@ import random
 class Colony():
 	'Class for converting pandas dataframe to colony format'
 
-	def __init__(self, df, colonyCol, droperr, genoerr, pmale, pfemale, runlen, inbreed):
+	def __init__(self, df, cDat, droperr, genoerr, pmale, pfemale, runlen, inbreed):
 		self.df = df
-		self.colonyCol = colonyCol
 		self.ldict = df.columns.tolist()
 
+		# account for individuals removed by filters
+		common_records = pandas.merge(self.df, cDat, on='Sample', how='inner')
+		self.cDat = common_records.pop('colony2') # colony data (potential male parent, female parent, offspring)
+
 		# dict to convert alleles to number-coded genotypes
-		self.nucleotides = {'A': '01', 'C': '02', 'G': '03', 'T': '04', '-': '05', '0': '00'}
+		self.nucleotides = {'A': '101', 'C': '102', 'G': '103', 'T': '104', '-': '105', '0': '00'}
 
 		## CHANGE THESE DYNAMICALLY AT SOME POINT
 		self.derr = droperr # allelic dropout rate
@@ -23,12 +26,20 @@ class Colony():
 		self.runname = "gtSeqConvert"
 		self.inbreed = inbreed
 		self.runlen = runlen
-
+	
 	def convert(self):
 		output = list()
 
+		## check lengths of individual names; >20 characters not recognized by colony2
+		# exit function early and return empty list if names are too long
+		TorF = self.checkNameLengths()
+		if TorF:
+			print("WARNING: An empty colony2.dat file will be written. Please fix sample names and try again.")
+			return output
+
 		randseed = random.randint(1000, 9999) # 4-digit random number seed
-		colonyCounts = len(self.df) # counts of offspring and parents
+		#colonyCounts = len(self.df) # counts of offspring and parents ##OLD CODE
+		colonyCounts = self.cDat.str.lower().value_counts().to_dict() # counts of offspring and parents
 
 		loci = nLoci = int(len(self.df.columns)) # number of loci in dataframe
 
@@ -40,7 +51,7 @@ class Colony():
 		output.append(datasetline)
 		output.append(datasetline)
 
-		offspringline = str(colonyCounts) + "      ! Number of offspring in the sample"
+		offspringline = str(colonyCounts["offspring"]) + "      ! Number of offspring in the sample"
 		output.append(offspringline)
 
 		lociline = str(loci) + "       ! Number of loci"
@@ -92,75 +103,133 @@ class Colony():
 
 		
 		for (sampleName, row) in self.df.iterrows():
-			sampleList = list()
-			locusList = list()
-			sampleList.append(str(sampleName))
-			for (locus, genotype) in row.items():
-				if not pandas.isnull(genotype):
-					if genotype == 0:
-						locusList.append("0")
-						locusList.append("0")
+			if self.cDat[sampleName].casefold() == "offspring".casefold():
+				sampleList = list()
+				locusList = list()
+				sampleList.append(str(sampleName))
+				for (locus, genotype) in row.items():
+					if not pandas.isnull(genotype):
+						if genotype == 0:
+							locusList.append("0")
+							locusList.append("0")
+						else:
+							mid = len(genotype) // 2
+							a1 = genotype[:mid]
+							a2 = genotype[mid:]
+							a1 = self.nucleotides[a1]
+							a2 = self.nucleotides[a2]
+							locusList.append(str(a1))
+							locusList.append(str(a2))
 					else:
-						mid = len(genotype) // 2
-						a1 = genotype[:mid]
-						a2 = genotype[mid:]
-						a1 = self.nucleotides[a1]
-						a2 = self.nucleotides[a2]
-						locusList.append(str(a1))
-						locusList.append(str(a2))
-				else:
-					locusList.append("0")
-					locusList.append("0")
-			locusStr = " ".join(locusList)
-			sampleList.append(locusStr)
-			sampleStr = " ".join(sampleList)
-			output.append(sampleStr)
+						locusList.append("0")
+						locusList.append("0")
+				locusStr = " ".join(locusList)
+				sampleList.append(locusStr)
+				sampleStr = " ".join(sampleList)
+				output.append(sampleStr)
 
 		output.append("")
 
 		# set probabilities that male and/or female parent included among candidates
-		output.append("0.0  0.0     !prob. of dad/mum included in the candidates")
+		if( "male" not in colonyCounts) and ("female" not in colonyCounts):
+			output.append("0.0  0.0     !prob. of dad/mum included in the candidates")
+		else:
+			templine = list() # list to build probabilities line
+			if "male" in colonyCounts:
+				templine.append(str("0.5")) # MAKE DYNAMIC WITH self.pmale
+			else:
+				templine.append("0.0")
+
+			if "female" in colonyCounts:
+				templine.append(str("0.5")) # MAKE DYNAMIC WITH self.pfemale
+			else:
+				templine.append("0.0")
+
+			templine.append("      !prob. of dad/mum included in the candidates")
+			mfCountString = " ".join(templine)
+
+			output.append(mfCountString)
 	
 		# set number of male and/or female parents
-		output.append("0  0         !numbers of candidate males & females")
+		if( "male" not in colonyCounts) and ("female" not in colonyCounts):
+			output.append("0  0         !numbers of candidate males & females")
+		else:
+			templine = list() # list to build line from
+			if "male" in colonyCounts:
+				templine.append(str(colonyCounts["male"]))
+			else:
+				templine.append("0")
+
+			if "female" in colonyCounts:
+				templine.append(str(colonyCounts["female"]))
+			else:
+				templine.append("0")
+
+			templine.append("      !numbers of candidate males & females")
+			mfCountString = " ".join(templine)
+
+			output.append(mfCountString)
+
 		output.append("")
-#		# genotypes of male parent candidates go here
-#		if "male" in colonyCounts:
-#			for (sampleName, row) in self.df.iterrows():
-#				if self.cDat[sampleName].casefold() == "male".casefold():
-#					sampleList = list()
-#					locusList = list()
-#					sampleList.append(str(sampleName))
-#					for (locus, genotype) in row.items():
-#						loc = locus[:-2]
-#						if not pandas.isnull(genotype):
-#							locusList.append(str(self.ldict[loc][genotype]))
-#						else:
-#							locusList.append("0")
-#					locusStr = " ".join(locusList)
-#					sampleList.append(locusStr)
-#					sampleStr = " ".join(sampleList)
-#					output.append(sampleStr)
-#
+
+		# genotypes of male parent candidates go here
+		if "male" in colonyCounts:
+			for (sampleName, row) in self.df.iterrows():
+				if self.cDat[sampleName].casefold() == "male".casefold():
+					sampleList = list()
+					locusList = list()
+					sampleList.append(str(sampleName))
+					for (locus, genotype) in row.items():
+						if not pandas.isnull(genotype):
+							if genotype == 0:
+								locusList.append("0")
+								locusList.append("0")
+							else:
+								mid = len(genotype) // 2
+								a1 = genotype[:mid]
+								a2 = genotype[mid:]
+								a1 = self.nucleotides[a1]
+								a2 = self.nucleotides[a2]
+								locusList.append(str(a1))
+								locusList.append(str(a2))
+						else:
+							locusList.append("0")
+							locusList.append("0")
+					locusStr = " ".join(locusList)
+					sampleList.append(locusStr)
+					sampleStr = " ".join(sampleList)
+					output.append(sampleStr)
+
 		output.append("")
-#		# genotypes of female parent candidates go here
-#		if "female" in colonyCounts:
-#			for (sampleName, row) in self.df.iterrows():
-#				if self.cDat[sampleName].casefold() == "female".casefold():
-#					sampleList = list()
-#					locusList = list()
-#					sampleList.append(str(sampleName))
-#					for (locus, genotype) in row.items():
-#						loc = locus[:-2]
-#						if not pandas.isnull(genotype):
-#							locusList.append(str(self.ldict[loc][genotype]))
-#						else:
-#							locusList.append("0")
-#					locusStr = " ".join(locusList)
-#					sampleList.append(locusStr)
-#					sampleStr = " ".join(sampleList)
-#					output.append(sampleStr)
-#
+
+		# genotypes of female parent candidates go here
+		if "female" in colonyCounts:
+			for (sampleName, row) in self.df.iterrows():
+				if self.cDat[sampleName].casefold() == "female".casefold():
+					sampleList = list()
+					locusList = list()
+					sampleList.append(str(sampleName))
+					for (locus, genotype) in row.items():
+						if not pandas.isnull(genotype):
+							if genotype == 0:
+								locusList.append("0")
+								locusList.append("0")
+							else:
+								mid = len(genotype) // 2
+								a1 = genotype[:mid]
+								a2 = genotype[mid:]
+								a1 = self.nucleotides[a1]
+								a2 = self.nucleotides[a2]
+								locusList.append(str(a1))
+								locusList.append(str(a2))
+						else:
+							locusList.append("0")
+							locusList.append("0")
+					locusStr = " ".join(locusList)
+					sampleList.append(locusStr)
+					sampleStr = " ".join(sampleList)
+					output.append(sampleStr)
+
 		output.append("")
 		output.append("0  0        !#known father-offspring dyads, paternity exclusion threshold")
 		output.append("")
@@ -194,15 +263,21 @@ class Colony():
 		#print(self.errDict)
 
 
+	def checkNameLengths(self):
+		for (sampleName, row) in self.df.iterrows():
+			nameLen = len(sampleName)
+			if nameLen > 20:
+				nameLenStr = str(nameLen)
+				print("WARNING: Colony2 file cannot be written because at least one sample name is >20 characters long.")
+				print(f"For example: {sampleName} is {nameLenStr} characters long.")
+				return True # return true if names too long
+		return False # return false if no names exceed threshold
+
 
 	def getLocusNames(self):
 		colNames = list(self.df.columns) #get column names from pandas dataframe
-		#dupLoci = [item[:-2] for item in colNames] #strip allele identifiers from ends
-
-		#singleLoci = dupLoci[1::2] #keep odd numbered list elements
-
-		#return singleLoci
 		return colNames
+
 
 	def prepValues(self, nloci, val):
 		valList = [str(val)] * nloci

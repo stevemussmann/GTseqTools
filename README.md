@@ -150,7 +150,7 @@ Outputs retain the input file (-x / --infile) base name, but change the output f
 | AlleleMatch  | .allelematch                       | `-a`           |
 | Binary       | .bin                               | `-b`           |
 | Coancestry   | .coancestry; coancestry.popmap.txt | `-c`           |
-| Colony       | Colony2.Dat                        | `-C`           |
+| Colony       | colony2.dat                        | `-C`           |
 | Excel        | .xlsx                              | `-X`           |
 | Genepop      | .gen; genepop.popmap.txt           | `-g`           |
 | gRandma      | .grandma                           | `-G`           |
