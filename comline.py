@@ -121,6 +121,12 @@ class ComLine():
 							choices={1,2,3,4},
 							help="1/2/3/4 = Short/Medium/Long/VeryLong run (default = 2)."
 		)
+		colony.add_argument("-N", "--runname",
+							dest='runname',
+							type=str,
+							default='gtSeqConvert',
+							help="Run name for colony file format (default = 'gtSeqConvert')"
+		)
 		colony.add_argument("-M", "--pmale",
 							dest='pmale',
 							type=float,

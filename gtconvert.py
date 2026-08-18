@@ -15,7 +15,7 @@ import os
 class GTconvert():
 	'Class for converting pandas dataframes into various genotype files'
 
-	def __init__(self, pdf, popdata, struBool, headBool, snppitmap, snppitCols, newhybCols, infile, droperr, genoerr, runlen, pmale, pfemale, inbreed, colonyCol, log):
+	def __init__(self, pdf, popdata, struBool, headBool, snppitmap, snppitCols, newhybCols, infile, droperr, genoerr, runlen, pmale, pfemale, inbreed, colonyCol, runname, log):
 		self.snppitmap = snppitmap
 		self.snppitCols = snppitCols
 		self.newhybCols = newhybCols
@@ -36,6 +36,7 @@ class GTconvert():
 		self.pmale = pmale
 		self.pfemale = pfemale
 		self.inbreed = inbreed
+		self.runname = runname
 
 		self.suffix = {'allelematch': 'allelematch', 'binary': 'bin', 'coancestry': 'coancestry', 'colony': 'dat', 'genepop': 'gen', 'grandma': 'grandma', 'newhybrids': 'newhyb', 'plink': 'ped', 'structure': 'str', 'snppit': 'snppit', 'sequoia': 'sequoia'}
 		
@@ -71,7 +72,7 @@ class GTconvert():
 
 	def conv_colony(self):
 		#print("This function will convert to colony format")
-		cl = Colony(self.df, self.colonyCol, self.droperr, self.genoerr, self.pmale, self.pfemale, self.runlen, self.inbreed)
+		cl = Colony(self.df, self.colonyCol, self.droperr, self.genoerr, self.pmale, self.pfemale, self.runlen, self.inbreed, self.runname)
 		output = cl.convert()
 		return output
 

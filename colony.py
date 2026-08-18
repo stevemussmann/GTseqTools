@@ -7,7 +7,7 @@ import random
 class Colony():
 	'Class for converting pandas dataframe to colony format'
 
-	def __init__(self, df, cDat, droperr, genoerr, pmale, pfemale, runlen, inbreed):
+	def __init__(self, df, cDat, droperr, genoerr, pmale, pfemale, runlen, inbreed, runname):
 		self.df = df
 		self.ldict = df.columns.tolist()
 
@@ -21,9 +21,9 @@ class Colony():
 		## CHANGE THESE DYNAMICALLY AT SOME POINT
 		self.derr = droperr # allelic dropout rate
 		self.gerr = genoerr # genotyping error rate
-		#self.pmale = pmale # probability of father being present among candidates
-		#self.pfemale = pfemale # probability of mother being present among candidates
-		self.runname = "gtSeqConvert"
+		self.pmale = pmale # probability of father being present among candidates
+		self.pfemale = pfemale # probability of mother being present among candidates
+		self.runname = runname
 		self.inbreed = inbreed
 		self.runlen = runlen
 	
@@ -38,7 +38,6 @@ class Colony():
 			return output
 
 		randseed = random.randint(1000, 9999) # 4-digit random number seed
-		#colonyCounts = len(self.df) # counts of offspring and parents ##OLD CODE
 		colonyCounts = self.cDat.str.lower().value_counts().to_dict() # counts of offspring and parents
 
 		loci = nLoci = int(len(self.df.columns)) # number of loci in dataframe
@@ -136,12 +135,12 @@ class Colony():
 		else:
 			templine = list() # list to build probabilities line
 			if "male" in colonyCounts:
-				templine.append(str("0.5")) # MAKE DYNAMIC WITH self.pmale
+				templine.append(str(self.pmale))
 			else:
 				templine.append("0.0")
 
 			if "female" in colonyCounts:
-				templine.append(str("0.5")) # MAKE DYNAMIC WITH self.pfemale
+				templine.append(str(self.pfemale))
 			else:
 				templine.append("0.0")
 
