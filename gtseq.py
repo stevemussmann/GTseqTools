@@ -34,6 +34,8 @@ class GTseq():
 		if os.path.exists(self.plotDir) == False:
 			os.mkdir(self.plotDir)
 
+		matplotlib.rcParams["svg.fonttype"] = "none" # so text stays as text in svg
+		
 		# prepare dict of lists to contain data for sankey diagrams
 		sankeyKeys = ['Source', 'Filter', 'Count']
 		self.sankeyIndDict = {key: [] for key in sankeyKeys}
@@ -51,8 +53,8 @@ class GTseq():
 		mismatchStats.calcStats()
 
 		# make histogram and qq plots
-		histoFN = "histogram.mismatch.png"
-		qqFN = "qqplot.mismatch.png"
+		histoFN = "histogram.mismatch.svg"
+		qqFN = "qqplot.mismatch.svg"
 		mismatchHisto = os.path.join(self.plotDir, histoFN)
 		mismatchQQ = os.path.join(self.plotDir, qqFN)
 		self.makeMismatchHisto(mismatchDict, mismatchHisto)
@@ -70,7 +72,7 @@ class GTseq():
 		ifiStats.printStats(self.logfile, "ifi scores", prepost)
 	
 		# make histogram plot
-		ifiFn = "histogram.ifi." + prepost + ".png"
+		ifiFn = "histogram.ifi." + prepost + ".svg"
 		ifiHisto = os.path.join(self.plotDir, ifiFn)
 		self.makeIFIplot(ifiScoresDict, ifiHisto)
 
@@ -111,7 +113,7 @@ class GTseq():
 		lociStats.printStats(self.logfile, prepost, "loci")
 
 		# plot pre- or post-filter missing loci data here
-		lociFn = "histogram.loci." + prepost + ".png"
+		lociFn = "histogram.loci." + prepost + ".svg"
 		lociHisto = os.path.join(self.plotDir, lociFn)
 		self.plotMissing(missingDictLoci, lociHisto)
 
@@ -125,7 +127,7 @@ class GTseq():
 		indsStats.printStats(self.logfile, prepost, "individuals")
 
 		# make plot of pre- or post-filter missing data per individual
-		indsFn = "histogram.individuals." + prepost + ".png"
+		indsFn = "histogram.individuals." + prepost + ".svg"
 		sampPrefilterHisto = os.path.join(self.plotDir, indsFn)
 		self.plotMissing(missingDictInds, sampPrefilterHisto)
 
@@ -159,11 +161,20 @@ class GTseq():
 		holoviews.save(spInd, sankeyIndPath, fmt="html") # print sankey plot - opted for html because .png and .svg options have too many dependencies
 		print("Sankey diagram for individuals written to", str(sankeyIndPath))
 
+		holoviews.extension("matplotlib")
+		holoviews.output(fig="svg")
+		sankeyIndPath2 = os.path.join(self.plotDir, "sankey_plot_individuals.svg") # make path for sankey output
+		holoviews.save(spInd, sankeyIndPath2, fmt="svg")
+
 		sankeyLoc = holoviews.Sankey(sankeyLocDF, label='Loci') # make sankey object
 		spLoc = sankeyLoc.opts(label_position='left', edge_color='Filter', node_color='index', cmap='tab20') # make sankey plot
-		sankeyLocPath = os.path.join(self.plotDir, "sankey_plot_loci.html") # make path for sankey output
-		holoviews.save(spLoc, sankeyLocPath, fmt="html") # print sankey plot - opted for html because .png and .svg options have too many dependencies
-		print("Sankey diagram for loci written to", str(sankeyLocPath), "\n")
+		#sankeyLocPath = os.path.join(self.plotDir, "sankey_plot_loci.html") # make path for sankey output
+		#holoviews.save(spLoc, sankeyLocPath, fmt="html") # print sankey plot - opted for html because .png and .svg options have too many dependencies
+		#print("Sankey diagram for loci written to", str(sankeyLocPath), "\n")
+		
+		sankeyLocPath2 = os.path.join(self.plotDir, "sankey_plot_loci.svg") # make path for sankey output
+		holoviews.save(spLoc, sankeyLocPath2, fmt="svg")
+		print("Sankey diagram for loci written to", str(sankeyLocPath2), "\n")
 	
 	def printRetained(self, start, end, keepPops=None):
 		## start is a pandas series
