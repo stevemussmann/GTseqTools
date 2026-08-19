@@ -138,7 +138,7 @@ Current supported file conversions (**You are required to specify at least one c
 * **-a / --allelematch:** Prints a file formatted for the allelematch R package
 * **-b / --binary:** Prints a file in binary format (0 = major allele, 1 = minor allele, 2 = missing data).
 * **-c / --coancestry:** Prints a file formatted for coancestry (or 'related' R package)
-* **-C / --colony:** Prints a file formatted for colony. Inclusion of candidate parents not implemented yet - file only good for calculating sibship currently.
+* **-C / --colony:** Prints a file formatted for colony.
 * **-g / --genepop:** Prints a file in genepop format.
 * **-G / --grandma:** Prints a file in gRandma format.
 * **-n / --newhybrids:** Prints a file in newhybrids format.
