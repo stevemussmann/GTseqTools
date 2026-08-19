@@ -91,6 +91,11 @@ class ComLine():
 							dest='species',
 							help="Specify a list of loci that are species identification SNPs."
 		)
+		optional.add_argument("-Q", "--identquit",
+							dest='identquit',
+							action='store_false',
+							help="Turn off option to quit the program if identical sample names detected. Program will attempt to force unique names upon these samples."
+		)
 		colony.add_argument("-B", "--inbreed",
 							dest='inbreed',
 							type=int,

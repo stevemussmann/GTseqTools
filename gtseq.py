@@ -17,10 +17,11 @@ holoviews.extension('bokeh')
 class GTseq():
 	'Class for operating on GTseq genotype files'
 
-	def __init__(self, infile, log):
+	def __init__(self, infile, identQuit, log):
 		self.gtFile = infile
 		self.logfile = log
 		self.plotDir = "plots"
+		self.identQuit = identQuit
 
 		# write command used to launch program
 		fh = open(self.logfile, 'a')
@@ -299,14 +300,21 @@ class GTseq():
 		print("Checking for duplicate sample names...")
 		duplicateNames = data.index.duplicated().any()
 		if duplicateNames:
+			print("These sample names appeared multiple times in your input file:")
 			duplicateList = data.index[data.index.duplicated()].unique().tolist()
-			print("ERROR:")
-			print("Your input .xlsx file contains duplicate sample names.")
-			print("The following names are duplicated:")
 			print(*duplicateList, sep='\n')
-			print("Exiting program...")
-			print("")
-			raise SystemExit
+
+			if self.identQuit:
+				print("ERROR: Your input .xlsx file contains duplicate sample names.")
+				print("Either fix this problem in your input file or try forcing duplicated names to be unique with the -Q / --identquit option.")
+				print("Exiting program...\n")
+				raise SystemExit
+			else:
+				print("\nForcing unique names for duplicates...")
+				print("The first occurrence of each name will be unmodified and subsequent occurrences will have suffixes appended (e.g., '_1', '_2', etc.)\n")
+				counts = data.index.to_series().groupby(level=0).cumcount()
+				data.index = data.index.where(counts == 0, data.index + '_' + counts.astype(str))
+
 		else:
 			print("None Found!\n")
 

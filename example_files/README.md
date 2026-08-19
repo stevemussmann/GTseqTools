@@ -26,7 +26,7 @@ SNPPIT="snppitMap.txt"
 ERR="markerErrorRates.txt"
 
 gtSeqConvert.py -x $FILE -d $SEX -Z $SNPPIT -f $ERR \
-	-m -l 0.1 -i 0.2 -o "individuals" -D \
+	-m -l 0.1 -i 0.2 -o "individuals" -D -k "first" \
 	-M 0.6 -F 0.6 -y 1 -Y 1 -N "exampleDataTestRun" \
 	--genepop --newhybrids --snppit --sequoia --colony
 
@@ -46,6 +46,7 @@ The second line is used to apply various filtering options:
 * `-i 0.2`: Remove individuals with >20% missing data
 * `-o "individuals"`: This option will cause the `-i` filter to be applied before the `-l` filter
 * `-D`: Screen the input file for duplicate genotypes
+* `-k "first"`: Retain the first individual encountered from any pairs of duplicates
 
 The third line contains commands used by the Colony2 format:
 * `-M 0.6`: Sets the probability of a father being among the candidate parents to 0.6

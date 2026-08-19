@@ -38,7 +38,7 @@ def main():
 		os.remove(logfile)
 
 	# make new GTseq object and read in file
-	gtFile = GTseq(input.args.infile, logfile)
+	gtFile = GTseq(input.args.infile, input.args.identquit, logfile)
 	pdf = gtFile.parseFile() #returns pandas dataframe with unfiltered data
 
 	# make pre-filter plots and calculate summary statistics
@@ -138,9 +138,9 @@ def main():
 		monoName = os.path.join(discardDir, monoName)
 		monoPdf.to_excel(monoName, sheet_name="Final Genotypes")
 	
-	# remove duplicate individuals
+	# detect/remove duplicate genotypes
 	if input.args.dups:
-		print("Removing duplicate individuals (matching genotypes)")
+		print("Detecting duplicate individuals (matching genotypes)")
 		dupsName = re.sub('.REPLACE.xlsx$', '.duplicateGenos.xlsx', fileName)
 		dupsPdf = gtFile.remDupGenos(pdf, input.args.dupthresh, input.args.keepdups)
 		dupsName = os.path.join(discardDir, dupsName)

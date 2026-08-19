@@ -83,6 +83,7 @@ The program conducts all filtering procedures prior to file format conversion. F
 	- A missing genotype for a locus should be recorded as a single '0' (e.g., genotype = `0`). 
 	- Usage of other characters in the genotype data will likely result in the program throwing error messages. 
 	- Exceptions to this rule exist for the sex ID loci, which can be coded as sex genotypes (e.g., `XX`, `XY`, etc.), **but only if the `-d / --sexid` option is used** since this option will strip these loci from the data file before any file conversions take place.
+- Your input file should not contain multiple individuals with the same sample name. The default program behavior is to screen for duplicated sample names and exit if any are detected. Alternatively, you can try to force duplicated names to be unique with the `-Q / --identquit` option. 
 
 If you are using the GTscore pipeline for genotyping, I have [forked a copy of this repository](https://github.com/stevemussmann/GTscore) and included my [transposeDataGTscore.pl](https://github.com/stevemussmann/GTscore/blob/master/transposeDataGTscore.pl) script which will mostly transform the GTscore genotype outputs to a format compatible with `GTseqTools`. Just add and populate the 'Population ID' column, do the same for any desired / necessary optional columns, and then save the file in .csv or .xlsx format. Make sure the worksheet is titled 'Final Genotypes' if using .xlsx format.
 
@@ -115,7 +116,8 @@ Optional Arguments: <a name="optional"></a>
 * **-d / --sexid:** Provide a list of loci that are sex-identifying SNPs. This should be a plain text file with one locus per line. These loci will be removed from the dataset before any data filtering steps are executed. 
 * **-o / --order:** Specify whether missing data filters will first be applied to loci or individuals (options: 'loci' = loci filtered first (default), 'individuals' = individuals filtered first).
 * **-P / --keeppops:** Provide a list of populations that will be retained in final outputs. All individuals belonging to populations not specified in this file will be filtered. This input should be a plain text file with each population being specified on its own line. Population names must match those in the 'Population ID' column exactly.
-* **-s / --species:** Provide a list of loci that are species identification SNPs. This should be a plain text file with one locus per line. These loci will be removed from the dataset before any other data filtering steps are executed. 
+* **-s / --species:** Provide a list of loci that are species identification SNPs. This should be a plain text file with one locus per line. These loci will be removed from the dataset before any other data filtering steps are executed.
+* **-Q / --identquit:** Attempt to force duplicated sample names in your input file to be unique. This will be accomplished by appending suffixes (`_1`, `_2`, etc.) to all instances of a name past the first detection (Boolean; default = off).
 
 Colony Format Arguments:
 * **-e / --droperr:** Enter the assumed allelic dropout rate (default = 0.0005).
