@@ -2,6 +2,13 @@
 [![DOI](https://zenodo.org/badge/520264976.svg)](https://zenodo.org/badge/latestdoi/520264976)
 Program for filtering GTseq genotype data, conducting data quality assessment, and converting to various file formats.
 
+## Citation
+A manuscript is in preparation that will describe the program. The citation here will be updated once published:
+
+Mussmann, Steven M. 2026. GTseqTools: reproducible and transparent methods for filtering GTseq matrices *in prep*
+
+For now, please cite this github repository if you use this software.
+
 ## Python Version Compatibility and Dependencies
 This program has been tested with Python = 3.14 but it should be compatible with Python >= 3.8 (Syntax is used that was first introduced to Python in v3.8). 
 Testing and development was conducted with the following versions of Python libraries:
