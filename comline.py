@@ -218,6 +218,11 @@ class ComLine():
 							action='store_true',
 							help="Write Structure format file."
 		)
+		conversion.add_argument("-u", "--rubias",
+							dest='rubias',
+							action='store_true',
+							help="Write rubias format file."
+		)
 		conversion.add_argument("-X", "--xlsx",
 							dest='xlsx',
 							action='store_true',
@@ -235,7 +240,7 @@ class ComLine():
 		self.args = parser.parse_args()
 
 		#check if at least one conversion option was used.
-		if not [x for x in (self.args.allelematch, self.args.binary, self.args.coancestry, self.args.colony, self.args.genepop, self.args.grandma, self.args.newhybrids, self.args.plink, self.args.sequoia, self.args.structure, self.args.snppit, self.args.xlsx) if x is True]:
+		if not [x for x in (self.args.allelematch, self.args.binary, self.args.coancestry, self.args.colony, self.args.genepop, self.args.grandma, self.args.newhybrids, self.args.plink, self.args.sequoia, self.args.structure, self.args.rubias, self.args.snppit, self.args.xlsx) if x is True]:
 			print("")
 			print("No format conversion options were selected.")
 			print("You must choose at least one file format for output.")

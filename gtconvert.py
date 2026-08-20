@@ -6,6 +6,7 @@ from genepop import Genepop
 from grandma import gRandma
 from newhybrids import NewHybrids
 from plink import Plink
+from rubias import Rubias
 from sequoia import Sequoia
 from snppit import Snppit
 from structure import Structure
@@ -41,7 +42,7 @@ class GTconvert():
 		self.fpoly = fpoly
 		self.colErr = colErr # locus error rates for colony
 
-		self.suffix = {'allelematch': 'allelematch', 'binary': 'bin', 'coancestry': 'coancestry', 'colony': 'dat', 'genepop': 'gen', 'grandma': 'grandma', 'newhybrids': 'newhyb', 'plink': 'ped', 'structure': 'str', 'snppit': 'snppit', 'sequoia': 'sequoia'}
+		self.suffix = {'allelematch': 'allelematch', 'binary': 'bin', 'coancestry': 'coancestry', 'colony': 'dat', 'genepop': 'gen', 'grandma': 'grandma', 'newhybrids': 'newhyb', 'plink': 'ped', 'rubias': 'csv', 'structure': 'str', 'snppit': 'snppit', 'sequoia': 'sequoia'}
 		
 		self.convertedDir = "convertedFiles"
 		if os.path.exists(self.convertedDir) == False:
@@ -115,6 +116,12 @@ class GTconvert():
 		#print("This function will convert to gRandma format.")
 		gma = gRandma(self.df, self.log, self.pd)
 		output = gma.convert()
+		return output
+
+	def conv_rubias(self):
+		#print("This function will convert to rubias format.")
+		rub = Rubias(self.df, self.pd, self.convertedDir)
+		output = rub.convert()
 		return output
 
 	def conv_snppit(self):
