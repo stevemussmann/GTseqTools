@@ -145,6 +145,7 @@ Current supported file conversions (**You are required to specify at least one c
 * **-p / --plink:** Prints a file in plink format. Result is similar to using the --recode12 option in plink. Output should be valid for the program [Admixture](https://dalexander.github.io/admixture/)
 * **-q / --sequoia:** Prints a sequoia formatted genotype file.
 * **-S / --structure:** Prints a file in structure format (default = single line per individual. See '-t' option above).
+* **-u / --rubias:** Prints a mixture file in rubias format.
 * **-X / --xlsx:** Writes an xlsx-formatted file after user-specified individuals are removed (-r option) but before any other filtering steps are applied.
 * **-z / --snppit:** (under development) Prints a file in snppit format (-Z option is also required for snppit conversion as specified above).
 
@@ -167,6 +168,7 @@ Current supported file conversions (**You are required to specify at least one c
 | gRandma      | .grandma                           | `-G`           |
 | NewHybrids   | .newhyb; newhybrids.popmap.txt     | `-n`           |
 | Plink        | .ped and .map                      | `-p`           |
+| rubias       | .rubias.csv                        | `-u`           |
 | Sequoia      | .sequoia; sequoia.lh.txt           | `-q`           |
 | SNPPIT       | .snppit                            | `-z`           |
 | Structure    | .str; .distructLabels.txt          | `-S`           |
@@ -266,6 +268,15 @@ genotypes <- read.csv("output.grandma.txt", sep="\t", header=TRUE, na.strings=""
 The NewHybrids conversion allows for optional use of its 'z' option to specify known genotypes. To use this option, add an extra column to your input .xlsx file titled exactly `ZOPT`. The naming of the column is important so that it will be ignored in conversions for other file formats.
 
 Fill the column with data to designate individuals belonging to the different classes (i.e., `z0` for Pure_0, `z1` for Pure_1). If you do not want to provide a 'z' designation for a sample then leave that cell empty and it will be ignored. Any data in the `ZOPT` column will be transferred to your converted file exactly as it appears in your input .xlsx file, so it is important to only enter information that will be valid in a NewHybrids input file.
+
+### rubias
+The rubias-formatted file can be read into rubias with the following commands:
+```
+library("rubias")
+library("tidyverse")
+
+data <- read_csv("exampleData.rubias.csv", col_types = cols(.default="c"), na = c("NA"))
+```
 
 ### Sequoia
 The Sequoia conversion relies upon some of the optional SNPPIT columns that are also used for the SNPPIT file conversion (see below). Use the POPCOLUMN_SEX column to specify sex data for all individuals. Only case insensitive versions of `f`, `female`, `m`, and `male` will be recognized. All other values and blank cells will be converted to unknown sex data value in sequoia (3).
