@@ -28,7 +28,7 @@ class GTseq():
 		fh.write("#gtSeqConvert.py was launched with command:\n#")
 		comm = ' '.join(sys.argv)
 		fh.write(comm)
-		fh.write("\n\n")
+		fh.write("\n\nAll filtering operations have been applied in the order they are presented in this log file.\n\n")
 		fh.close()
 
 		if os.path.exists(self.plotDir) == False:
