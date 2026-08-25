@@ -4,6 +4,7 @@ from coancestry import Coancestry
 from colony import Colony
 from genepop import Genepop
 from grandma import gRandma
+from immanc import Immanc
 from newhybrids import NewHybrids
 from plink import Plink
 from rubias import Rubias
@@ -42,7 +43,7 @@ class GTconvert():
 		self.fpoly = fpoly
 		self.colErr = colErr # locus error rates for colony
 
-		self.suffix = {'allelematch': 'allelematch', 'binary': 'bin', 'coancestry': 'coancestry', 'colony': 'dat', 'genepop': 'gen', 'grandma': 'grandma', 'newhybrids': 'newhyb', 'plink': 'ped', 'rubias': 'rubias.csv', 'structure': 'str', 'snppit': 'snppit', 'sequoia': 'sequoia'}
+		self.suffix = {'allelematch': 'allelematch', 'binary': 'bin', 'coancestry': 'coancestry', 'colony': 'dat', 'genepop': 'gen', 'grandma': 'grandma', 'immanc': 'immanc', 'newhybrids': 'newhyb', 'plink': 'ped', 'rubias': 'rubias.csv', 'structure': 'str', 'snppit': 'snppit', 'sequoia': 'sequoia'}
 		
 		self.convertedDir = "convertedFiles"
 		if os.path.exists(self.convertedDir) == False:
@@ -80,6 +81,24 @@ class GTconvert():
 		output = cl.convert()
 		return output
 
+	def conv_genepop(self):
+		#print("This function will convert to Genepop format.")
+		gen = Genepop(self.df, self.pd, self.convertedDir)
+		output = gen.convert()
+		return output
+
+	def conv_grandma(self):
+		#print("This function will convert to gRandma format.")
+		gma = gRandma(self.df, self.log, self.pd)
+		output = gma.convert()
+		return output
+
+	def conv_immanc(self):
+		#print("This function will convert to immanc format.")
+		ima = Immanc(self.df, self.pd)
+		output = ima.convert()
+		return output
+
 	def conv_newhybrids(self):
 		#print("This function will convert to NewHybrids format.")
 		nh = NewHybrids(self.df, self.pd, self.convertedDir)
@@ -93,10 +112,22 @@ class GTconvert():
 		self.printOutput(plinkmap, self.infile, "map") #special call to print plink map
 		return output
 	
+	def conv_rubias(self):
+		#print("This function will convert to rubias format.")
+		rub = Rubias(self.df, self.pd, self.convertedDir)
+		output = rub.convert()
+		return output
+
 	def conv_sequoia(self):
 		#print("This function will convert to binary format.")
 		seq = Sequoia(self.df, self.pd, self.convertedDir)
 		output = seq.convert(self.snppitCols)
+		return output
+
+	def conv_snppit(self):
+		#print("This function will convert to SNPPIT format.")
+		snppit = Snppit(self.df, self.pd)
+		output = snppit.convert(self.snppitmap, self.snppitCols)
 		return output
 
 	def conv_structure(self):
@@ -104,30 +135,6 @@ class GTconvert():
 		stru = Structure(self.df, self.pd)
 		output, structureMap = stru.convert(self.structureTwoLine, self.structureHeader)
 		self.printOutput(structureMap, self.infile, "distructLabels.txt")
-		return output
-
-	def conv_genepop(self):
-		#print("This function will convert to Genepop format.")
-		gen = Genepop(self.df, self.pd, self.convertedDir)
-		output = gen.convert()
-		return output
-
-	def conv_grandma(self):
-		#print("This function will convert to gRandma format.")
-		gma = gRandma(self.df, self.log, self.pd)
-		output = gma.convert()
-		return output
-
-	def conv_rubias(self):
-		#print("This function will convert to rubias format.")
-		rub = Rubias(self.df, self.pd, self.convertedDir)
-		output = rub.convert()
-		return output
-
-	def conv_snppit(self):
-		#print("This function will convert to SNPPIT format.")
-		snppit = Snppit(self.df, self.pd)
-		output = snppit.convert(self.snppitmap, self.snppitCols)
 		return output
 
 	def convert_to(self, name: str):

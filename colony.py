@@ -57,7 +57,14 @@ class Colony():
 		output.append(datasetline)
 		output.append(datasetline)
 
-		offspringline = str(colonyCounts["offspring"]) + "      ! Number of offspring in the sample"
+		try:
+			offspringline = str(colonyCounts["offspring"]) + "      ! Number of offspring in the sample"
+		except KeyError as e:
+			print("ERROR: " + str(e) + " not detected in colony2 column of your input file.")
+			print("Did you specify which individuals are offspring in the colony2 column?")
+			print("Exiting Program...\n\n")
+			raise SystemExit
+
 		output.append(offspringline)
 
 		lociline = str(loci) + "       ! Number of loci"

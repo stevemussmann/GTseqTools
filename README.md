@@ -148,6 +148,7 @@ Current supported file conversions (**You are required to specify at least one c
 * **-C / --colony:** Prints a file formatted for colony.
 * **-g / --genepop:** Prints a file in genepop format.
 * **-G / --grandma:** Prints a file in gRandma format.
+* **-A / --immanc:** Prints a file in immanc (BayesAss) format.
 * **-n / --newhybrids:** Prints a file in newhybrids format.
 * **-p / --plink:** Prints a file in plink format. Result is similar to using the --recode12 option in plink. Output should be valid for the program [Admixture](https://dalexander.github.io/admixture/)
 * **-q / --sequoia:** Prints a sequoia formatted genotype file.
@@ -173,6 +174,7 @@ Current supported file conversions (**You are required to specify at least one c
 | Excel        | .xlsx                              | `-X`           |
 | Genepop      | .gen; genepop.popmap.txt           | `-g`           |
 | gRandma      | .grandma                           | `-G`           |
+| immanc       | .immanc                            | `-A`           |
 | NewHybrids   | .newhyb; newhybrids.popmap.txt     | `-n`           |
 | Plink        | .ped and .map                      | `-p`           |
 | rubias       | .rubias.csv                        | `-u`           |
