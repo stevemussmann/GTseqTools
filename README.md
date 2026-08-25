@@ -3,11 +3,10 @@
 Program for filtering GTseq genotype data, conducting data quality assessment, and converting to various file formats.
 
 ## Citation
-A manuscript is in preparation that will describe the program. The citation here will be updated once published:
+A manuscript is in preparation that will describe the program. For now, please cite this github repository if you use this software. The citation here will be updated once published:
 
-Mussmann, Steven M. 2026. GTseqTools: reproducible and transparent methods for filtering GTseq matrices *in prep*
+`Mussmann, Steven M. 2026. GTseqTools: reproducible and transparent methods for filtering GTseq matrices *in prep*`
 
-For now, please cite this github repository if you use this software.
 
 ## Python Version Compatibility and Dependencies
 This program has been tested with Python = 3.14 but it should be compatible with Python >= 3.8 (Syntax is used that was first introduced to Python in v3.8). 
@@ -148,7 +147,7 @@ Current supported file conversions (**You are required to specify at least one c
 * **-C / --colony:** Prints a file formatted for colony.
 * **-g / --genepop:** Prints a file in genepop format.
 * **-G / --grandma:** Prints a file in gRandma format.
-* **-A / --immanc:** Prints a file in immanc (BayesAss) format.
+* **-A / --immanc:** Prints a file in immanc ([BayesAss](https://github.com/stevemussmann/BayesAss3-SNPs)) format.
 * **-n / --newhybrids:** Prints a file in newhybrids format.
 * **-p / --plink:** Prints a file in plink format. Result is similar to using the --recode12 option in plink. Output should be valid for the program [Admixture](https://dalexander.github.io/admixture/)
 * **-q / --sequoia:** Prints a sequoia formatted genotype file.
