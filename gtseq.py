@@ -75,7 +75,7 @@ class GTseq():
 		hetStats.calcStats()
 		hetStats.printStats(self.logfile, "heterozygosity", prepost)
 	
-		# make histogram plot
+		# make histogram and QQ plots
 		hetFn = "histogram.obsHet." + prepost + ".png"
 		hetQQfn = "qq.obsHet." + prepost + ".png"
 		hetHisto = os.path.join(self.plotDir, hetFn)
