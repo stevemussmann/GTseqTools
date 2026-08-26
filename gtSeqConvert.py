@@ -43,6 +43,7 @@ def main():
 
 	# make pre-filter plots and calculate summary statistics
 	gtFile.makeHistos(pdf, "prefilter") # makes pre-filter missing data plots for loci and individuals
+
 	ifiCols = gtFile.removeIFI(pdf) #removes optional IFI score column. Need to do this here so can test whether column exists for plotting of IFI score values
 	if not ifiCols.empty:
 		gtFile.plotIFI(ifiCols, "prefilter") # makes pre-filter ifi score plot (if IFI column found)
@@ -117,6 +118,9 @@ def main():
 	newhybCols = gtFile.removeNewhyb(pdf) #removes optional columns for NewHybrids
 	sexes = gtFile.removeSex(pdf) #removes optional phenotypic sex data column
 	pops = gtFile.getPops(pdf) #remove populations column; variable 'pops' is a dict
+
+	# heterozygosity calculation; filter not yet implemented
+	#gtFile.heterozygosity(pdf)
 
 	# check for empty cells in SNP matrix
 	total_empty = pdf.isnull().sum().sum()

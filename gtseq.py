@@ -1,5 +1,5 @@
 from collections import Counter
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 from duplicates import Duplicates
 from stats import GTStats
 
@@ -38,6 +38,69 @@ class GTseq():
 		sankeyKeys = ['Source', 'Filter', 'Count']
 		self.sankeyIndDict = {key: [] for key in sankeyKeys}
 		self.sankeyLocDict = {key: [] for key in sankeyKeys}
+
+
+	def heterozygosity(self, pdf):
+		print("heterozygosity function")
+
+		hetVals = dict()
+
+		for ind, row in pdf.iterrows():
+			locCount = 0
+			hetCount = 0
+			ho = Decimal(0.0)
+			for locus, geno in row.items():
+				if str(geno) != "0":
+					locCount+=1
+					mid = len(geno) // 2
+					a1, a2 = geno[:mid], geno[mid:]
+					if a1 != a2:
+						hetCount+=1
+			if locCount != 0:
+				val = Decimal(hetCount/locCount)
+				ho = val.quantize(Decimal("0.0001"), rounding=ROUND_HALF_UP)
+
+			hetVals[ind] = ho
+
+		df = pandas.DataFrame.from_dict(hetVals, orient='index', columns=['Ho'])
+
+		print(df)
+		self.plotHet(df, "midfilter")
+
+	def plotHet(self, df, prepost):
+		hetVals = df['Ho'].tolist() # extract as list for stats calculations
+		hetVals = [Decimal(x) for x in hetVals] # cast all list elements as Decimal
+		
+		hetValsDict = df['Ho'].to_dict() # extract as dict for plotting
+
+		# calculate stats
+		hetStats = GTStats(hetVals)
+		hetStats.calcStats()
+		hetStats.printStats(self.logfile, "heterozygosity values", prepost)
+	
+		# make histogram plot
+		hetFn = "histogram.Ho." + prepost + ".png"
+		hetHisto = os.path.join(self.plotDir, hetFn)
+		self.makeHetPlot(hetValsDict, hetHisto)
+
+	def makeHetPlot(self, d, fn):
+		matplotlib.pyplot.figure().clear()
+		hetSeries = pandas.Series(d)
+
+		# get maximum IFI value
+		maxHet = 1.0
+
+		# give about 40 bins per 5.0 IFI score units
+		binCount = 50
+
+		hetSeries = pandas.to_numeric(hetSeries)
+		histo = hetSeries.plot.hist(grid=False, bins=binCount, range=(0.0,maxHet), rwidth=0.9, color='#607c8e')
+		histo.set_xlim(0.0, maxHet)
+		fig = histo.get_figure()
+		matplotlib.pyplot.title('Ho Value Distribution')
+		matplotlib.pyplot.xlabel('Ho Values')
+		matplotlib.pyplot.ylabel('Counts')
+		fig.savefig(fn, dpi=600)
 
 
 	# This function can only be run after the GTseq.remDupGenos() function because it will add an object of type Duplicates to this class as a member variable (self.dups)
