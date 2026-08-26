@@ -119,9 +119,6 @@ def main():
 	sexes = gtFile.removeSex(pdf) #removes optional phenotypic sex data column
 	pops = gtFile.getPops(pdf) #remove populations column; variable 'pops' is a dict
 
-	# heterozygosity calculation; filter not yet implemented
-	#gtFile.heterozygosity(pdf)
-
 	# check for empty cells in SNP matrix
 	total_empty = pdf.isnull().sum().sum()
 	if total_empty > 0:

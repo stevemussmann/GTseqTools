@@ -40,9 +40,7 @@ class GTseq():
 		self.sankeyLocDict = {key: [] for key in sankeyKeys}
 
 
-	def heterozygosity(self, pdf):
-		print("heterozygosity function")
-
+	def heterozygosity(self, pdf, prepost):
 		hetVals = dict()
 
 		for ind, row in pdf.iterrows():
@@ -64,8 +62,7 @@ class GTseq():
 
 		df = pandas.DataFrame.from_dict(hetVals, orient='index', columns=['Ho'])
 
-		print(df)
-		self.plotHet(df, "midfilter")
+		self.plotHet(df, prepost)
 
 	def plotHet(self, df, prepost):
 		hetVals = df['Ho'].tolist() # extract as list for stats calculations
@@ -76,12 +73,16 @@ class GTseq():
 		# calculate stats
 		hetStats = GTStats(hetVals)
 		hetStats.calcStats()
-		hetStats.printStats(self.logfile, "heterozygosity values", prepost)
+		hetStats.printStats(self.logfile, "heterozygosity", prepost)
 	
 		# make histogram plot
 		hetFn = "histogram.obsHet." + prepost + ".png"
+		hetQQfn = "qq.obsHet." + prepost + ".png"
 		hetHisto = os.path.join(self.plotDir, hetFn)
+		hetQQ = os.path.join(self.plotDir, hetQQfn)
 		self.printHistogram(hetValsDict, hetHisto, 1.0, 50, "Obs. Het. Distribution", "Obs. Het. Values")
+		hetValsDict = {k: float(v) for k, v in hetValsDict.items()} # cast as floats because scipy doesn't like Decimal objects.
+		self.printQQplot(hetValsDict, hetQQ, "Normal Q-Q Plot (Obs. Het.)", "Observed Heterozygosity")
 
 	def printHistogram(self, d, fn, maxX, nBin, plotTitle, xAxisLabel):
 		matplotlib.pyplot.figure().clear()
@@ -96,6 +97,18 @@ class GTseq():
 		matplotlib.pyplot.xlabel(xAxisLabel)
 		matplotlib.pyplot.ylabel('Counts')
 		fig.savefig(fn, dpi=600)
+
+	def printQQplot(self, d, qqFN, plotTitle, yAxisLabel):
+		matplotlib.pyplot.figure().clear()
+		matplotlib.pyplot.figure(figsize=(6,6))
+		vallist = list(d.values())
+		res = scipy.stats.probplot(vallist, dist="norm", plot=matplotlib.pyplot)
+
+		matplotlib.pyplot.title(plotTitle, fontsize=14)
+		matplotlib.pyplot.xlabel("Theoretical Quantiles", fontsize=12)
+		matplotlib.pyplot.ylabel(yAxisLabel, fontsize=12)
+		matplotlib.pyplot.grid(True, linestyle="--", alpha=0.6)
+		matplotlib.pyplot.savefig(qqFN, dpi=600, bbox_inches="tight")
 
 	# This function can only be run after the GTseq.remDupGenos() function because it will add an object of type Duplicates to this class as a member variable (self.dups)
 	def plotMismatches(self):
@@ -114,7 +127,7 @@ class GTseq():
 		mismatchQQ = os.path.join(self.plotDir, qqFN)
 		maxMismatch = max(int(v) for v in mismatchDict.values()) # get max mismatch score while ensuring values in dict are numeric
 		self.printHistogram(mismatchDict, mismatchHisto, maxMismatch, maxMismatch, "Distribution of Genotype Mixmatches", "Mismatches") # number of bins = maxMismatch value
-		self.makeMismatchQQ(mismatchDict, mismatchQQ)
+		self.printQQplot(mismatchDict, mismatchQQ, "Normal Q-Q Plot (Genotype Mismatch Counts)", "Number of Mismatching Loci")
 
 	def plotIFI(self, df, prepost):
 		ifiScores = df['IFI'].tolist() # extract as list for stats calculations
@@ -188,6 +201,9 @@ class GTseq():
 		indsFn = "histogram.individuals." + prepost + ".png"
 		indsHisto = os.path.join(self.plotDir, indsFn)
 		self.printHistogram(missingDictInds, indsHisto, 1.0, 40, "Proportion of Missing GTseq Data (per Individual)", "Proportion Missing")
+
+		# calculate pre- or post-filter heterozygosity per individual
+		self.heterozygosity(deepcopy, prepost)
 
 		del metaCols # make sure memory used by removed columns is freed
 		del deepcopy # make sure memory used by the deep copy is freed
@@ -458,19 +474,6 @@ class GTseq():
 		removedInds.to_excel(indsName, sheet_name="Final Genotypes")
 
 		return df
-
-	def makeMismatchQQ(self, d, qqFN):
-		# qq plot
-		matplotlib.pyplot.figure().clear()
-		matplotlib.pyplot.figure(figsize=(6,6))
-		vallist = list(d.values())
-		res = scipy.stats.probplot(vallist, dist="norm", plot=matplotlib.pyplot)
-
-		matplotlib.pyplot.title("Normal Q-Q Plot (Genotype Mismatch Counts)", fontsize=14)
-		matplotlib.pyplot.xlabel("Theoretical Quantiles", fontsize=12)
-		matplotlib.pyplot.ylabel("Number of Mismatching Loci", fontsize=12)
-		matplotlib.pyplot.grid(True, linestyle="--", alpha=0.6)
-		matplotlib.pyplot.savefig(qqFN, dpi=600, bbox_inches="tight")
 
 	## This function is unused - leaving it here in case I want it later for any reason
 	## previously called from within makeMismatchPlots() function to look for outliers in qq plot
