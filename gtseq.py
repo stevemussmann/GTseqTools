@@ -79,29 +79,23 @@ class GTseq():
 		hetStats.printStats(self.logfile, "heterozygosity values", prepost)
 	
 		# make histogram plot
-		hetFn = "histogram.Ho." + prepost + ".png"
+		hetFn = "histogram.obsHet." + prepost + ".png"
 		hetHisto = os.path.join(self.plotDir, hetFn)
-		self.makeHetPlot(hetValsDict, hetHisto)
+		self.printHistogram(hetValsDict, hetHisto, 1.0, 50, "Obs. Het. Distribution", "Obs. Het. Values")
 
-	def makeHetPlot(self, d, fn):
+	def printHistogram(self, d, fn, maxX, nBin, plotTitle, xAxisLabel):
 		matplotlib.pyplot.figure().clear()
-		hetSeries = pandas.Series(d)
+		dataSeries = pandas.Series(d) # convert to pandas series
+		dataSeries = pandas.to_numeric(dataSeries) # make sure data are numeric
 
-		# get maximum IFI value
-		maxHet = 1.0
-
-		# give about 40 bins per 5.0 IFI score units
-		binCount = 50
-
-		hetSeries = pandas.to_numeric(hetSeries)
-		histo = hetSeries.plot.hist(grid=False, bins=binCount, range=(0.0,maxHet), rwidth=0.9, color='#607c8e')
-		histo.set_xlim(0.0, maxHet)
+		histo = dataSeries.plot.hist(grid=False, bins=nBin, range=(0.0, maxX), rwidth=0.9, color='#607c8e')
+		histo.set_xlim(0.0, maxX)
 		fig = histo.get_figure()
-		matplotlib.pyplot.title('Ho Value Distribution')
-		matplotlib.pyplot.xlabel('Ho Values')
+
+		matplotlib.pyplot.title(plotTitle)
+		matplotlib.pyplot.xlabel(xAxisLabel)
 		matplotlib.pyplot.ylabel('Counts')
 		fig.savefig(fn, dpi=600)
-
 
 	# This function can only be run after the GTseq.remDupGenos() function because it will add an object of type Duplicates to this class as a member variable (self.dups)
 	def plotMismatches(self):
@@ -118,7 +112,8 @@ class GTseq():
 		qqFN = "qqplot.mismatch.png"
 		mismatchHisto = os.path.join(self.plotDir, histoFN)
 		mismatchQQ = os.path.join(self.plotDir, qqFN)
-		self.makeMismatchHisto(mismatchDict, mismatchHisto)
+		maxMismatch = max(int(v) for v in mismatchDict.values()) # get max mismatch score while ensuring values in dict are numeric
+		self.printHistogram(mismatchDict, mismatchHisto, maxMismatch, maxMismatch, "Distribution of Genotype Mixmatches", "Mismatches") # number of bins = maxMismatch value
 		self.makeMismatchQQ(mismatchDict, mismatchQQ)
 
 	def plotIFI(self, df, prepost):
@@ -135,7 +130,9 @@ class GTseq():
 		# make histogram plot
 		ifiFn = "histogram.ifi." + prepost + ".png"
 		ifiHisto = os.path.join(self.plotDir, ifiFn)
-		self.makeIFIplot(ifiScoresDict, ifiHisto)
+		maxIFI = max(float(v) for v in ifiScoresDict.values()) # get max IFI score while ensuring values in dict are numeric
+		binCount = int(maxIFI/0.125) # get about 40 bins per 5.0 IFI score units
+		self.printHistogram(ifiScoresDict, ifiHisto, maxIFI, binCount, "IFI Score Distribution", "IFI Scores")
 
 	def makeHistos(self, df, prepost):
 		deepcopy = df.copy() # make deep copy of dataframe
@@ -176,7 +173,7 @@ class GTseq():
 		# plot pre- or post-filter missing loci data here
 		lociFn = "histogram.loci." + prepost + ".png"
 		lociHisto = os.path.join(self.plotDir, lociFn)
-		self.plotMissing(missingDictLoci, lociHisto)
+		self.printHistogram(missingDictLoci, lociHisto, 1.0, 40, "Proportion of Missing GTseq Data (per Locus)", "Proportion Missing")
 
 		# calculate pre- or post-filter missing data per individual
 		missingDictInds = self.calcMissingInds(deepcopy)
@@ -189,8 +186,8 @@ class GTseq():
 
 		# make plot of pre- or post-filter missing data per individual
 		indsFn = "histogram.individuals." + prepost + ".png"
-		sampPrefilterHisto = os.path.join(self.plotDir, indsFn)
-		self.plotMissing(missingDictInds, sampPrefilterHisto)
+		indsHisto = os.path.join(self.plotDir, indsFn)
+		self.printHistogram(missingDictInds, indsHisto, 1.0, 40, "Proportion of Missing GTseq Data (per Individual)", "Proportion Missing")
 
 		del metaCols # make sure memory used by removed columns is freed
 		del deepcopy # make sure memory used by the deep copy is freed
@@ -462,27 +459,6 @@ class GTseq():
 
 		return df
 
-	def makeMismatchHisto(self, d, histoFN):
-		matplotlib.pyplot.figure().clear()
-		mismatchSeries = pandas.Series(d)
-
-		# get maximum mismatch value
-		maxMismatch = mismatchSeries.max()
-
-		# Set number of bins to number of mismatches
-		binCount = maxMismatch
-
-		# histogram plot
-		mismatchSeries = pandas.to_numeric(mismatchSeries)
-		histo = mismatchSeries.plot.hist(grid=False, bins=binCount, range=(0.0,maxMismatch), rwidth=0.9, color='#607c8e')
-		histo.set_xlim(0.0, maxMismatch)
-		fig = histo.get_figure()
-		matplotlib.pyplot.title('Distribution of Genotype Mismatches')
-		matplotlib.pyplot.xlabel('Mismatches')
-		matplotlib.pyplot.ylabel('Counts')
-		fig.savefig(histoFN, dpi=600)
-
-
 	def makeMismatchQQ(self, d, qqFN):
 		# qq plot
 		matplotlib.pyplot.figure().clear()
@@ -519,39 +495,6 @@ class GTseq():
 
 		print(f"Found {len(outliers)} outlier values.")
 		print("Top 10 most extreme outliers:", outliers[:10])
-
-	def makeIFIplot(self, d, fn):
-		matplotlib.pyplot.figure().clear()
-		ifiSeries = pandas.Series(d)
-
-		# get maximum IFI value
-		maxIFI = ifiSeries.max()
-
-		# give about 40 bins per 5.0 IFI score units
-		binCount = int(maxIFI/0.125)
-
-		ifiSeries = pandas.to_numeric(ifiSeries)
-		histo = ifiSeries.plot.hist(grid=False, bins=binCount, range=(0.0,maxIFI), rwidth=0.9, color='#607c8e')
-		histo.set_xlim(0.0, maxIFI)
-		fig = histo.get_figure()
-		matplotlib.pyplot.title('IFI Score Distribution')
-		matplotlib.pyplot.xlabel('IFI Scores')
-		matplotlib.pyplot.ylabel('Counts')
-		fig.savefig(fn, dpi=600)
-
-
-	def plotMissing(self, d, fn):
-		matplotlib.pyplot.figure().clear()
-		missSeries = pandas.Series(d)
-		missSeries = pandas.to_numeric(missSeries)
-		histo = missSeries.plot.hist(grid=False, bins=40, range=(0.0,1.0), rwidth=0.9, color='#607c8e')
-		histo.set_xlim(0.0, 1.0)
-		fig = histo.get_figure()
-		matplotlib.pyplot.title('Proportion of Missing GTseq Data')
-		matplotlib.pyplot.xlabel('Proportion Missing')
-		matplotlib.pyplot.ylabel('Counts')
-		fig.savefig(fn, dpi=600)
-
 
 	def removeSpecial(self, df, snps, locfilter):
 		remove = list()
