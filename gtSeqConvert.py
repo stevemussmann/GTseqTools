@@ -3,6 +3,7 @@
 from comline import ComLine
 from gtseq import GTseq
 from gtconvert import GTconvert
+from plots import GTPlots
 
 import argparse
 import collections
@@ -157,8 +158,11 @@ def main():
 	else:
 		gtFile.printRetained(startPopCounts, endPopCounts) # print number of retained individuals to logfile
 
-	# print plots and final statistics
-	gtFile.printSankey(pdf)
+	## print plots and final statistics
+	# Sankey dicts
+	sankeyIndDict, sankeyLocDict = gtFile.returnSankeyDicts()
+	sankeyPlots = GTPlots(sankeyIndDict, sankeyLocDict)
+	sankeyPlots.printSankey(pdf)
 	print("Final missing data Statistics:")
 	gtFile.makeHistos(pdf, "postfilter") # makes post-filter missing data plots for loci and individuals
 	if input.args.monomorphic:

@@ -1,6 +1,7 @@
 from collections import Counter
 from decimal import Decimal, ROUND_HALF_UP
 from duplicates import Duplicates
+from plots import GTPlots
 from stats import GTStats
 
 import os
@@ -8,11 +9,7 @@ import re
 import sys
 import numpy
 import pandas
-import holoviews
-import matplotlib.pyplot
 import scipy
-
-holoviews.extension('bokeh')
 
 class GTseq():
 	'Class for operating on GTseq genotype files'
@@ -40,6 +37,9 @@ class GTseq():
 		self.sankeyLocDict = {key: [] for key in sankeyKeys}
 
 
+	def returnSankeyDicts(self):
+		return self.sankeyIndDict, self.sankeyLocDict
+
 	def heterozygosity(self, pdf, prepost):
 		hetVals = dict()
 
@@ -66,7 +66,6 @@ class GTseq():
 
 	def plotHet(self, df, prepost):
 		hetVals = df['Ho'].tolist() # extract as list for stats calculations
-		hetVals = [Decimal(x) for x in hetVals] # cast all list elements as Decimal
 		
 		hetValsDict = df['Ho'].to_dict() # extract as dict for plotting
 
@@ -77,38 +76,12 @@ class GTseq():
 	
 		# make histogram and QQ plots
 		hetFn = "histogram.obsHet." + prepost + ".png"
-		hetQQfn = "qq.obsHet." + prepost + ".png"
+		hetQQfn = "qqplot.obsHet." + prepost + ".png"
 		hetHisto = os.path.join(self.plotDir, hetFn)
 		hetQQ = os.path.join(self.plotDir, hetQQfn)
-		self.printHistogram(hetValsDict, hetHisto, 1.0, 50, "Obs. Het. Distribution", "Obs. Het. Values")
-		hetValsDict = {k: float(v) for k, v in hetValsDict.items()} # cast as floats because scipy doesn't like Decimal objects.
-		self.printQQplot(hetValsDict, hetQQ, "Normal Q-Q Plot (Obs. Het.)", "Observed Heterozygosity")
-
-	def printHistogram(self, d, fn, maxX, nBin, plotTitle, xAxisLabel):
-		matplotlib.pyplot.figure().clear()
-		dataSeries = pandas.Series(d) # convert to pandas series
-		dataSeries = pandas.to_numeric(dataSeries) # make sure data are numeric
-
-		histo = dataSeries.plot.hist(grid=False, bins=nBin, range=(0.0, maxX), rwidth=0.9, color='#607c8e')
-		histo.set_xlim(0.0, maxX)
-		fig = histo.get_figure()
-
-		matplotlib.pyplot.title(plotTitle)
-		matplotlib.pyplot.xlabel(xAxisLabel)
-		matplotlib.pyplot.ylabel('Counts')
-		fig.savefig(fn, dpi=600)
-
-	def printQQplot(self, d, qqFN, plotTitle, yAxisLabel):
-		matplotlib.pyplot.figure().clear()
-		matplotlib.pyplot.figure(figsize=(6,6))
-		vallist = list(d.values())
-		res = scipy.stats.probplot(vallist, dist="norm", plot=matplotlib.pyplot)
-
-		matplotlib.pyplot.title(plotTitle, fontsize=14)
-		matplotlib.pyplot.xlabel("Theoretical Quantiles", fontsize=12)
-		matplotlib.pyplot.ylabel(yAxisLabel, fontsize=12)
-		matplotlib.pyplot.grid(True, linestyle="--", alpha=0.6)
-		matplotlib.pyplot.savefig(qqFN, dpi=600, bbox_inches="tight")
+		hetValsPlot = GTPlots(hetValsDict)
+		hetValsPlot.printHistogram(hetHisto, 1.0, 50, "Obs. Het. Distribution", "Obs. Het. Values")
+		hetValsPlot.printQQplot(hetQQ, "Normal Q-Q Plot (Obs. Het.)", "Observed Heterozygosity")
 
 	# This function can only be run after the GTseq.remDupGenos() function because it will add an object of type Duplicates to this class as a member variable (self.dups)
 	def plotMismatches(self):
@@ -126,8 +99,9 @@ class GTseq():
 		mismatchHisto = os.path.join(self.plotDir, histoFN)
 		mismatchQQ = os.path.join(self.plotDir, qqFN)
 		maxMismatch = max(int(v) for v in mismatchDict.values()) # get max mismatch score while ensuring values in dict are numeric
-		self.printHistogram(mismatchDict, mismatchHisto, maxMismatch, maxMismatch, "Distribution of Genotype Mixmatches", "Mismatches") # number of bins = maxMismatch value
-		self.printQQplot(mismatchDict, mismatchQQ, "Normal Q-Q Plot (Genotype Mismatch Counts)", "Number of Mismatching Loci")
+		mismatchPlot = GTPlots(mismatchDict)
+		mismatchPlot.printHistogram(mismatchHisto, maxMismatch, maxMismatch, "Distribution of Genotype Mixmatches", "Mismatches") # number of bins = maxMismatch value
+		mismatchPlot.printQQplot(mismatchQQ, "Normal Q-Q Plot (Genotype Mismatch Counts)", "Number of Mismatching Loci")
 
 	def plotIFI(self, df, prepost):
 		ifiScores = df['IFI'].tolist() # extract as list for stats calculations
@@ -145,7 +119,8 @@ class GTseq():
 		ifiHisto = os.path.join(self.plotDir, ifiFn)
 		maxIFI = max(float(v) for v in ifiScoresDict.values()) # get max IFI score while ensuring values in dict are numeric
 		binCount = int(maxIFI/0.125) # get about 40 bins per 5.0 IFI score units
-		self.printHistogram(ifiScoresDict, ifiHisto, maxIFI, binCount, "IFI Score Distribution", "IFI Scores")
+		ifiScoresPlot = GTPlots(ifiScoresDict)
+		ifiScoresPlot.printHistogram(ifiHisto, maxIFI, binCount, "IFI Score Distribution", "IFI Scores")
 
 	def makeHistos(self, df, prepost):
 		deepcopy = df.copy() # make deep copy of dataframe
@@ -186,7 +161,8 @@ class GTseq():
 		# plot pre- or post-filter missing loci data here
 		lociFn = "histogram.loci." + prepost + ".png"
 		lociHisto = os.path.join(self.plotDir, lociFn)
-		self.printHistogram(missingDictLoci, lociHisto, 1.0, 40, "Proportion of Missing GTseq Data (per Locus)", "Proportion Missing")
+		missingLociPlot = GTPlots(missingDictLoci)
+		missingLociPlot.printHistogram(lociHisto, 1.0, 40, "Proportion of Missing GTseq Data (per Locus)", "Proportion Missing")
 
 		# calculate pre- or post-filter missing data per individual
 		missingDictInds = self.calcMissingInds(deepcopy)
@@ -200,7 +176,8 @@ class GTseq():
 		# make plot of pre- or post-filter missing data per individual
 		indsFn = "histogram.individuals." + prepost + ".png"
 		indsHisto = os.path.join(self.plotDir, indsFn)
-		self.printHistogram(missingDictInds, indsHisto, 1.0, 40, "Proportion of Missing GTseq Data (per Individual)", "Proportion Missing")
+		missingIndsPlot = GTPlots(missingDictInds)
+		missingIndsPlot.printHistogram(indsHisto, 1.0, 40, "Proportion of Missing GTseq Data (per Individual)", "Proportion Missing")
 
 		# calculate pre- or post-filter heterozygosity per individual
 		self.heterozygosity(deepcopy, prepost)
@@ -208,39 +185,6 @@ class GTseq():
 		del metaCols # make sure memory used by removed columns is freed
 		del deepcopy # make sure memory used by the deep copy is freed
 
-
-	def printSankey(self, pdf):
-		print("Writing sankey diagrams...")
-
-		## individuals
-		sankeyIndDF = pandas.DataFrame(self.sankeyIndDict) # convert sankey data to pandas dataframe
-		sankeyIndDF['Count'] = pandas.to_numeric(sankeyIndDF['Count'], errors='coerce') # force count data to be numeric
-		discardSum = sankeyIndDF.loc[sankeyIndDF['Source'] == 'Discarded', 'Count'].sum() # sum discarded values
-		sankeyIndDF.loc[len(sankeyIndDF)] = ['All', 'Discarded', discardSum] # add discarded value sum to dataframe
-		#print(sankeyIndDF, "\n")
-
-		## loci
-		self.sankeyLocDict["Source"].append("All")
-		self.sankeyLocDict["Filter"].append("Retained")
-		self.sankeyLocDict["Count"].append(len(pdf.columns))
-		sankeyLocDF = pandas.DataFrame(self.sankeyLocDict)
-		sankeyLocDF['Count'] = pandas.to_numeric(sankeyLocDF['Count'], errors='coerce') # force count data to be numeric
-		discardSumLoc = sankeyLocDF.loc[sankeyLocDF['Source'] == 'Discarded', 'Count'].sum() # sum discarded values
-		sankeyLocDF.loc[len(sankeyLocDF)] = ['All', 'Discarded', discardSumLoc] # add discarded value sum to dataframe
-		#print(sankeyLocDF, "\n")
-
-		sankeyInd = holoviews.Sankey(sankeyIndDF, label='Individuals') # make sankey object
-		spInd = sankeyInd.opts(label_position='left', edge_color='Filter', node_color='index', cmap='tab20') # make sankey plot
-		sankeyIndPath = os.path.join(self.plotDir, "sankey_plot_individuals.html") # make path for sankey output
-		holoviews.save(spInd, sankeyIndPath, fmt="html") # print sankey plot - opted for html because .png and .svg options have too many dependencies
-		print("Sankey diagram for individuals written to", str(sankeyIndPath))
-
-		sankeyLoc = holoviews.Sankey(sankeyLocDF, label='Loci') # make sankey object
-		spLoc = sankeyLoc.opts(label_position='left', edge_color='Filter', node_color='index', cmap='tab20') # make sankey plot
-		sankeyLocPath = os.path.join(self.plotDir, "sankey_plot_loci.html") # make path for sankey output
-		holoviews.save(spLoc, sankeyLocPath, fmt="html") # print sankey plot - opted for html because .png and .svg options have too many dependencies
-		print("Sankey diagram for loci written to", str(sankeyLocPath), "\n")
-	
 	def printRetained(self, start, end, keepPops=None):
 		## start is a pandas series
 		## end is of type 'collections.Counter'

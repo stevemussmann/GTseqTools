@@ -57,11 +57,12 @@ class GTStats():
 
 	def printStats(self, fn, mode1, mode2):
 		if mode1 == "ifi scores":
-			print(f"IFI score summary for {mode2} individuals.")
+			print(f"IFI score summary for {mode2} individuals:")
 		elif mode1 == "heterozygosity":
-			print(f"{mode2} heterozygosity.")
+			prepost = mode2.capitalize()
+			print(f"{prepost} heterozygosity summary for individuals:")
 		else:
-			print(f"Proportion of missing data summary for {mode1} {mode2}.")
+			print(f"Proportion of missing data summary for {mode1} {mode2}:")
 		print("Mean\tStDev\tMedian\tMin\tMax")
 
 		fh = open(fn, 'a')
