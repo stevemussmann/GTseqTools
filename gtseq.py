@@ -36,6 +36,8 @@ class GTseq():
 		self.sankeyIndDict = {key: [] for key in sankeyKeys}
 		self.sankeyLocDict = {key: [] for key in sankeyKeys}
 
+		self.discardStart = None # used to hold individuals discarded from beginning
+
 
 	def returnSankeyDicts(self):
 		return self.sankeyIndDict, self.sankeyLocDict
@@ -201,11 +203,9 @@ class GTseq():
 
 		# check if keeppops (-P) option used
 		if keepPops is not None:
-			discardStart = start[~start.index.isin(keepPops)]
+			self.discardStart = start[~start.index.isin(keepPops)]
 			start = start[start.index.isin(keepPops)]
 			end = Counter({k: end[k] for k in keepPops if k in end})
-
-		#print(discardEnd)
 
 		totalIn = start.sum() # total samples input
 		totalOut = end.total() # total samples output
@@ -215,77 +215,32 @@ class GTseq():
 		self.sankeyIndDict["Source"].append("All")
 		self.sankeyIndDict["Filter"].append("Retained")
 		self.sankeyIndDict["Count"].append(str(totalOut))
-
-		obsList = list()
-		expList = list()
-		for k,v in start.items():
-			if k in end:
-				exp = self.expected(start[k], end[k], pctRetained)
-				print("{}\t{}\t{}\t{}".format(k, v, end[k], "{:.2f}".format(exp)))
-				fh.write(str(k) + "\t" + str(v) + "\t" + str(end[k]) + "\t" + "{:.2f}".format(exp) + "\n")
-				obsList.append(float(end[k]))
-				expList.append(float(exp))
-			else:
-				exp = self.expected(start[k], 0, pctRetained)
-				print("{}\t{}\t{}\t{}".format(k, v, "0", "{:.2f}".format(exp)))
-				fh.write(str(k) + "\t" + str(v) + "\t" + str("0") + "\t" + "{:.2f}".format(exp) + "\n")
-				obsList.append(float(0))
-				expList.append(float(exp))
-		print("{}\t{}\t{}\t{}".format("Total", str(totalIn), str(totalOut), "N/A"))
-		print("")
-		fh.write(str("Total\t") + str(totalIn) + "\t" + str(totalOut) + "\tN/A" + "\n\n")
-
-		# test if more than one population input and/or retained before performing chisquare test
-		if len(obsList) > 1:
-			try:
-				# chisquare test using scipy library
-				#chisq = scipy.stats.chisquare(obsList, f_exp=expList) # old code
-				## folowing example from here: https://github.com/scipy/scipy/issues/12282
-				expList_scaled = numpy.array(expList) * (numpy.sum(obsList) / numpy.sum(expList)) # new code
-				chisq = scipy.stats.chisquare(f_obs=obsList, f_exp=expList_scaled) # new code
-				df = len(obsList)-1
 		
-				print("Performing chi squared test to evaluate if missing individuals are evenly distributed among sample groups.")
-				print("chisq\tdf\tp")
-				print(str("{:.3f}".format(chisq[0])), "\t", str(df), "\t", str("{:.3f}".format(chisq[1])))
-				print("")
-		
-				fh.write("Performing chi squared test to evaluate if missing individuals are evenly distributed among sample groups.\n")
-				fh.write("chisq\tdf\tp\n")
-				fh.write(str("{:.3f}".format(chisq[0])) + "\t" + str(df) + "\t" + str("{:.3f}".format(chisq[1])) + "\n\n")
-
-			except ValueError as e:
-				print("ERROR: chisquare test failed.")
-				print("Error message: " + str(e))
-				print("")
-		else:
-			print("Chi squared test not performed because only one population was analyzed.\n")
-			fh.write("Chi squared test not performed because only one population was analyzed.\n\n")
-
-		# if keeppops filter was used, print discarded populations
-		if keepPops is not None:
-			totalDiscardIn = discardStart.sum() # total samples input
-
-			print("These populations were discarded by the -P / --keeppops filter:")
-			print("Population\tInput\tOutput(observed)\tOutput(expected)")
-
-			fh.write("These populations were discarded by the -P / --keeppops filter:\n")
-			fh.write("Population\tInput\tOutput(observed)\tOutput(expected)\n")
-
-			# print / write to log counts for discarded populations
-			for k, v in discardStart.items():
-				print("{}\t{}\t{}\t{}".format(k, v, "0", "0.0"))
-				fh.write(str(k) + "\t" + str(v) + "\t" + str("0") + "\t" + "0.0\n")
-			print("{}\t{}\t{}\t{}".format("Total", str(totalDiscardIn), "0", "N/A"))
-			print("")
-			fh.write(str("Total\t") + str(totalDiscardIn) + "\t0\tN/A\n\n")
-				
 		fh.close()
 
-	def expected(self, inInds, outInds, pctRet):
-		exp = inInds * pctRet
+		return start, end
 
-		return exp
+	def printDiscard(self):
+		fh = open(self.logfile, 'a')
+
+		# print discarded populations
+		totalDiscardIn = self.discardStart.sum() # total samples input
+
+		print("These populations were discarded by the -P / --keeppops filter:")
+		print("Population\tInput\tOutput(observed)\tOutput(expected)")
+
+		fh.write("These populations were discarded by the -P / --keeppops filter:\n")
+		fh.write("Population\tInput\tOutput(observed)\tOutput(expected)\n")
+
+		# print / write to log counts for discarded populations
+		for k, v in self.discardStart.items():
+			print("{}\t{}\t{}\t{}".format(k, v, "0", "0.0"))
+			fh.write(str(k) + "\t" + str(v) + "\t" + str("0") + "\t" + "0.0\n")
+		print("{}\t{}\t{}\t{}".format("Total", str(totalDiscardIn), "0", "N/A"))
+		print("")
+		fh.write(str("Total\t") + str(totalDiscardIn) + "\t0\tN/A\n\n")
+				
+		fh.close()
 
 	def parseFile(self):
 		print("Reading input file.")

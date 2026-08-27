@@ -1,6 +1,8 @@
 from decimal import *
 
 import math
+import numpy
+import scipy
 
 class GTStats():
 	'Class for calculating summary statistics'
@@ -78,3 +80,63 @@ class GTStats():
 		fh.write(str(round(self.mean,3)) + "\t" + str(round(self.stdev,3)) + "\t" + str(round(self.med,3)) + "\t" + str(round(self.mmin,3)) + "\t" + str(round(self.mmax,3)) + "\n\n")
 		
 		fh.close()
+
+	def chisq(self, start, end, fn):
+		fh = open( fn, 'a')
+
+		totalIn = start.sum() # total samples input
+		totalOut = end.total() # total samples output
+		pctRetained = float(totalOut / totalIn) # percentage of retained individuals
+
+		obsList = list()
+		expList = list()
+		for k,v in start.items():
+			if k in end:
+				exp = self.expected(start[k], pctRetained)
+				print("{}\t{}\t{}\t{}".format(k, v, end[k], "{:.2f}".format(exp)))
+				fh.write(str(k) + "\t" + str(v) + "\t" + str(end[k]) + "\t" + "{:.2f}".format(exp) + "\n")
+				obsList.append(float(end[k]))
+				expList.append(float(exp))
+			else:
+				exp = self.expected(start[k], pctRetained)
+				print("{}\t{}\t{}\t{}".format(k, v, "0", "{:.2f}".format(exp)))
+				fh.write(str(k) + "\t" + str(v) + "\t" + str("0") + "\t" + "{:.2f}".format(exp) + "\n")
+				obsList.append(float(0))
+				expList.append(float(exp))
+		print("{}\t{}\t{}\t{}".format("Total", str(totalIn), str(totalOut), "N/A"))
+		print("")
+		fh.write(str("Total\t") + str(totalIn) + "\t" + str(totalOut) + "\tN/A" + "\n\n")
+
+		# test if more than one population input and/or retained before performing chisquare test
+		if len(obsList) > 1:
+			try:
+				# chisquare test using scipy library
+				#chisq = scipy.stats.chisquare(obsList, f_exp=expList) # old code
+				## folowing example from here: https://github.com/scipy/scipy/issues/12282
+				expList_scaled = numpy.array(expList) * (numpy.sum(obsList) / numpy.sum(expList)) # new code
+				chisq = scipy.stats.chisquare(f_obs=obsList, f_exp=expList_scaled) # new code
+				df = len(obsList)-1
+		
+				print("Performing chi squared test to evaluate if missing individuals are evenly distributed among sample groups.")
+				print("chisq\tdf\tp")
+				print(str("{:.3f}".format(chisq[0])), "\t", str(df), "\t", str("{:.3f}".format(chisq[1])))
+				print("")
+		
+				fh.write("Performing chi squared test to evaluate if missing individuals are evenly distributed among sample groups.\n")
+				fh.write("chisq\tdf\tp\n")
+				fh.write(str("{:.3f}".format(chisq[0])) + "\t" + str(df) + "\t" + str("{:.3f}".format(chisq[1])) + "\n\n")
+
+			except ValueError as e:
+				print("ERROR: chisquare test failed.")
+				print("Error message: " + str(e))
+				print("")
+		else:
+			print("Chi squared test not performed because only one population was analyzed.\n")
+			fh.write("Chi squared test not performed because only one population was analyzed.\n\n")
+
+		fh.close()
+
+	def expected(self, inInds, pctRet):
+		exp = inInds * pctRet
+
+		return exp

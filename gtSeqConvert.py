@@ -4,6 +4,7 @@ from comline import ComLine
 from gtseq import GTseq
 from gtconvert import GTconvert
 from plots import GTPlots
+from stats import GTStats
 
 import argparse
 import collections
@@ -154,9 +155,14 @@ def main():
 	pops = {k: pops[k] for k in keep} # reduce 'pops' dict to only individuals retained after missing data filtering
 	endPopCounts = collections.Counter(pops.values()) #count ending number of individuals per population
 	if input.args.keeppops:
-		gtFile.printRetained(startPopCounts, endPopCounts, keepSet) # pass set of populations to be retained
+		startDict, endDict = gtFile.printRetained(startPopCounts, endPopCounts, keepSet) # pass set of populations to be retained
+		retainedStats = GTStats()
+		retainedStats.chisq(startDict, endDict, logfile)
+		gtFile.printDiscard()
 	else:
-		gtFile.printRetained(startPopCounts, endPopCounts) # print number of retained individuals to logfile
+		startDict, endDict = gtFile.printRetained(startPopCounts, endPopCounts) # print number of retained individuals to logfile
+		retainedStats = GTStats()
+		retainedStats.chisq(startDict, endDict, logfile)
 
 	## print plots and final statistics
 	# Sankey dicts
