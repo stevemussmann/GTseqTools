@@ -7,9 +7,7 @@ from stats import GTStats
 import os
 import re
 import sys
-import numpy
 import pandas
-import scipy
 
 class GTseq():
 	'Class for operating on GTseq genotype files'
@@ -373,30 +371,6 @@ class GTseq():
 		removedInds.to_excel(indsName, sheet_name="Final Genotypes")
 
 		return df
-
-	## This function is unused - leaving it here in case I want it later for any reason
-	## previously called from within makeMismatchPlots() function to look for outliers in qq plot
-	def calcOutliers(self, res):
-		# Find the equation of the reference line (y = mx + b)
-		# res[1][0] = slope (m), res[1][1] = intercept (b)
-		x = res[0][0]
-		y = res[0][1]
-		slope = res[1][0]
-		intercept = res[1][1]
-
-		# Calculate expected y-values on the reference line and find the distance (residuals)
-		expected_y = slope * x + intercept
-		distances = y - expected_y
-
-		# Set a threshold for what constitutes an "outlier"
-		# Using standard deviations of the distances (4.5 standard deviations in code below)
-		threshold = 4.5 * numpy.std(distances)
-
-		# Extract the actual outlier values from your original data
-		outliers = y[distances < -threshold]
-
-		print(f"Found {len(outliers)} outlier values.")
-		print("Top 10 most extreme outliers:", outliers[:10])
 
 	def removeSpecial(self, df, snps, locfilter):
 		remove = list()
