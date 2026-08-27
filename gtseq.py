@@ -70,8 +70,8 @@ class GTseq():
 		hetValsDict = df['Ho'].to_dict() # extract as dict for plotting
 
 		# calculate stats
-		hetStats = GTStats(hetVals)
-		hetStats.calcStats()
+		hetStats = GTStats()
+		hetStats.calcStats(hetVals)
 		hetStats.printStats(self.logfile, "heterozygosity", prepost)
 	
 		# make histogram and QQ plots
@@ -90,8 +90,8 @@ class GTseq():
 		mismatchDict = dict(enumerate(mismatches)) # enumerate to add dummy key values for purpose of making dict to plot data
 
 		# calculate stats
-		mismatchStats = GTStats(mismatches)
-		mismatchStats.calcStats()
+		mismatchStats = GTStats()
+		mismatchStats.calcStats(mismatches)
 
 		# make histogram and qq plots
 		histoFN = "histogram.mismatch.png"
@@ -110,8 +110,8 @@ class GTseq():
 		ifiScoresDict = df['IFI'].to_dict() # extract as dict for plotting
 
 		# calculate stats
-		ifiStats = GTStats(ifiScores)
-		ifiStats.calcStats()
+		ifiStats = GTStats()
+		ifiStats.calcStats(ifiScores)
 		ifiStats.printStats(self.logfile, "ifi scores", prepost)
 	
 		# make histogram plot
@@ -154,8 +154,8 @@ class GTseq():
 		lociMissVals = list(missingDictLoci.values()) # get missing data proportions as list
 
 		# calculate pre- or post-filter missing data statistics per locus
-		lociStats = GTStats(lociMissVals)
-		lociStats.calcStats()
+		lociStats = GTStats()
+		lociStats.calcStats(lociMissVals)
 		lociStats.printStats(self.logfile, prepost, "loci")
 
 		# plot pre- or post-filter missing loci data here
@@ -169,8 +169,8 @@ class GTseq():
 		indsMissVals = list(missingDictInds.values()) # get missing data proportions as list
 
 		# calculate pre- or post-filter missing data statistics per individual
-		indsStats = GTStats(indsMissVals)
-		indsStats.calcStats()
+		indsStats = GTStats()
+		indsStats.calcStats(indsMissVals)
 		indsStats.printStats(self.logfile, prepost, "individuals")
 
 		# make plot of pre- or post-filter missing data per individual

@@ -5,15 +5,16 @@ import math
 class GTStats():
 	'Class for calculating summary statistics'
 	
-	def __init__(self, l):
-		self.l = l
+	def __init__(self):
+		self.l = list()
 		self.mean = 0.0
 		self.stdev = 0.0
 		self.med = 0.0
 		self.mmin = 0.0
 		self.mmax = 0.0
 
-	def calcStats(self):
+	def calcStats(self, l):
+		self.l = l
 		if len(self.l)!=0:
 			self.mean = self.calcMean(self.l)
 			self.stdev = self.calcStdev(self.l, self.mean)
