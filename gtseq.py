@@ -554,11 +554,12 @@ class GTseq():
 
 		junk = pandas.DataFrame()
 
-		self.sankeyLocDict["Source"].append("Discarded")
-		self.sankeyLocDict["Filter"].append("pmissloc")
-		self.sankeyLocDict["Count"].append(len(remove))
-
 		if remove:
+			# track number of loci removed for sankey plots
+			self.sankeyLocDict["Source"].append("Discarded")
+			self.sankeyLocDict["Filter"].append("pmissloc")
+			self.sankeyLocDict["Count"].append(len(remove))
+
 			junk = self.removeColumns(df, remove)
 
 		print("")
