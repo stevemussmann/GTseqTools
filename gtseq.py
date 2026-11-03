@@ -94,6 +94,8 @@ class GTseq():
 		mismatchStats.calcStats(mismatches)
 
 		# make histogram and qq plots
+		print("\nMaking mismatch histogram and qq plots. This can take a while with large datafiles...\n")
+
 		histoFN = "histogram.mismatch.png"
 		qqFN = "qqplot.mismatch.png"
 		mismatchHisto = os.path.join(self.plotDir, histoFN)
@@ -302,12 +304,13 @@ class GTseq():
 		if not removeList:
 			print("No duplicates to be removed.")
 		else:
+			# track removed individuals for sankey plot
+			self.sankeyIndDict["Source"].append("Discarded")
+			self.sankeyIndDict["Filter"].append("keepdups")
+			self.sankeyIndDict["Count"].append(str(len(removeList)))
+			
 			removedDups = self.removeRows(df, removeList)
 
-		# track removed individuals for sankey plot
-		self.sankeyIndDict["Source"].append("Discarded")
-		self.sankeyIndDict["Filter"].append("keepdups")
-		self.sankeyIndDict["Count"].append(str(len(removeList)))
 
 		self.dups = dups # add Duplicates() object as member variable
 
