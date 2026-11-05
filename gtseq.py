@@ -101,6 +101,7 @@ class GTseq():
 		mismatchHisto = os.path.join(self.plotDir, histoFN)
 		mismatchQQ = os.path.join(self.plotDir, qqFN)
 		maxMismatch = max(int(v) for v in mismatchDict.values()) # get max mismatch score while ensuring values in dict are numeric
+
 		mismatchPlot = GTPlots(mismatchDict)
 		mismatchPlot.printHistogram(mismatchHisto, maxMismatch, maxMismatch, "Distribution of Genotype Mixmatches", "Mismatches") # number of bins = maxMismatch value
 		mismatchPlot.printQQplot(mismatchQQ, "Normal Q-Q Plot (Genotype Mismatch Counts)", "Number of Mismatching Loci")

@@ -87,14 +87,19 @@ class ComLine():
 							dest='keeppops',
 							help="Provide a text file of populations to retain. One population per line. Populations must match data in 'Population ID' column of your input Excel file."
 		)
-		optional.add_argument("-s", "--species",
-							dest='species',
-							help="Specify a list of loci that are species identification SNPs."
-		)
 		optional.add_argument("-Q", "--identquit",
 							dest='identquit',
 							action='store_false',
 							help="Turn off option to quit the program if identical sample names detected. Program will attempt to force unique names upon these samples."
+		)
+		optional.add_argument("-s", "--species",
+							dest='species',
+							help="Specify a list of loci that are species identification SNPs."
+		)
+		optional.add_argument("-v", "--noplots",
+							dest='noplots',
+							action='store_false',
+							help="Turn off plotting of data related to duplicate sample detection."
 		)
 		colony.add_argument("-B", "--inbreed",
 							dest='inbreed',

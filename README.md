@@ -9,14 +9,14 @@ A manuscript is in preparation that will describe the program. For now, please c
 
 
 ## Python Version Compatibility and Dependencies
-This program has been tested with Python = 3.14 but it should be compatible with Python >= 3.8 (Syntax is used that was first introduced to Python in v3.8). 
+This program has been tested with Python = 3.14.7 but it should be compatible with Python >= 3.8.x (Syntax is used that was first introduced to Python in v3.8). 
 Testing and development was conducted with the following versions of Python libraries:
-- holoviews = 1.23.1
-- matplotlib = 3.10.7
-- numpy = 2.3.4
+- holoviews = 1.23.2
+- matplotlib = 3.11.1
+- numpy = 2.5.3
 - openpyxl = 3.1.5
-- pandas = 2.3.3
-- scipy = 1.16.3
+- pandas = 3.0.5
+- scipy = 1.18.1
 
 ## Installation
 1. Set up a conda environment. This is accomplished by first installing [Miniconda](https://docs.conda.io/en/latest/miniconda.html). See the [basic account configuration](https://github.com/stevemussmann/ca_chinook?tab=readme-ov-file#basic-account-configuration-conda-installation-etc-) instructions in another of my repositories to see how I install custom software. Do steps 1 - 8 under the heading "Basic account configuration, conda installation, etc." These instructions are written for Windows Subsystem for Linux (WSL) but should be translatable to any Unix-based operating system. You do not need to repeat this procedure if you have already done it for another one of my packages.
@@ -123,7 +123,8 @@ Optional Arguments: <a name="optional"></a>
 * **-o / --order:** Specify whether missing data filters will first be applied to loci or individuals (options: 'loci' = loci filtered first (default), 'individuals' = individuals filtered first).
 * **-P / --keeppops:** Provide a list of populations that will be retained in final outputs. All individuals belonging to populations not specified in this file will be filtered. This input should be a plain text file with each population being specified on its own line. Population names must match those in the 'Population ID' column exactly.
 * **-s / --species:** Provide a list of loci that are species identification SNPs. This should be a plain text file with one locus per line. These loci will be removed from the dataset before any other data filtering steps are executed.
-* **-Q / --identquit:** Attempt to force duplicated sample names in your input file to be unique. This will be accomplished by appending suffixes (`_1`, `_2`, etc.) to all instances of a name past the first detection (Boolean; default = off).
+* **-v / --noplots:** Invoke this option to prevent the printing of plots related to duplicate detection. These plots can take a long time to render for large files (e.g., 10,000 individuals); sometimes taking as long as duplicate detection itself. If you have already obtained these plots for your data and are rerunning the program to change filtering options you might consider using this option to reduce runtime (Boolean; default = print duplicate plots).
+* **-Q / --identquit:** By default, this program will exit if it detects two or more individual samples that have the same sample name. Invoking this option will instead force the program to proceed by force duplicated sample names to be unique. This will be accomplished by appending suffixes (`_1`, `_2`, etc.) to all instances of a name past its first detection (Boolean; default = off).
 
 Colony Format Arguments:
 * **-e / --droperr:** Enter the assumed allelic dropout rate (default = 0.0005).
